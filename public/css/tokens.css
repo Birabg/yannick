@@ -1,35 +1,13 @@
-/* Design tokens. Source of truth: DESIGN.md */
+/* Design tokens. Source of truth: DESIGN.md (formicai.dev kit, Livery v1) */
 
 @font-face {
-  font-family: 'Bodoni Moda';
-  src: url('/fonts/bodoni-moda-latin-wght-normal.woff2') format('woff2');
-  font-weight: 400 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Bodoni Moda';
-  src: url('/fonts/bodoni-moda-latin-wght-italic.woff2') format('woff2');
-  font-weight: 400 900;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Jost';
-  src: url('/fonts/jost-latin-wght-normal.woff2') format('woff2');
+  font-family: 'Urbanist';
+  src: url('/fonts/urbanist-latin-wght-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
-/* The Ethiopic faces download only when Amharic text is on the page. */
-@font-face {
-  font-family: 'Noto Serif Ethiopic';
-  src: url('/fonts/noto-serif-ethiopic-ethiopic-wght-normal.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+1200-139F, U+2D80-2DDF, U+AB00-AB2F;
-}
+/* The Ethiopic face downloads only when Amharic text is on the page. */
 @font-face {
   font-family: 'Noto Sans Ethiopic';
   src: url('/fonts/noto-sans-ethiopic-ethiopic-wght-normal.woff2') format('woff2');
@@ -40,92 +18,127 @@
 }
 
 :root {
-  /* colour */
-  --ivory: #f7f3ec;
-  --stone: #eae3d7;
-  --white: #fdfbf7;
-  --ink: #1c1714;
-  --taupe: #6b5f54;
-  --taupe-dark: #b3a798;
-  --bordeaux: #5b1a24;
-  --brass: #a68a5b;
-  --hair: #d9d0c1;
-  --danger: #8c1d18;
-  --danger-bg: #f3e1de;
+  color-scheme: light dark;
+
+  /* colour: light */
+  --c-bg: #ffffff;
+  --c-surface: #f4f4f2;
+  --c-chip: #e9e9e9;
+  --c-card: #ffffff;
+  --c-text: #1a1a1a;
+  --c-muted: #5c5c5c;
+  --c-border: #e5e5e5;
+  --c-accent: #557611;
+  --c-on-accent: #ffffff;
+  --c-accent-soft: #c9d5ba;
+  --c-photo: #e9e9e9;
+  --c-danger: #a3231c;
+  --c-danger-bg: #fbeceb;
+  /* the inverse band (dark section on a light page) */
+  --c-inv-bg: #131312;
+  --c-inv-text: #f0efec;
+  --c-inv-muted: #b0aeaa;
+  --c-inv-border: #2a2a29;
+  --c-inv-accent: #a5e12a;
+  /* legacy aliases used by older rules */
+  --c-muted-inv: var(--c-inv-muted);
+  --c-accent-inv: var(--c-inv-accent);
 
   /* semantic (sections re-map these) */
-  --bg: var(--ivory);
-  --fg: var(--ink);
-  --soft: var(--taupe);
-  --rule: var(--hair);
-  --accent: var(--bordeaux);
+  --bg: var(--c-bg);
+  --fg: var(--c-text);
+  --soft: var(--c-muted);
+  --rule: var(--c-border);
+  --accent: var(--c-accent);
 
-  /* type */
-  --font-display: 'Bodoni Moda', 'Noto Serif Ethiopic', 'Didot', Georgia, serif;
-  --font-body: 'Jost', 'Noto Sans Ethiopic', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* type: one family, tight at large sizes */
+  --font-display: 'Urbanist', 'Noto Sans Ethiopic', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: var(--font-display);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  --t-xl: clamp(3rem, 1.6rem + 7.4vw, 7.5rem);
-  --t-l: clamp(2.4rem, 1.7rem + 3.4vw, 4.6rem);
-  --t-m: clamp(1.6rem, 1.3rem + 1.4vw, 2.2rem);
-  --t-s: clamp(1.35rem, 1.2rem + 0.6vw, 1.6rem);
-  --t-lead: clamp(1.2rem, 1.1rem + 0.5vw, 1.4rem);
-  --t-body: 1.0625rem;
-  --t-small: 0.9375rem;
-  --t-label: 0.78rem;
+  --t-xl: clamp(2.5rem, 1.5rem + 4.6vw, 4.5rem);
+  --t-l: clamp(1.875rem, 1.4rem + 2vw, 3rem);
+  --t-m: clamp(1.5rem, 1.3rem + 0.8vw, 1.875rem);
+  --t-s: 1.25rem;
+  --t-lead: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+  --t-body: 1rem;
+  --t-small: 0.875rem;
+  --t-label: 0.75rem;
 
-  /* space: 8px scale */
+  /* space */
   --s-1: 0.5rem;
   --s-2: 1rem;
   --s-3: 1.5rem;
   --s-4: 2rem;
   --s-5: 3rem;
   --s-6: 4rem;
-  --s-7: 6rem;
-  --s-8: 8rem;
-  --s-9: 10rem;
-  --section: clamp(6rem, 4rem + 8vw, 10rem);
+  --s-7: 5rem;
+  --s-8: 6rem;
+  --s-9: 8rem;
+  --section: clamp(3.5rem, 2.5rem + 4vw, 5rem);
 
-  /* shape */
-  --r: 2px;
+  /* shape and depth */
+  --r: 8px;
+  --r-sm: 6px;
+  --r-card: 16px;
+  --r-pill: 9999px;
   --line: 1px solid var(--rule);
-  --container: 1240px;
+  --ring: 0 0 0 1px var(--c-border);
+  --float: 0 4px 24px rgb(0 0 0 / 0.04);
+  --container: 1080px;
   --gutter: 1.25rem;
-  --header-h: 72px;
+  --header-h: 56px;
   --bar-h: 56px;
 
   /* motion */
-  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --d-fast: 300ms;
-  --d-base: 500ms;
-  --d-slow: 800ms;
-  --d-image: 900ms;
+  --ease: ease;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --d-fast: 150ms;
+  --d-base: 300ms;
+  --d-slow: 700ms;
+  --d-image: 400ms;
 }
 @media (min-width: 760px) {
   :root {
     --gutter: 2rem;
-    --header-h: 88px;
   }
 }
-@media (min-width: 1200px) {
+
+/* colour: dark */
+@media (prefers-color-scheme: dark) {
   :root {
-    --gutter: 3rem;
+    --c-bg: #131312;
+    --c-surface: #1c1c1b;
+    --c-chip: #232322;
+    --c-card: #1c1c1b;
+    --c-text: #f0efec;
+    --c-muted: #b0aeaa;
+    --c-border: #2a2a29;
+    --c-accent: #a5e12a;
+    --c-on-accent: #131312;
+    --c-accent-soft: #2e3427;
+    --c-danger: #ff8d85;
+    --c-danger-bg: #3a1d1b;
+    --c-inv-bg: #1c1c1b;
+    --ring: 0 0 0 1px var(--c-border);
+    --float: 0 4px 24px rgb(0 0 0 / 0.3);
   }
 }
 
 /* Section tones. Every section picks one. */
-.tone--ivory {
-  background-color: var(--ivory);
+.tone--bg {
+  background-color: var(--c-bg);
 }
-.tone--stone {
-  --bg: var(--stone);
-  background-color: var(--stone);
+.tone--surface {
+  --bg: var(--c-surface);
+  background-color: var(--c-surface);
 }
-.tone--ink {
-  --bg: var(--ink);
-  --fg: var(--ivory);
-  --soft: var(--taupe-dark);
-  --rule: rgb(166 138 91 / 0.45);
-  --accent: var(--brass);
-  background-color: var(--ink);
-  color: var(--ivory);
+.tone--inv {
+  --bg: var(--c-inv-bg);
+  --fg: var(--c-inv-text);
+  --soft: var(--c-inv-muted);
+  --rule: var(--c-inv-border);
+  --accent: var(--c-inv-accent);
+  background-color: var(--c-inv-bg);
+  color: var(--c-inv-text);
 }

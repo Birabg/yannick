@@ -1,8 +1,8 @@
 /* Buttons: rectangular, 2px radius, small caps. Primary = bordeaux. */
 .btn {
-  --b-bg: var(--bordeaux);
-  --b-fg: var(--ivory);
-  --b-border: var(--bordeaux);
+  --b-bg: var(--c-accent);
+  --b-fg: var(--c-bg);
+  --b-border: var(--c-accent);
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -30,13 +30,13 @@
 }
 .btn:hover,
 .btn.is-hover {
-  --b-bg: #45121a;
-  --b-border: #45121a;
+  --b-bg: color-mix(in srgb, var(--c-accent) 84%, #000);
+  --b-border: color-mix(in srgb, var(--c-accent) 84%, #000);
 }
 .btn:active,
 .btn.is-active {
-  --b-bg: #340d13;
-  --b-border: #340d13;
+  --b-bg: color-mix(in srgb, var(--c-accent) 70%, #000);
+  --b-border: color-mix(in srgb, var(--c-accent) 70%, #000);
 }
 
 /* Secondary: hairline outline. `paper` is kept as an alias for scripts and admin. */
@@ -44,55 +44,55 @@
 .btn--paper {
   --b-bg: transparent;
   --b-fg: var(--fg);
-  --b-border: var(--ink);
+  --b-border: var(--c-text);
 }
 .btn--outline:hover,
 .btn--outline.is-hover,
 .btn--paper:hover,
 .btn--paper.is-hover {
-  --b-bg: var(--ink);
-  --b-fg: var(--ivory);
-  --b-border: var(--ink);
+  --b-bg: var(--c-text);
+  --b-fg: var(--c-bg);
+  --b-border: var(--c-text);
 }
 .btn--outline:active,
 .btn--outline.is-active,
 .btn--paper:active,
 .btn--paper.is-active {
-  --b-bg: #000;
-  --b-fg: var(--ivory);
+  --b-bg: var(--c-text);
+  --b-fg: var(--c-bg);
 }
-.tone--ink .btn--outline,
-.tone--ink .btn--paper {
-  --b-fg: var(--ivory);
-  --b-border: var(--brass);
+.tone--inv .btn--outline,
+.tone--inv .btn--paper {
+  --b-fg: var(--c-bg);
+  --b-border: var(--c-inv-muted);
 }
-.tone--ink .btn--outline:hover,
-.tone--ink .btn--paper:hover {
-  --b-bg: var(--ivory);
-  --b-fg: var(--ink);
-  --b-border: var(--ivory);
+.tone--inv .btn--outline:hover,
+.tone--inv .btn--paper:hover {
+  --b-bg: var(--c-bg);
+  --b-fg: var(--c-text);
+  --b-border: var(--c-bg);
 }
 
 /* Dark solid */
 .btn--ink {
-  --b-bg: var(--ink);
-  --b-fg: var(--ivory);
-  --b-border: var(--ink);
+  --b-bg: var(--c-text);
+  --b-fg: var(--c-bg);
+  --b-border: var(--c-text);
 }
 .btn--ink:hover,
 .btn--ink.is-hover {
-  --b-bg: var(--bordeaux);
-  --b-border: var(--bordeaux);
+  --b-bg: var(--c-accent);
+  --b-border: var(--c-accent);
 }
 /* On dark sections the solid button inverts. */
-.tone--ink .btn--primary {
-  --b-bg: var(--ivory);
-  --b-fg: var(--ink);
-  --b-border: var(--ivory);
+.tone--inv .btn--primary {
+  --b-bg: var(--c-bg);
+  --b-fg: var(--c-text);
+  --b-border: var(--c-bg);
 }
-.tone--ink .btn--primary:hover {
-  --b-bg: var(--brass);
-  --b-border: var(--brass);
+.tone--inv .btn--primary:hover {
+  --b-bg: var(--c-accent-inv);
+  --b-border: var(--c-accent-inv);
 }
 
 .btn--sm {
@@ -110,9 +110,9 @@
 }
 .btn:disabled,
 .btn[aria-disabled='true'] {
-  --b-bg: var(--stone);
-  --b-fg: var(--taupe);
-  --b-border: var(--hair);
+  --b-bg: var(--c-surface);
+  --b-fg: var(--c-muted);
+  --b-border: var(--c-border);
   cursor: not-allowed;
 }
 
@@ -186,7 +186,7 @@
     background-color var(--d-fast) var(--ease);
 }
 .icon-btn:hover {
-  border-color: var(--ink);
+  border-color: var(--c-text);
 }
 .icon-btn:disabled {
   opacity: 0.35;

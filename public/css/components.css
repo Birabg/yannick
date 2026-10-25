@@ -3,10 +3,10 @@
 .sticker {
   display: inline-block;
   padding: 0.3rem 0.65rem;
-  border: 1px solid var(--ink);
+  border: 1px solid var(--c-text);
   border-radius: var(--r);
-  background: var(--ivory);
-  color: var(--ink);
+  background: var(--c-bg);
+  color: var(--c-text);
   font-size: 0.68rem;
   font-weight: 500;
   letter-spacing: 0.18em;
@@ -15,30 +15,30 @@
 }
 .tag--new,
 .sticker--new {
-  border-color: var(--bordeaux);
-  color: var(--bordeaux);
+  border-color: var(--c-accent);
+  color: var(--c-accent);
 }
 .tag--bestseller,
 .sticker--bestseller {
-  border-color: var(--brass);
-  background: var(--ink);
-  color: var(--ivory);
+  border-color: var(--rule);
+  background: var(--c-text);
+  color: var(--c-bg);
 }
 .tag--featured,
 .sticker--featured {
-  border-color: var(--hair);
+  border-color: var(--c-border);
 }
 .tag--soldout,
 .sticker--soldout {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--ivory);
+  border-color: var(--c-text);
+  background: var(--c-text);
+  color: var(--c-bg);
 }
 .tag--sample,
 .sticker--sample {
   border-style: dashed;
-  border-color: var(--taupe);
-  color: var(--ink);
+  border-color: var(--c-muted);
+  color: var(--c-text);
 }
 
 /* ---------- Tabs (collection filters) ---------- */
@@ -46,7 +46,7 @@
   display: flex;
   gap: var(--s-4);
   overflow-x: auto;
-  border-bottom: 1px solid var(--hair);
+  border-bottom: 1px solid var(--c-border);
   scrollbar-width: none;
 }
 .tabs::-webkit-scrollbar {
@@ -59,7 +59,7 @@
   padding: 0.85rem 0;
   border: 0;
   background: none;
-  color: var(--taupe);
+  color: var(--c-muted);
   font-size: 0.78rem;
   font-weight: 500;
   letter-spacing: 0.2em;
@@ -72,21 +72,21 @@
   position: absolute;
   inset: auto 0 -1px;
   height: 1px;
-  background: var(--bordeaux);
+  background: var(--c-accent);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform var(--d-base) var(--ease);
 }
 .tab:hover,
 .tab[aria-pressed='true'] {
-  color: var(--ink);
+  color: var(--c-text);
 }
 .tab:hover::after,
 .tab[aria-pressed='true']::after {
   transform: scaleX(1);
 }
 .tab:active {
-  color: var(--bordeaux);
+  color: var(--c-accent);
 }
 
 /* ---------- Photo ---------- */
@@ -95,7 +95,7 @@
   isolation: isolate;
   overflow: hidden;
   aspect-ratio: 4 / 5;
-  background: var(--stone);
+  background: var(--c-surface);
 }
 .photo__img {
   width: 100%;
@@ -144,14 +144,14 @@
   flex-direction: column;
   gap: 2px;
   padding: var(--s-2) 0 var(--s-2);
-  border-bottom: 1px solid var(--hair);
+  border-bottom: 1px solid var(--c-border);
 }
 .card__body::after {
   content: '';
   position: absolute;
   inset: auto 0 -1px;
   height: 1px;
-  background: var(--bordeaux);
+  background: var(--c-accent);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform var(--d-base) var(--ease);
@@ -162,7 +162,7 @@
 }
 .card__brand {
   margin: 0;
-  color: var(--taupe);
+  color: var(--c-muted);
   font-size: 0.72rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -187,11 +187,11 @@
   justify-content: space-between;
   gap: 0 var(--s-2);
   margin: var(--s-1) 0 0;
-  color: var(--taupe);
+  color: var(--c-muted);
   font-size: var(--t-small);
 }
 .card__price {
-  color: var(--ink);
+  color: var(--c-text);
   font-weight: 500;
   letter-spacing: 0.04em;
 }
@@ -200,7 +200,7 @@
   opacity: 0.55;
 }
 .card.is-soldout .card__name {
-  color: var(--taupe);
+  color: var(--c-muted);
 }
 
 /* ---------- Panel: right drawer on desktop, bottom sheet on phones ---------- */
@@ -214,13 +214,13 @@
   padding: 0;
   overflow: hidden;
   border: 0;
-  border-top: 1px solid var(--brass);
-  background: var(--ivory);
-  color: var(--ink);
+  border-top: 1px solid var(--rule);
+  background: var(--c-bg);
+  color: var(--c-text);
   transform: translateY(var(--drag, 0px));
 }
 .sheet::backdrop {
-  background: rgb(28 23 20 / 0.55);
+  background: rgb(0 0 0 / 0.5);
 }
 .sheet[open] {
   animation: sheet-up var(--d-base) var(--ease);
@@ -265,8 +265,8 @@
   justify-content: space-between;
   min-height: 64px;
   padding: var(--s-1) var(--s-2) var(--s-1) var(--s-3);
-  border-bottom: 1px solid var(--hair);
-  background: var(--ivory);
+  border-bottom: 1px solid var(--c-border);
+  background: var(--c-bg);
   touch-action: none;
 }
 .sheet__grab {
@@ -276,10 +276,10 @@
   width: 40px;
   height: 2px;
   margin-left: -20px;
-  background: var(--brass);
+  background: var(--rule);
 }
 .sheet__title {
-  color: var(--taupe);
+  color: var(--c-muted);
   font-size: var(--t-label);
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -296,7 +296,7 @@
     max-height: none;
     height: 100dvh;
     border: 0;
-    border-left: 1px solid var(--brass);
+    border-left: 1px solid var(--rule);
     transform: none;
   }
   .sheet[open] {
@@ -338,7 +338,7 @@ html.sheet-open {
 }
 .detail__brand {
   margin: 0 0 var(--s-1);
-  color: var(--taupe);
+  color: var(--c-muted);
   font-size: var(--t-label);
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -349,19 +349,19 @@ html.sheet-open {
 }
 .detail__meta {
   margin: var(--s-1) 0 0;
-  color: var(--taupe);
+  color: var(--c-muted);
 }
 .detail__price {
   margin: var(--s-2) 0 var(--s-3);
   padding-bottom: var(--s-3);
-  border-bottom: 1px solid var(--hair);
+  border-bottom: 1px solid var(--c-border);
   font-family: var(--font-display);
   font-size: 1.9rem;
   line-height: 1;
 }
 .detail__price small {
   margin-right: 0.4em;
-  color: var(--taupe);
+  color: var(--c-muted);
   font-family: var(--font-body);
   font-size: 0.75rem;
   letter-spacing: 0.2em;
@@ -371,7 +371,7 @@ html.sheet-open {
 }
 .pyramid {
   margin: var(--s-4) 0;
-  border-top: 1px solid var(--hair);
+  border-top: 1px solid var(--c-border);
 }
 .pyramid__row {
   display: grid;
@@ -379,10 +379,10 @@ html.sheet-open {
   gap: var(--s-2);
   align-items: baseline;
   padding: var(--s-2) 0;
-  border-bottom: 1px solid var(--hair);
+  border-bottom: 1px solid var(--c-border);
 }
 .pyramid__label {
-  color: var(--taupe);
+  color: var(--c-muted);
   font-size: var(--t-label);
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -405,7 +405,7 @@ html.sheet-open {
   gap: var(--s-2);
 }
 .meter__label {
-  color: var(--taupe);
+  color: var(--c-muted);
   font-size: var(--t-label);
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -417,10 +417,10 @@ html.sheet-open {
 }
 .meter__bar {
   height: 2px;
-  background: var(--hair);
+  background: var(--c-border);
 }
 .meter__bar.is-on {
-  background: var(--bordeaux);
+  background: var(--c-accent);
 }
 .detail__actions {
   display: grid;
@@ -428,18 +428,18 @@ html.sheet-open {
 }
 .detail__note {
   margin: var(--s-2) 0 0;
-  color: var(--taupe);
+  color: var(--c-muted);
   font-size: var(--t-small);
 }
 .crumbs {
   margin: 0 0 var(--s-4);
-  color: var(--taupe);
+  color: var(--c-muted);
   font-size: var(--t-label);
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 .crumbs a:hover {
-  color: var(--bordeaux);
+  color: var(--c-accent);
 }
 @media (min-width: 760px) {
   .detail__body {
@@ -470,7 +470,7 @@ html.sheet-open {
 /* ---------- Loading, empty, toast ---------- */
 .skeleton {
   height: 16px;
-  background: var(--stone);
+  background: var(--c-surface);
   animation: pulse 1.8s ease-in-out infinite;
 }
 .skeleton--tall {
@@ -492,7 +492,7 @@ html.sheet-open {
   justify-items: start;
   gap: var(--s-2);
   padding: var(--s-6) 0;
-  border-block: 1px solid var(--hair);
+  border-block: 1px solid var(--c-border);
 }
 .empty__title {
   margin: 0;
@@ -503,10 +503,10 @@ html.sheet-open {
 .empty p {
   margin: 0;
   max-width: 44ch;
-  color: var(--taupe);
+  color: var(--c-muted);
 }
 .empty .empty__title {
-  color: var(--ink);
+  color: var(--c-text);
 }
 
 .toasts {
@@ -523,14 +523,14 @@ html.sheet-open {
   margin: 0;
   padding: 0.85rem 1.25rem;
   border-radius: var(--r);
-  background: var(--ink);
-  color: var(--ivory);
+  background: var(--c-text);
+  color: var(--c-bg);
   font-size: var(--t-small);
   letter-spacing: 0.04em;
   animation: toast-in var(--d-base) var(--ease);
 }
 .toast--error {
-  background: var(--danger);
+  background: var(--c-danger);
 }
 .toast.is-leaving {
   opacity: 0;
@@ -557,8 +557,8 @@ html.sheet-open {
   grid-template-columns: 1fr 1fr;
   height: calc(var(--bar-h) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
-  border-top: 1px solid var(--hair);
-  background: var(--ivory);
+  border-top: 1px solid var(--c-border);
+  background: var(--c-bg);
 }
 .mobile-bar__link {
   display: flex;
@@ -571,8 +571,8 @@ html.sheet-open {
   text-transform: uppercase;
 }
 .mobile-bar__link--wa {
-  background: var(--bordeaux);
-  color: var(--ivory);
+  background: var(--c-accent);
+  color: var(--c-bg);
 }
 @media (max-width: 899px) {
   body {
@@ -592,10 +592,10 @@ html.sheet-open {
   width: 100%;
   min-height: 52px;
   padding: 0.6rem 1rem;
-  border: 1px solid var(--hair);
+  border: 1px solid var(--c-border);
   border-radius: var(--r);
-  background: var(--white);
-  color: var(--ink);
+  background: var(--c-card);
+  color: var(--c-text);
   transition:
     border-color var(--d-fast) var(--ease),
     box-shadow var(--d-fast) var(--ease);
@@ -603,19 +603,19 @@ html.sheet-open {
 .input:hover,
 .search input:hover,
 .sort select:hover {
-  border-color: var(--taupe);
+  border-color: var(--c-muted);
 }
 .input:focus-visible,
 .search input:focus-visible,
 .sort select:focus-visible,
 .input.is-focus {
-  border-color: var(--bordeaux);
+  border-color: var(--c-accent);
   outline: 0;
-  box-shadow: 0 0 0 1px var(--bordeaux);
+  box-shadow: 0 0 0 1px var(--c-accent);
 }
 .input:disabled {
-  background: var(--stone);
-  color: var(--taupe);
+  background: var(--c-surface);
+  color: var(--c-muted);
 }
 .search {
   position: relative;
@@ -624,7 +624,7 @@ html.sheet-open {
   position: absolute;
   top: 50%;
   left: 1rem;
-  color: var(--taupe);
+  color: var(--c-muted);
   transform: translateY(-50%);
   pointer-events: none;
 }
@@ -632,14 +632,14 @@ html.sheet-open {
   padding-left: 3rem;
 }
 .search input::placeholder {
-  color: var(--taupe);
+  color: var(--c-muted);
   opacity: 1;
 }
 .sort {
   display: flex;
   align-items: center;
   gap: var(--s-2);
-  color: var(--taupe);
+  color: var(--c-muted);
   font-size: var(--t-label);
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -647,7 +647,7 @@ html.sheet-open {
 .sort select {
   width: auto;
   min-width: 210px;
-  color: var(--ink);
+  color: var(--c-text);
   font-size: var(--t-body);
   letter-spacing: 0;
   text-transform: none;

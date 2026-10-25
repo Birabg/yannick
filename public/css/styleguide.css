@@ -23,35 +23,35 @@
 .sg-swatch__chip {
   height: 88px;
   margin-bottom: var(--s-1);
-  border: 1px solid var(--hair);
+  border: 1px solid var(--c-border);
   background: var(--c);
 }
 .sg-c--ivory {
-  --c: var(--ivory);
+  --c: var(--c-bg);
 }
 .sg-c--stone {
-  --c: var(--stone);
+  --c: var(--c-surface);
 }
 .sg-c--white {
-  --c: var(--white);
+  --c: var(--c-card);
 }
 .sg-c--ink {
-  --c: var(--ink);
+  --c: var(--c-text);
 }
 .sg-c--taupe {
-  --c: var(--taupe);
+  --c: var(--c-muted);
 }
 .sg-c--bordeaux {
-  --c: var(--bordeaux);
+  --c: var(--c-accent);
 }
 .sg-c--brass {
-  --c: var(--brass);
+  --c: var(--c-accent-inv);
 }
 .sg-c--hair {
-  --c: var(--hair);
+  --c: var(--c-border);
 }
 .sg-c--danger {
-  --c: var(--danger);
+  --c: var(--c-danger);
 }
 
 .sg-xl {
@@ -60,7 +60,7 @@
   line-height: 1;
 }
 .sg-xl em {
-  color: var(--brass);
+  color: var(--c-accent-inv);
 }
 .sg-m {
   font-family: var(--font-display);
@@ -93,7 +93,7 @@
 .sg-space__bar {
   width: var(--w);
   height: 8px;
-  background: var(--bordeaux);
+  background: var(--c-accent);
 }
 .sg-w-s-1 {
   --w: var(--s-1);
@@ -130,7 +130,7 @@
 }
 .sg-row__label {
   flex: 0 0 100%;
-  color: var(--taupe);
+  color: var(--c-muted);
   font-size: var(--t-label);
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -144,7 +144,7 @@
   padding: var(--s-3);
 }
 .sg-dark .sg-row__label {
-  color: var(--taupe-dark);
+  color: var(--c-muted-inv);
 }
 .sg-grid {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
@@ -152,7 +152,7 @@
 }
 .sg-panel {
   max-width: 640px;
-  border: 1px solid var(--hair);
+  border: 1px solid var(--c-border);
 }
 .sg-form {
   display: grid;
@@ -164,17 +164,17 @@
   gap: 6px;
 }
 .sg-form .field__label {
-  color: var(--taupe);
+  color: var(--c-muted);
   font-size: var(--t-label);
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 .sg-form .input.is-error {
-  border-color: var(--danger);
-  background: var(--danger-bg);
+  border-color: var(--c-danger);
+  background: var(--c-danger-bg);
 }
 .sg-form .field__error {
-  color: var(--danger);
+  color: var(--c-danger);
   font-size: var(--t-small);
 }
 .sg-stack {
@@ -193,10 +193,10 @@
   max-width: 560px;
 }
 .sg-empty p {
-  color: var(--taupe-dark);
+  color: var(--c-muted-inv);
 }
 .sg-empty .empty__title {
-  color: var(--ivory);
+  color: var(--c-bg);
 }
 .sg-motion {
   display: grid;
@@ -205,11 +205,11 @@
 }
 .styleguide code {
   padding: 1px 6px;
-  background: var(--stone);
-  color: var(--ink);
+  background: var(--c-surface);
+  color: var(--c-text);
   font-size: 0.9em;
 }
-.tone--stone .styleguide code,
-.tone--stone code {
-  background: var(--ivory);
+.tone--surface .styleguide code,
+.tone--surface code {
+  background: var(--c-bg);
 }

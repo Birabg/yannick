@@ -21,7 +21,7 @@
 %>
 <%- include('partials/head') %>
 <main id="main" class="styleguide">
-  <section class="section tone--ivory">
+  <section class="section tone--bg">
     <div class="container">
       <p class="label"><span class="label__num">i</span>Internal</p>
       <h1 class="sec-title">Style <em>guide</em></h1>
@@ -33,7 +33,7 @@
     </div>
   </section>
 
-  <section class="section tone--stone" id="colour" aria-labelledby="sg-colour">
+  <section class="section tone--surface" id="colour" aria-labelledby="sg-colour">
     <div class="container">
       <h2 class="sg-h" id="sg-colour">Colour</h2>
       <ul class="sg-swatches">
@@ -44,7 +44,7 @@
     </div>
   </section>
 
-  <section class="section tone--ink" id="type" aria-labelledby="sg-type">
+  <section class="section tone--inv" id="type" aria-labelledby="sg-type">
     <div class="container">
       <h2 class="sg-h" id="sg-type">Type</h2>
       <p class="label">Display: Bodoni Moda, regular, italic accents</p>
@@ -63,7 +63,7 @@
     </div>
   </section>
 
-  <section class="section tone--ivory" id="space" aria-labelledby="sg-space">
+  <section class="section tone--bg" id="space" aria-labelledby="sg-space">
     <div class="container">
       <h2 class="sg-h" id="sg-space">Spacing and shape</h2>
       <ul class="sg-space">
@@ -75,7 +75,7 @@
     </div>
   </section>
 
-  <section class="section tone--stone" id="buttons" aria-labelledby="sg-buttons">
+  <section class="section tone--surface" id="buttons" aria-labelledby="sg-buttons">
     <div class="container">
       <h2 class="sg-h" id="sg-buttons">Buttons</h2>
       <% [['primary', 'Primary'], ['outline', 'Secondary'], ['ink', 'Dark']].forEach(function (v) { %>
@@ -95,7 +95,7 @@
         <a class="link" href="#buttons">Text link</a>
         <button class="icon-btn" type="button" aria-label="Menu"><%- icon('menu') %></button>
       </div>
-      <div class="sg-dark tone--ink">
+      <div class="sg-dark tone--inv">
         <span class="sg-row__label">On ink</span>
         <%- include('components/button', { label: 'Primary' }) %>
         <%- include('components/button', { label: 'Secondary', variant: 'outline' }) %>
@@ -103,7 +103,7 @@
     </div>
   </section>
 
-  <section class="section tone--ivory" id="tabs" aria-labelledby="sg-tabs">
+  <section class="section tone--bg" id="tabs" aria-labelledby="sg-tabs">
     <div class="container">
       <h2 class="sg-h" id="sg-tabs">Tabs and tags</h2>
       <div class="tabs">
@@ -121,7 +121,7 @@
     </div>
   </section>
 
-  <section class="section tone--stone" id="cards" aria-labelledby="sg-cards">
+  <section class="section tone--surface" id="cards" aria-labelledby="sg-cards">
     <div class="container">
       <h2 class="sg-h" id="sg-cards">Product cards</h2>
       <p class="sg-note">No box and no shadow. A hairline draws in under the card on hover; the image zooms to 1.03.</p>
@@ -133,7 +133,7 @@
     </div>
   </section>
 
-  <section class="section tone--ivory" id="detail" aria-labelledby="sg-detail">
+  <section class="section tone--bg" id="detail" aria-labelledby="sg-detail">
     <div class="container">
       <h2 class="sg-h" id="sg-detail">Panel content</h2>
       <div class="sg-panel">
@@ -142,7 +142,7 @@
     </div>
   </section>
 
-  <section class="section tone--stone" id="forms" aria-labelledby="sg-forms">
+  <section class="section tone--surface" id="forms" aria-labelledby="sg-forms">
     <div class="container sg-form">
       <h2 class="sg-h" id="sg-forms">Fields</h2>
       <label class="field"><span class="field__label">Default</span><input class="input" placeholder="Placeholder"></label>
@@ -152,7 +152,7 @@
     </div>
   </section>
 
-  <section class="section tone--ink" id="feedback" aria-labelledby="sg-feedback">
+  <section class="section tone--inv" id="feedback" aria-labelledby="sg-feedback">
     <div class="container">
       <h2 class="sg-h" id="sg-feedback">Feedback states</h2>
       <p class="label">Toasts</p>
@@ -167,7 +167,7 @@
     </div>
   </section>
 
-  <section class="section tone--ivory" id="motion" aria-labelledby="sg-motion">
+  <section class="section tone--bg" id="motion" aria-labelledby="sg-motion">
     <div class="container">
       <h2 class="sg-h" id="sg-motion">Motion</h2>
       <ul class="sg-motion">

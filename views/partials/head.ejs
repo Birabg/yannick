@@ -12,7 +12,7 @@
   <meta name="description" content="<%= description %>">
   <% if (seo.noindex) { %><meta name="robots" content="noindex, nofollow"><% } %>
   <% if (canonical) { %><link rel="canonical" href="<%= canonical %>"><% } %>
-  <meta name="theme-color" content="#ff5a1f">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#131312" media="(prefers-color-scheme: dark)">
 
   <meta property="og:site_name" content="<%= site.brand.name %>">
   <meta property="og:type" content="<%= seo.type === 'product' ? 'product' : 'website' %>">
@@ -30,9 +30,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
 
-  <link rel="preload" href="/fonts/bodoni-moda-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/bodoni-moda-latin-wght-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/urbanist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <% if (locals.preloadHero) { %><link rel="preload" href="/img/hero.svg" as="image" fetchpriority="high"><% } %>
 
   <% if (criticalCss) { %>
