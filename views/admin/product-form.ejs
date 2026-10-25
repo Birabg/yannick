@@ -45,7 +45,7 @@
 
     <fieldset class="checks">
       <legend>Collection sections</legend>
-      <p class="hint">Men and Women are set from the category above. The colour of the card follows the scent family you tick here.</p>
+      <p class="hint">Men and Women are set from the category above. Tick the scent family so shoppers can filter by it.</p>
       <% shelves.forEach(function (c) { %>
       <label class="check"><input type="checkbox" name="collections" value="<%= c.key %>" <%= p.collections.includes(c.key) ? 'checked' : '' %>><span><%= c.label %></span></label>
       <% }) %>

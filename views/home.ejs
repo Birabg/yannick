@@ -39,7 +39,7 @@
   </section>
 
   <!-- I. Story -->
-  <section class="section tone--ivory" id="story" aria-labelledby="story-title">
+  <section class="section tone--bg" id="story" aria-labelledby="story-title">
     <div class="container story">
       <div class="story__photo reveal">
         <div class="story__frame">
@@ -61,7 +61,7 @@
   </section>
 
   <!-- II. Collection -->
-  <section class="section tone--ivory" id="collection" aria-labelledby="collection-title">
+  <section class="section tone--bg" id="collection" aria-labelledby="collection-title">
     <div class="container">
       <%- include('components/section-head', { key: 'collection', titleId: 'collection-title', num: num(), lead: true }) %>
 
@@ -113,7 +113,7 @@
   </section>
 
   <!-- III. Olfactory journey -->
-  <section class="section tone--ink" id="notes" aria-labelledby="notes-title">
+  <section class="section tone--inv" id="notes" aria-labelledby="notes-title">
     <div class="container journey">
       <%- include('components/section-head', { key: 'journey', titleId: 'notes-title', num: num(), lead: true }) %>
       <ol class="journey__tiers">
@@ -131,18 +131,21 @@
   </section>
 
   <!-- IV. Houses -->
-  <section class="section tone--stone" id="houses" aria-labelledby="houses-title">
+  <section class="section tone--surface" id="houses" aria-labelledby="houses-title">
     <div class="container">
       <%- include('components/section-head', { key: 'houses', titleId: 'houses-title', num: num() }) %>
-      <div class="houses reveal">
-        <% site.houses.forEach(function (h) { %><p class="house"><%= h %></p><% }) %>
+      <div class="houses-rail reveal">
+        <div class="houses">
+          <% site.houses.forEach(function (h) { %><p class="house"><%= h %></p><% }) %>
+          <% site.houses.forEach(function (h) { %><p class="house" aria-hidden="true"><%= h %></p><% }) %>
+        </div>
       </div>
       <p class="houses-note" <%- i('houses.note') %>><%= t('houses.note') %></p>
     </div>
   </section>
 
   <!-- V. Find your scent -->
-  <section class="section tone--ivory" id="find" aria-labelledby="find-title">
+  <section class="section tone--bg" id="find" aria-labelledby="find-title">
     <div class="container quiz" id="quiz">
       <div class="quiz__aside reveal">
         <p class="label"><span class="label__num"><%= num() %></span><span <%- i('quiz.label') %>><%= t('quiz.label') %></span></p>
@@ -158,7 +161,7 @@
 
   <% if (hasReviews) { %>
   <!-- Reviews -->
-  <section class="section tone--stone" id="reviews" aria-labelledby="reviews-title">
+  <section class="section tone--surface" id="reviews" aria-labelledby="reviews-title">
     <div class="container">
       <%- include('components/section-head', { key: 'reviews', titleId: 'reviews-title', num: num() }) %>
       <div class="reviews">

@@ -85,7 +85,7 @@ module.exports = {
   ],
 
   story: {
-    statement: 'A small shop in Addis Ababa, and a *real person* on the other end of the chat.',
+    statement: 'A small shop in Addis Ababa, with a *real person* on the other end.',
     paragraphs: [
       'Yannick Scents brings in original bottles from six houses, and helps you choose one you will actually wear.',
       'Tell us what you like and what you can spend. Yannick replies personally, usually with two or three suggestions rather than a long list.',
@@ -149,11 +149,11 @@ module.exports = {
   faq: [
     {
       q: 'Are the perfumes original?',
-      a: 'Yes. We sell original designer bottles only, from the houses listed on this site. No copies, no "inspired by". If you have doubts about a bottle, message us and ask.',
+      a: 'Yes. We sell original designer bottles only. No copies, no "inspired by". If you doubt a bottle, message us and ask.',
     },
     {
       q: 'How does delivery work?',
-      a: 'Delivery inside Addis Ababa is free. You order on WhatsApp or by phone, we confirm the bottle, your address and a time that suits you, then we bring it.',
+      a: 'Delivery inside Addis Ababa is free. You order on WhatsApp or by phone. We confirm the bottle, your address and a time, then we bring it.',
     },
     {
       q: 'How do I pay?',

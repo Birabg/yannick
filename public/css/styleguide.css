@@ -23,35 +23,32 @@
 .sg-swatch__chip {
   height: 88px;
   margin-bottom: var(--s-1);
-  border: 1px solid var(--hair);
+  border: 1px solid var(--c-border);
   background: var(--c);
 }
-.sg-c--ivory {
-  --c: var(--ivory);
+.sg-c-bg {
+  --c: var(--c-bg);
 }
-.sg-c--stone {
-  --c: var(--stone);
+.sg-c-surface {
+  --c: var(--c-surface);
 }
-.sg-c--white {
-  --c: var(--white);
+.sg-c-chip {
+  --c: var(--c-chip);
 }
-.sg-c--ink {
-  --c: var(--ink);
+.sg-c-text {
+  --c: var(--c-text);
 }
-.sg-c--taupe {
-  --c: var(--taupe);
+.sg-c-muted {
+  --c: var(--c-muted);
 }
-.sg-c--bordeaux {
-  --c: var(--bordeaux);
+.sg-c-accent {
+  --c: var(--c-accent);
 }
-.sg-c--brass {
-  --c: var(--brass);
+.sg-c-border {
+  --c: var(--c-border);
 }
-.sg-c--hair {
-  --c: var(--hair);
-}
-.sg-c--danger {
-  --c: var(--danger);
+.sg-c-danger {
+  --c: var(--c-danger);
 }
 
 .sg-xl {
@@ -60,7 +57,7 @@
   line-height: 1;
 }
 .sg-xl em {
-  color: var(--brass);
+  color: var(--c-inv-accent);
 }
 .sg-m {
   font-family: var(--font-display);
@@ -69,7 +66,6 @@
 .sg-s {
   font-family: var(--font-display);
   font-size: var(--t-s);
-  font-style: italic;
 }
 .sg-lead {
   font-size: var(--t-lead);
@@ -93,7 +89,7 @@
 .sg-space__bar {
   width: var(--w);
   height: 8px;
-  background: var(--bordeaux);
+  background: var(--c-accent);
 }
 .sg-w-s-1 {
   --w: var(--s-1);
@@ -130,10 +126,8 @@
 }
 .sg-row__label {
   flex: 0 0 100%;
-  color: var(--taupe);
+  color: var(--c-muted);
   font-size: var(--t-label);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
 }
 .sg-dark {
   display: flex;
@@ -144,7 +138,7 @@
   padding: var(--s-3);
 }
 .sg-dark .sg-row__label {
-  color: var(--taupe-dark);
+  color: var(--c-muted-inv);
 }
 .sg-grid {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
@@ -152,7 +146,7 @@
 }
 .sg-panel {
   max-width: 640px;
-  border: 1px solid var(--hair);
+  border: 1px solid var(--c-border);
 }
 .sg-form {
   display: grid;
@@ -164,17 +158,15 @@
   gap: 6px;
 }
 .sg-form .field__label {
-  color: var(--taupe);
+  color: var(--c-muted);
   font-size: var(--t-label);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
 }
 .sg-form .input.is-error {
-  border-color: var(--danger);
-  background: var(--danger-bg);
+  border-color: var(--c-danger);
+  background: var(--c-danger-bg);
 }
 .sg-form .field__error {
-  color: var(--danger);
+  color: var(--c-danger);
   font-size: var(--t-small);
 }
 .sg-stack {
@@ -193,10 +185,10 @@
   max-width: 560px;
 }
 .sg-empty p {
-  color: var(--taupe-dark);
+  color: var(--c-muted-inv);
 }
 .sg-empty .empty__title {
-  color: var(--ivory);
+  color: var(--c-bg);
 }
 .sg-motion {
   display: grid;
@@ -205,11 +197,11 @@
 }
 .styleguide code {
   padding: 1px 6px;
-  background: var(--stone);
-  color: var(--ink);
+  background: var(--c-surface);
+  color: var(--c-text);
   font-size: 0.9em;
 }
-.tone--stone .styleguide code,
-.tone--stone code {
-  background: var(--ivory);
+.tone--surface .styleguide code,
+.tone--surface code {
+  background: var(--c-bg);
 }

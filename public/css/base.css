@@ -5,6 +5,8 @@
 }
 
 html {
+  scrollbar-color: var(--c-border) transparent;
+  scrollbar-width: thin;
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--header-h) + 16px);
   -webkit-text-size-adjust: 100%;
@@ -13,12 +15,13 @@ html {
 body {
   margin: 0;
   overflow-x: clip;
-  background: var(--ivory) url('/img/grain.png');
-  color: var(--ink);
+  background: var(--c-bg);
+  color: var(--c-text);
   font-family: var(--font-body);
   font-size: var(--t-body);
   font-weight: 400;
   line-height: 1.7;
+  font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -28,17 +31,21 @@ h3,
 h4 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.08;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   text-wrap: balance;
+}
+em {
+  font-style: normal;
 }
 h1 em,
 h2 em,
 h3 em,
 .em {
-  font-style: italic;
-  font-weight: 400;
+  color: var(--soft);
+  font-style: normal;
+  font-weight: inherit;
 }
 
 p {
@@ -78,11 +85,11 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid var(--bordeaux);
-  outline-offset: 3px;
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
 }
-.tone--ink :focus-visible {
-  outline-color: var(--ivory);
+.tone--inv :focus-visible {
+  outline-color: var(--c-inv-accent);
 }
 
 /* Amharic: no uppercase, no tracking, taller lines, upright accents. */
@@ -124,8 +131,8 @@ button {
   left: var(--s-1);
   z-index: 300;
   padding: var(--s-1) var(--s-2);
-  background: var(--bordeaux);
-  color: var(--ivory);
+  background: var(--c-accent);
+  color: var(--c-bg);
   transform: translateY(-200%);
 }
 .skip-link:focus {
@@ -152,16 +159,12 @@ button {
   color: var(--soft);
   font-size: var(--t-label);
   font-weight: 500;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
 }
 .label__num {
   color: var(--accent);
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-  font-style: italic;
-  letter-spacing: 0.04em;
-  text-transform: none;
+  font-size: var(--t-label);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
 }
 .label__num::after {
   content: '';
@@ -169,28 +172,47 @@ button {
   width: 48px;
   height: 1px;
   margin-left: var(--s-2);
-  background: var(--brass);
+  background: var(--rule);
   vertical-align: middle;
 }
 
-/* Scroll reveal: hidden only while JS runs and motion is welcome. */
+/* Scroll reveal: a clip-path wipe, only while JS runs and motion is welcome. */
 @media (prefers-reduced-motion: no-preference) {
   .js .reveal {
-    opacity: 0;
-    transform: translateY(16px);
-    transition:
-      opacity var(--d-slow) var(--ease),
-      transform var(--d-slow) var(--ease);
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path var(--d-slow) var(--ease-out);
   }
   .js .reveal.is-visible {
-    opacity: 1;
-    transform: none;
+    clip-path: inset(-32px);
   }
   .js .reveal--2 {
     transition-delay: 120ms;
   }
   .js .reveal--3 {
     transition-delay: 240ms;
+  }
+
+  /* Entrance: fade in from a soft blur, one after the other. */
+  .hero__copy .hero__inner > * {
+    animation: stream-in 420ms var(--ease-out) both;
+  }
+  .hero__copy .hero__inner > :nth-child(2) {
+    animation-delay: 80ms;
+  }
+  .hero__copy .hero__inner > :nth-child(3) {
+    animation-delay: 160ms;
+  }
+  .hero__copy .hero__inner > :nth-child(4) {
+    animation-delay: 240ms;
+  }
+  .hero__copy .hero__inner > :nth-child(5) {
+    animation-delay: 320ms;
+  }
+}
+@keyframes stream-in {
+  from {
+    opacity: 0;
+    filter: blur(4px);
   }
 }
 
@@ -205,4 +227,26 @@ button {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Details: fine grain on dark bands, filled accent word, restyled scrollbars. */
+/* grain only on the inverse bands, where it reads as printed rather than dirty */
+.tone--inv {
+  background-image: url('/img/grain.png');
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  border: 2px solid var(--c-bg);
+  border-radius: var(--r-pill);
+  background: var(--c-border);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-muted);
+}
+::selection {
+  background: var(--c-accent);
+  color: var(--c-on-accent);
 }

@@ -1,14 +1,13 @@
 <%
   const swatches = [
-    ['Ivory', '--ivory', '#F7F3EC', 'Main background'],
-    ['Stone', '--stone', '#EAE3D7', 'Alternate sections, image backdrops'],
-    ['Soft white', '--white', '#FDFBF7', 'Inputs, panels'],
-    ['Ink', '--ink', '#1C1714', 'Text and dark sections'],
-    ['Taupe', '--taupe', '#6B5F54', 'Secondary text (5.6:1 on ivory)'],
-    ['Bordeaux', '--bordeaux', '#5B1A24', 'The one accent: buttons, links, focus'],
-    ['Brass', '--brass', '#A68A5B', 'Hairlines and tiny details only'],
-    ['Hairline', '--hair', '#D9D0C1', '1px borders on light'],
-    ['Danger', '--danger', '#8C1D18', 'Errors only'],
+    ['Background', '--c-bg', '#FFFFFF / #131312', 'Page background (light / dark)'],
+    ['Surface', '--c-surface', '#F4F4F2 / #1C1C1B', 'Alternate bands, disabled fields'],
+    ['Chip', '--c-chip', '#E9E9E9 / #232322', 'Badges, skeletons, meter tracks, image backdrops'],
+    ['Text', '--c-text', '#1A1A1A / #F0EFEC', 'Body text and headings'],
+    ['Muted', '--c-muted', '#5C5C5C / #B0AEAA', 'Secondary text (5.5:1 or better)'],
+    ['Accent', '--c-accent', '#557611 / #A5E12A', 'The one accent: primary actions, links, focus'],
+    ['Border', '--c-border', '#E5E5E5 / #2A2A29', '1px borders and rings'],
+    ['Danger', '--c-danger', '#A3231C / #FF8D85', 'Errors only'],
   ];
   const sample = function (extra) {
     return Object.assign({
@@ -21,7 +20,7 @@
 %>
 <%- include('partials/head') %>
 <main id="main" class="styleguide">
-  <section class="section tone--ivory">
+  <section class="section tone--bg">
     <div class="container">
       <p class="label"><span class="label__num">i</span>Internal</p>
       <h1 class="sec-title">Style <em>guide</em></h1>
@@ -33,37 +32,37 @@
     </div>
   </section>
 
-  <section class="section tone--stone" id="colour" aria-labelledby="sg-colour">
+  <section class="section tone--surface" id="colour" aria-labelledby="sg-colour">
     <div class="container">
       <h2 class="sg-h" id="sg-colour">Colour</h2>
       <ul class="sg-swatches">
         <% swatches.forEach(function (s) { %>
-        <li class="sg-swatch"><span class="sg-swatch__chip sg-c<%= s[1] %>"></span><strong><%= s[0] %></strong><code><%= s[2] %></code><span><%= s[3] %></span></li>
+        <li class="sg-swatch"><span class="sg-swatch__chip sg-c-<%= s[1].slice(4) %>"></span><strong><%= s[0] %></strong><code><%= s[2] %></code><span><%= s[3] %></span></li>
         <% }) %>
       </ul>
     </div>
   </section>
 
-  <section class="section tone--ink" id="type" aria-labelledby="sg-type">
+  <section class="section tone--inv" id="type" aria-labelledby="sg-type">
     <div class="container">
       <h2 class="sg-h" id="sg-type">Type</h2>
-      <p class="label">Display: Bodoni Moda, regular, italic accents</p>
+      <p class="label">Urbanist, weight 500, tracking -0.02em on large sizes</p>
       <p class="sg-xl">A Good Scent <em>Speaks</em> First</p>
       <p class="label">Section title</p>
       <p class="sec-title">The <em>Collection</em></p>
       <p class="label">Heading M / S</p>
       <p class="sg-m">One perfume, three acts</p>
       <p class="sg-s">Top, Heart, Base</p>
-      <p class="label">Body and UI: Jost, 17px, 1.7 line height, 65ch measure</p>
+      <p class="label">Body and UI: Urbanist, 16px, 1.7 line height, 65ch measure</p>
       <p class="sg-lead">Original bottles from six houses, delivered free in Addis.</p>
-      <p>Body text is 17px on every screen so a phone in daylight stays readable. Paragraphs never run wider than about 65 characters.</p>
-      <p class="sg-small">Small text is 15px. Eyebrow labels are uppercase with wide tracking.</p>
-      <p class="label">Amharic: Noto Serif / Sans Ethiopic</p>
+      <p>Body text is 16px on every screen so a phone in daylight stays readable. Paragraphs never run wider than about 65 characters.</p>
+      <p class="sg-small">Small text is 14px. Labels are 12px, sentence case, no capitals.</p>
+      <p class="label">Amharic: Noto Sans Ethiopic</p>
       <p lang="am" class="sg-lead">ጥሩ መዓዛ መጀመሪያ ይናገራል</p>
     </div>
   </section>
 
-  <section class="section tone--ivory" id="space" aria-labelledby="sg-space">
+  <section class="section tone--bg" id="space" aria-labelledby="sg-space">
     <div class="container">
       <h2 class="sg-h" id="sg-space">Spacing and shape</h2>
       <ul class="sg-space">
@@ -71,11 +70,11 @@
         <li><code>--<%= s[0] %></code><span class="sg-space__bar sg-w-<%= s[0] %>"></span><%= s[1] %></li>
         <% }) %>
       </ul>
-      <p class="sg-note">Radius is 2px everywhere. The only curve is the arched founder portrait.</p>
+      <p class="sg-note">Radius: 6px chips, 8px fields, 14 to 16px cards, pill buttons and tabs. The founder portrait keeps its arch.</p>
     </div>
   </section>
 
-  <section class="section tone--stone" id="buttons" aria-labelledby="sg-buttons">
+  <section class="section tone--surface" id="buttons" aria-labelledby="sg-buttons">
     <div class="container">
       <h2 class="sg-h" id="sg-buttons">Buttons</h2>
       <% [['primary', 'Primary'], ['outline', 'Secondary'], ['ink', 'Dark']].forEach(function (v) { %>
@@ -95,7 +94,7 @@
         <a class="link" href="#buttons">Text link</a>
         <button class="icon-btn" type="button" aria-label="Menu"><%- icon('menu') %></button>
       </div>
-      <div class="sg-dark tone--ink">
+      <div class="sg-dark tone--inv">
         <span class="sg-row__label">On ink</span>
         <%- include('components/button', { label: 'Primary' }) %>
         <%- include('components/button', { label: 'Secondary', variant: 'outline' }) %>
@@ -103,7 +102,7 @@
     </div>
   </section>
 
-  <section class="section tone--ivory" id="tabs" aria-labelledby="sg-tabs">
+  <section class="section tone--bg" id="tabs" aria-labelledby="sg-tabs">
     <div class="container">
       <h2 class="sg-h" id="sg-tabs">Tabs and tags</h2>
       <div class="tabs">
@@ -121,10 +120,10 @@
     </div>
   </section>
 
-  <section class="section tone--stone" id="cards" aria-labelledby="sg-cards">
+  <section class="section tone--surface" id="cards" aria-labelledby="sg-cards">
     <div class="container">
       <h2 class="sg-h" id="sg-cards">Product cards</h2>
-      <p class="sg-note">No box and no shadow. A hairline draws in under the card on hover; the image zooms to 1.03.</p>
+      <p class="sg-note">A 16px card with a 1px border. On hover the border darkens and a soft neutral shadow appears; nothing moves.</p>
       <ul class="grid sg-grid">
         <%- include('components/product-card', { p: sample({ badges: ['new'] }), order: 1 }) %>
         <%- include('components/product-card', { p: sample({ name: 'Libre', brand: 'Yves Saint Laurent', badges: ['bestseller'] }), order: 2 }) %>
@@ -133,7 +132,7 @@
     </div>
   </section>
 
-  <section class="section tone--ivory" id="detail" aria-labelledby="sg-detail">
+  <section class="section tone--bg" id="detail" aria-labelledby="sg-detail">
     <div class="container">
       <h2 class="sg-h" id="sg-detail">Panel content</h2>
       <div class="sg-panel">
@@ -142,7 +141,7 @@
     </div>
   </section>
 
-  <section class="section tone--stone" id="forms" aria-labelledby="sg-forms">
+  <section class="section tone--surface" id="forms" aria-labelledby="sg-forms">
     <div class="container sg-form">
       <h2 class="sg-h" id="sg-forms">Fields</h2>
       <label class="field"><span class="field__label">Default</span><input class="input" placeholder="Placeholder"></label>
@@ -152,7 +151,7 @@
     </div>
   </section>
 
-  <section class="section tone--ink" id="feedback" aria-labelledby="sg-feedback">
+  <section class="section tone--inv" id="feedback" aria-labelledby="sg-feedback">
     <div class="container">
       <h2 class="sg-h" id="sg-feedback">Feedback states</h2>
       <p class="label">Toasts</p>
@@ -167,17 +166,17 @@
     </div>
   </section>
 
-  <section class="section tone--ivory" id="motion" aria-labelledby="sg-motion">
+  <section class="section tone--bg" id="motion" aria-labelledby="sg-motion">
     <div class="container">
       <h2 class="sg-h" id="sg-motion">Motion</h2>
       <ul class="sg-motion">
-        <li><code>--d-fast</code> 300ms: colour changes</li>
-        <li><code>--d-base</code> 500ms: underlines, panels, accordions</li>
-        <li><code>--d-slow</code> 800ms: reveals (fade plus 16px rise)</li>
-        <li><code>--d-image</code> 900ms: image zoom to 1.03</li>
-        <li><code>--ease</code> cubic-bezier(0.22, 0.61, 0.36, 1)</li>
+        <li><code>--d-fast</code> 150ms: colour changes (the default)</li>
+        <li><code>--d-base</code> 300ms: panels, accordions, shadows</li>
+        <li><code>--d-slow</code> 700ms: reveals (clip-path wipe)</li>
+        <li><code>--ease-out</code> cubic-bezier(0.23, 1, 0.32, 1): wipes and entrances</li>
+        <li><code>--ease</code> ease</li>
       </ul>
-      <p>Only <code>transform</code> and <code>opacity</code> animate. With reduced motion switched on, nothing moves.</p>
+      <p>Only colour, opacity, transform and clip-path animate. With reduced motion switched on, nothing moves.</p>
     </div>
   </section>
 </main>
