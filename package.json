@@ -11,6 +11,8 @@
     "prestart": "node scripts/build.js",
     "start": "node src/server.js",
     "seed": "node src/seed.js",
+    "import:images": "node scripts/import-images.js",
+    "descriptions": "node scripts/descriptions.js",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
@@ -22,7 +24,10 @@
     "esbuild": "^0.28.2",
     "eslint": "^10.13.0",
     "globals": "^17.13.0",
-    "prettier": "^3.9.10"
+    "prettier": "^3.9.10",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "shaders": "^4.0.5"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

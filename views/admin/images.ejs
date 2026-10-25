@@ -1,0 +1,85 @@
+<%- include('_head', { seo: { title: 'Images' } }) %>
+<div class="page-head">
+  <h1>Images <span class="count"><%= items.length + slots.length %></span></h1>
+</div>
+<p class="muted">Every picture on the website, where it is used, and a button to replace it. New photos are resized to three sizes and keep their shape, exactly like the ones you add on a perfume.</p>
+
+<% if (query.error) { %><p class="alert alert--error" role="alert"><%= query.error %></p><% } %>
+
+<h2 class="lib__title">Site pictures</h2>
+<ul class="lib">
+  <% slots.forEach(function (s) { %>
+  <li class="lib__row">
+    <img class="lib__img lib__img--<%= s.key %>" src="<%= s.url %>" alt="" width="<%= s.key === 'share' ? 160 : 100 %>" height="<%= s.key === 'share' ? 84 : 125 %>" loading="lazy" data-photo>
+    <div class="lib__main">
+      <p class="lib__name"><%= s.label %></p>
+      <p class="lib__meta">Used in: <%= s.use %></p>
+      <p class="lib__pills">
+        <span class="sticker <%= s.custom ? 'sticker--new' : 'sticker--sample' %>"><%= s.custom ? 'Your photo' : 'Placeholder' %></span>
+      </p>
+      <p class="hint"><%= s.hint %></p>
+    </div>
+    <div class="lib__actions">
+      <form class="lib__replace" method="post" action="/admin/images/site/<%= s.key %>?_csrf=<%= csrfToken %>" enctype="multipart/form-data">
+        <label class="btn btn--paper btn--sm lib__file"><%- icon('upload') %><span><%= s.custom ? 'Replace' : 'Upload' %></span><input type="file" name="photo" accept="image/jpeg,image/png,image/webp" aria-label="<%= s.custom ? 'Replace' : 'Upload' %> <%= s.label %>" data-autosubmit></label>
+      </form>
+      <% if (s.custom) { %>
+      <form method="post" action="/admin/images/site/<%= s.key %>/reset" data-confirm="Go back to the placeholder for the <%= s.label.toLowerCase() %>?">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn--paper btn--sm btn--danger-text" type="submit"><%- icon('trash') %><span>Remove</span></button>
+      </form>
+      <% } %>
+    </div>
+  </li>
+  <% }) %>
+</ul>
+
+<h2 class="lib__title">Perfume photos</h2>
+<ul class="lib">
+  <% items.forEach(function (it) { %>
+  <li class="lib__row">
+    <%- include('../components/photo', { p: it.p, cls: 'lib__img', alt: '', sizes: '100px' }) %>
+    <div class="lib__main">
+      <p class="lib__name"><a href="/admin/products/<%= it.p.id %>/edit"><%= it.p.brand %> &middot; <%= it.p.name %></a></p>
+      <p class="lib__meta">
+        <% if (it.p.image) { %><%= it.p.imageW ? it.p.imageW + ' × ' + it.p.imageH + ' px' : 'older upload' %> &middot; <%= it.size %> &middot; <%= it.widths.length %> size<%= it.widths.length === 1 ? '' : 's' %><% } else { %>No photo yet<% } %>
+      </p>
+      <p class="lib__pills">
+        <% if (it.missing) { %><span class="sticker sticker--soldout">File missing</span><% } %>
+        <% if (!it.p.image) { %><span class="sticker sticker--sample">Placeholder bottle</span><% } %>
+        <% it.usage.forEach(function (u) { %><span class="sticker sticker--used"><%= u %></span><% }) %>
+        <% if (it.p.image && !it.p.imageAlt) { %><span class="sticker sticker--needs">No alt text</span><% } %>
+      </p>
+    </div>
+    <div class="lib__actions">
+      <form class="lib__replace" method="post" action="/admin/images/product/<%= it.p.id %>?_csrf=<%= csrfToken %>" enctype="multipart/form-data">
+        <label class="btn btn--paper btn--sm lib__file"><%- icon('upload') %><span><%= it.p.image ? 'Replace' : 'Add photo' %></span><input type="file" name="photo" accept="image/jpeg,image/png,image/webp" aria-label="<%= it.p.image ? 'Replace' : 'Add' %> photo of <%= it.p.name %>" data-autosubmit></label>
+      </form>
+      <%- include('../components/button', { href: '/admin/products/' + it.p.id + '/edit', ico: 'edit', label: 'Focus and alt text', variant: 'paper', size: 'sm' }) %>
+    </div>
+  </li>
+  <% }) %>
+</ul>
+
+<% if (orphans.length) { %>
+<h2 class="lib__title">Not used by any perfume</h2>
+<p class="muted">Left over from deleted or replaced perfumes. Safe to delete.</p>
+<ul class="lib">
+  <% orphans.forEach(function (o) { %>
+  <li class="lib__row">
+    <img class="lib__img" src="/uploads/products/<%= o.base %>-<%= o.widths.includes('480') ? '480' : o.widths.includes('sm') ? 'sm' : o.widths[0] %>.webp" alt="" width="100" height="125" loading="lazy" data-photo>
+    <div class="lib__main">
+      <p class="lib__name"><%= o.base %></p>
+      <p class="lib__meta"><%= o.size %> &middot; <%= o.widths.length %> size<%= o.widths.length === 1 ? '' : 's' %></p>
+    </div>
+    <div class="lib__actions">
+      <form method="post" action="/admin/images/orphan" data-confirm="Delete this unused image file?">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="base" value="<%= o.base %>">
+        <button class="btn btn--paper btn--sm btn--danger-text" type="submit"><%- icon('trash') %><span>Delete</span></button>
+      </form>
+    </div>
+  </li>
+  <% }) %>
+</ul>
+<% } %>
+<%- include('_foot') %>

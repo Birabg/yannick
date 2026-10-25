@@ -2,7 +2,7 @@
   const title = seo.title || site.brand.name;
   const description = seo.description || site.brand.description;
   const canonical = seo.canonical ? siteUrl + seo.canonical : '';
-  const ogImage = seo.image ? siteUrl + seo.image : siteUrl + '/img/og-default.png';
+  const ogImage = seo.image ? siteUrl + seo.image : siteUrl + siteImage('share');
 %><!doctype html>
 <html lang="en">
 <head>
@@ -12,7 +12,7 @@
   <meta name="description" content="<%= description %>">
   <% if (seo.noindex) { %><meta name="robots" content="noindex, nofollow"><% } %>
   <% if (canonical) { %><link rel="canonical" href="<%= canonical %>"><% } %>
-  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#131312" media="(prefers-color-scheme: dark)">
+  <%- include('theme-init') %>
 
   <meta property="og:site_name" content="<%= site.brand.name %>">
   <meta property="og:type" content="<%= seo.type === 'product' ? 'product' : 'website' %>">
@@ -31,7 +31,8 @@
   <link rel="manifest" href="/site.webmanifest">
 
   <link rel="preload" href="/fonts/urbanist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <% if (locals.preloadHero) { %><link rel="preload" href="/img/hero.svg" as="image" fetchpriority="high"><% } %>
+  <% if (locals.preloadImage && preloadImage.image) { %><link rel="preload" as="image" href="<%= photo.photoUrl(preloadImage, 'sm') %>"<% if (photo.widthsOf(preloadImage).length > 1) { %> imagesrcset="<%= photo.srcset(preloadImage) %>" imagesizes="(min-width: 1024px) 260px, (min-width: 640px) 32vw, 70vw"<% } %> fetchpriority="high"><% } %>
+  <link rel="preload" href="/fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 
   <% if (criticalCss) { %>
   <style nonce="<%= cspNonce %>"><%- criticalCss %></style>

@@ -4,6 +4,7 @@
  * Product data, FAQ answers and the guide's questions stay in English.
  */
 const en = {
+  'nav.home': 'Home',
   'nav.story': 'Story',
   'nav.collection': 'Collection',
   'nav.notes': 'Journey',
@@ -16,9 +17,11 @@ const en = {
   'cta.call': 'Call',
   'cta.find': 'Find your scent',
   'hero.eyebrow': 'Addis Ababa · Original perfume',
-  'hero.title': 'A Good Scent *Speaks* First',
+  'hero.title': 'A Good Scent Speaks First',
   'hero.sub':
-    'Original bottles from six houses. Free delivery in Addis. Tell us what you like and we will find your scent.',
+    'Original bottles from famous houses. Free delivery in Addis. Tell us what you like and we will find your scent.',
+  'hero.cta': 'Explore the Collection',
+  'hero.teaser': 'Answer 3 questions and we pick your bottle',
   'hero.f1': '100% original',
   'hero.f2': 'Free delivery in Addis',
   'hero.f3': 'Personal advice',
@@ -32,11 +35,11 @@ const en = {
   'sort.featured': 'Featured',
   'sort.low': 'Price, low to high',
   'sort.high': 'Price, high to low',
-  'journey.label': 'The Olfactory Journey',
+  'journey.label': 'The scent unfolds',
   'journey.title': 'One perfume, *three* acts',
   'journey.lead': 'A fragrance changes on your skin through the day. Here is how to read it.',
   'houses.label': 'Houses We Carry',
-  'houses.title': 'Six houses, *one* standard',
+  'houses.title': 'Famous houses, *one* standard',
   'houses.note': 'Authentic bottles from the most recognised houses in perfumery',
   'quiz.label': 'Find Your Scent',
   'quiz.title': 'Three questions, *one* suggestion',
@@ -55,6 +58,7 @@ const en = {
 };
 
 const am = {
+  'nav.home': 'ዋና ገጽ',
   'nav.story': 'ታሪካችን',
   'nav.collection': 'ስብስብ',
   'nav.notes': 'ጉዞ',
@@ -67,8 +71,10 @@ const am = {
   'cta.call': 'ይደውሉ',
   'cta.find': 'መዓዛዎን ያግኙ',
   'hero.eyebrow': 'አዲስ አበባ · ኦሪጅናል ሽቶ',
-  'hero.title': 'ጥሩ መዓዛ መጀመሪያ *ይናገራል*',
-  'hero.sub': 'ከስድስት ታዋቂ ብራንዶች ኦሪጅናል ሽቶዎች። በአዲስ አበባ ነፃ ዴሊቨሪ። የሚወዱትን ይንገሩን፣ መዓዛዎን እንፈልግልዎታለን።',
+  'hero.title': 'ጥሩ መዓዛ መጀመሪያ ይናገራል',
+  'hero.sub': 'ከታዋቂ ብራንዶች ኦሪጅናል ሽቶዎች። በአዲስ አበባ ነፃ ዴሊቨሪ። የሚወዱትን ይንገሩን፣ መዓዛዎን እንፈልግልዎታለን።',
+  'hero.cta': 'ስብስቡን ያስሱ',
+  'hero.teaser': 'ሦስት ጥያቄዎችን ይመልሱ፣ ጠርሙስዎን እኛ እንመርጣለን',
   'hero.f1': '100% ኦሪጅናል',
   'hero.f2': 'ነፃ ዴሊቨሪ በአዲስ አበባ',
   'hero.f3': 'የግል ምክር',
@@ -86,7 +92,7 @@ const am = {
   'journey.title': 'አንድ ሽቶ፣ *ሦስት* ደረጃ',
   'journey.lead': 'ሽቶ በቆዳዎ ላይ በቀኑ ውስጥ ይለወጣል። እንዴት እንደሚነበብ እነሆ።',
   'houses.label': 'የምናቀርባቸው ብራንዶች',
-  'houses.title': 'ስድስት ብራንዶች፣ *አንድ* መስፈርት',
+  'houses.title': 'ታዋቂ ብራንዶች፣ *አንድ* መስፈርት',
   'houses.note': 'ከዓለም ታዋቂ የሽቶ ቤቶች የተገኙ ኦሪጅናል ሽቶዎች',
   'quiz.label': 'መዓዛዎን ያግኙ',
   'quiz.title': 'ሦስት ጥያቄ፣ *አንድ* ምክር',

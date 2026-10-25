@@ -41,14 +41,20 @@
 .sg-c-muted {
   --c: var(--c-muted);
 }
-.sg-c-accent {
-  --c: var(--c-accent);
-}
 .sg-c-border {
   --c: var(--c-border);
 }
 .sg-c-danger {
   --c: var(--c-danger);
+}
+.sg-c-amber {
+  --c: var(--amber);
+}
+.sg-c-gold {
+  --c: var(--gold);
+}
+.sg-c-sun {
+  --c: var(--sun);
 }
 
 .sg-xl {
@@ -57,7 +63,9 @@
   line-height: 1;
 }
 .sg-xl em {
-  color: var(--c-inv-accent);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
 }
 .sg-m {
   font-family: var(--font-display);
@@ -89,7 +97,7 @@
 .sg-space__bar {
   width: var(--w);
   height: 8px;
-  background: var(--c-accent);
+  background: var(--amber);
 }
 .sg-w-s-1 {
   --w: var(--s-1);
@@ -204,4 +212,23 @@
 .tone--surface .styleguide code,
 .tone--surface code {
   background: var(--c-bg);
+}
+
+.sg-c-fresh {
+  background: var(--fam-fresh);
+}
+.sg-c-woody {
+  background: var(--fam-woody);
+}
+.sg-c-oriental {
+  background: var(--fam-oriental);
+}
+.sg-c-men {
+  background: var(--fam-men);
+}
+.sg-c-women {
+  background: var(--fam-women);
+}
+.sg-c-none {
+  background: var(--fam-none);
 }

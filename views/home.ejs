@@ -8,55 +8,77 @@
       { id: 'budget', question: 'What would you like to spend?', options: site.quiz.budget },
     ],
   };
-  const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
   let step = 0;
-  const num = function () { return ROMAN[step++]; };
+  const num = function () { return String(++step).padStart(2, '0'); };
 %>
-<%- include('partials/head', { preloadHero: true }) %>
+<%- include('partials/head', { preloadImage: heroProducts[0] || null }) %>
 <main id="main">
 
   <!-- Hero -->
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="hero__media">
-      <img class="hero__img" src="/img/hero.svg" width="1200" height="1000" alt="Three perfume bottles on a warm stone shelf" fetchpriority="high">
-    </div>
-    <div class="hero__copy">
-      <div class="hero__inner">
-        <p class="hero__eyebrow" <%- i('hero.eyebrow') %>><%= t('hero.eyebrow') %></p>
-        <h1 class="hero__title" id="hero-title" <%- i('hero.title') %>><%- rich(t('hero.title')) %></h1>
-        <p class="hero__text" <%- i('hero.sub') %>><%= t('hero.sub') %></p>
-        <div class="hero__cta">
-          <%- include('components/button', { href: fmt.genericLink(), external: true, ico: 'whatsapp', label: t('cta.whatsapp'), i18n: 'cta.whatsapp', size: 'lg' }) %>
-          <%- include('components/button', { href: '#find', label: t('cta.find'), i18n: 'cta.find', variant: 'outline', size: 'lg' }) %>
-        </div>
-        <ul class="hero__facts">
-          <li <%- i('hero.f1') %>><%= t('hero.f1') %></li>
-          <li <%- i('hero.f2') %>><%= t('hero.f2') %></li>
-          <li <%- i('hero.f3') %>><%= t('hero.f3') %></li>
+  <%
+    // The headline is cut into lines (stacked on phones) and words (each slides up from a mask).
+    const heroWords = t('hero.title').split(' ');
+    const heroLines = heroWords.length === 5
+      ? [heroWords.slice(0, 2), heroWords.slice(2, 3), heroWords.slice(3)]
+      : [heroWords];
+    let wi = 0;
+    const titleHtml = heroLines.map(function (line, n) {
+      return '<span class="ln ln--' + 'abc'[n] + '">' + line.map(function (w) {
+        return '<span class="wm"><span class="w">' + w + '</span></span>';
+      }).join(' ') + '</span>';
+    }).join(' ');
+    const tall = heroProducts.slice(0, 5);
+    const small = heroProducts.slice(5, 7);
+    const founderLine = site.story.statement.replace(/\*/g, '');
+  %>
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="container hero__head">
+      <a class="spin" href="<%= site.contact.tiktok %>" target="_blank" rel="noopener">
+        <span class="sr-only">Watch our story on TikTok</span>
+        <svg class="spin__ring" aria-hidden="true" viewBox="0 0 120 120" aria-hidden="true"><defs><path id="spin-path" d="M60 60m-45 0a45 45 0 1 1 90 0a45 45 0 1 1-90 0"/></defs><text><textPath href="#spin-path" textLength="276" lengthAdjust="spacing">Watch our story • on TikTok • Watch our story • on TikTok •</textPath></text></svg>
+        <span class="spin__play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
+      </a>
+      <h1 class="hero__title" id="hero-title" <%- i('hero.title') %>><%- titleHtml %></h1>
+      <% if (tall.length >= 3) { %>
+      <div class="stack">
+        <ul class="stack__list" aria-hidden="true">
+          <% tall.slice(0, 3).forEach(function (p) { %><li class="stack__item fam--<%= fmt.cardColor(p) %>"><%- include('components/photo', { p: p, cls: 'stack__img', alt: '', sizes: '64px' }) %></li><% }) %>
         </ul>
+        <a class="stack__plus" href="#collection" aria-label="See the whole collection"><%- icon('plus') %></a>
       </div>
+      <% } %>
     </div>
-  </section>
 
-  <!-- I. Story -->
-  <section class="section tone--bg" id="story" aria-labelledby="story-title">
-    <div class="container story">
-      <div class="story__photo reveal">
-        <div class="story__frame">
-          <img src="<%= site.founderPhoto %>" width="600" height="750" loading="lazy" alt="Yannick, founder of <%= site.brand.name %>">
+    <% if (tall.length) { %>
+    <div class="hero__wrap">
+      <div class="hero__stage">
+        <div class="hero__cards" data-cards role="region" aria-label="Featured bottles" tabindex="0">
+          <ul class="hero__row">
+            <% tall.forEach(function (p, n) { %><%- include('components/hero-card', { p: p, slot: n + 1, eager: n < 3, shader: n === 2 }) %><% }) %>
+            <% small.forEach(function (p, n) { %><%- include('components/hero-card', { p: p, slot: n === 0 ? 6 : 7 }) %><% }) %>
+          </ul>
         </div>
-        <p class="story__caption">Yannick &middot; <%= site.location.city %></p>
+        <div class="hero__cta">
+          <a class="btn btn--lg btn--ink" href="#collection"><span <%- i('hero.cta') %>><%= t('hero.cta') %></span><%- icon('arrow') %></a>
+        </div>
       </div>
-      <div class="story__copy reveal reveal--2">
-        <p class="label"><span class="label__num"><%= num() %></span><span <%- i('story.label') %>><%= t('story.label') %></span></p>
-        <h2 class="story__statement" id="story-title"><%- rich(site.story.statement) %></h2>
-        <% site.story.paragraphs.forEach(function (para) { %><p><%= para %></p><% }) %>
-        <ul class="facts">
-          <% site.facts.forEach(function (f) { %>
-          <li class="fact"><span class="fact__num"><%= f.num %></span><span class="fact__text"><strong><%= f.title %></strong><%= f.text %></span></li>
-          <% }) %>
-        </ul>
-      </div>
+    </div>
+    <% } %>
+
+    <div class="container hero__foot">
+      <figure class="quote">
+        <span class="quote__mark" aria-hidden="true">&ldquo;</span>
+        <blockquote class="quote__text"><%= quote ? quote.text : founderLine %></blockquote>
+        <figcaption class="quote__sign"><%= quote ? quote.name : 'Yannick' %></figcaption>
+      </figure>
+      <a class="teaser" href="#find">
+        <span class="teaser__num" aria-hidden="true">01</span>
+        <span class="teaser__body">
+          <span class="teaser__label" <%- i('quiz.label') %>><%= t('quiz.label') %></span>
+          <strong class="teaser__line" <%- i('hero.teaser') %>><%= t('hero.teaser') %></strong>
+        </span>
+        <span class="teaser__go" aria-hidden="true"><%- icon('arrow') %></span>
+      </a>
     </div>
   </section>
 
@@ -85,7 +107,7 @@
       <div class="filterbar" role="group" aria-label="Filter perfumes">
         <div class="tabs">
           <%- include('components/tab', { filter: 'all', label: t('filter.all'), pressed: true, i18n: 'filter.all' }) %>
-          <% site.collections.forEach(function (c) { %><%- include('components/tab', { filter: c.key, label: c.label, pressed: false }) %><% }) %>
+          <% shelves.forEach(function (c) { %><%- include('components/tab', { filter: c.key, label: c.label, pressed: false }) %><% }) %>
         </div>
       </div>
 
@@ -112,21 +134,92 @@
     </div>
   </section>
 
-  <!-- III. Olfactory journey -->
-  <section class="section tone--inv" id="notes" aria-labelledby="notes-title">
-    <div class="container journey">
+  <!-- Notes: how a scent unfolds -->
+  <section class="section tone--bg" id="notes" aria-labelledby="notes-title">
+    <div class="container">
       <%- include('components/section-head', { key: 'journey', titleId: 'notes-title', num: num(), lead: true }) %>
-      <ol class="journey__tiers">
+      <ol class="nc-grid">
         <% site.journey.forEach(function (s, n) { %>
-        <li class="tier reveal reveal--<%= n + 1 %>">
-          <span class="tier__num" aria-hidden="true"><%= ROMAN[n] %></span>
-          <h3 class="tier__title"><%= s.title %></h3>
-          <p class="tier__time"><%= s.time %></p>
-          <p class="tier__text"><%= s.text %></p>
-          <ul class="tier__notes"><% s.notes.forEach(function (note) { %><li><%= note %></li><% }) %></ul>
+        <li class="nc fam--<%= ['fresh', 'oriental', 'woody'][n] %> reveal reveal--<%= n + 1 %>">
+          <div class="nc__top">
+            <p class="nc__num" aria-hidden="true"><%= String(n + 1).padStart(2, '0') %></p>
+            <h3 class="nc__title"><%= s.title %></h3>
+            <p class="nc__time"><%= s.time %></p>
+          </div>
+          <p class="nc__text"><%= s.text %></p>
+          <ul class="nc__notes"><% s.notes.forEach(function (note) { %><li><%= note %></li><% }) %></ul>
         </li>
         <% }) %>
       </ol>
+    </div>
+  </section>
+
+  <!-- By mood -->
+  <% const moodList = moods.filter(function (m) { return m.picks.length; }); %>
+  <% if (moodList.length >= 2) { %>
+  <section class="section tone--surface" id="mood" data-mood aria-labelledby="mood-title">
+    <div class="container mood">
+      <header class="sec-head reveal">
+        <p class="label"><span class="label__num"><%= String(++step).padStart(2, '0') %></span><span>By mood</span></p>
+        <h2 class="sec-title" id="mood-title">When will you wear it?</h2>
+        <p class="sec-lead">Pick a moment. We will show three bottles that suit it.</p>
+      </header>
+      <div class="mood__main">
+        <div class="mood__picker" role="radiogroup" aria-label="Scent by mood">
+          <% moodList.forEach(function (m, n) { %>
+          <button class="mood__btn mood__btn--<%= m.key %>" type="button" role="radio" aria-checked="<%= n === 0 %>" data-mood-btn="<%= m.key %>"><%= m.label %></button>
+          <% }) %>
+        </div>
+        <% moodList.forEach(function (m, n) { %>
+        <div class="mood__panel" data-mood-panel="<%= m.key %>" <%= n === 0 ? '' : 'hidden' %>>
+          <p class="mood__line"><%= m.line %></p>
+          <ul class="mood__list">
+            <% m.picks.forEach(function (p) { %>
+            <li class="pick">
+              <span class="pick__img fam--<%= fmt.cardColor(p) %>"><%- include('components/photo', { p: p, cls: 'pick__photo', alt: '', sizes: '96px' }) %></span>
+              <div class="pick__body">
+                <p class="pick__brand"><%= p.brand %></p>
+                <h3 class="pick__name"><a href="/perfume/<%= p.slug %>" data-open-product><%= p.name %></a></h3>
+                <p class="pick__meta"><%= [p.size, p.concentration, fmt.price(p.price)].filter(Boolean).join(' · ') %></p>
+              </div>
+              <a class="btn btn--sm pick__order" href="<%= fmt.orderLink(p) %>" target="_blank" rel="noopener"><span>Order</span><span class="sr-only"> <%= fmt.productLabel(p) %> on WhatsApp</span></a>
+            </li>
+            <% }) %>
+          </ul>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+  <% } %>
+
+  <!-- I. Story -->
+  <section class="section tone--bg" id="story" aria-labelledby="story-title">
+    <div class="container story">
+      <div class="story__photo reveal">
+        <% if (siteImageIsCustom('founder')) { %>
+        <div class="story__frame">
+          <img src="<%= siteImage('founder') %>" width="1000" height="1250" loading="lazy" decoding="async" alt="Yannick, founder of <%= site.brand.name %>">
+        </div>
+        <p class="story__caption">Yannick &middot; <%= site.location.city %></p>
+        <% } else { %>
+        <%# No portrait uploaded yet: show real bottles from the shelf instead of a made-up person. %>
+        <div class="story__frame story__frame--shelf" aria-hidden="true">
+          <% heroProducts.slice(0, 3).forEach(function (p) { %><%- include('components/photo', { p: p, cls: 'shelf__img', alt: '', sizes: '(min-width: 900px) 150px, 30vw' }) %><% }) %>
+        </div>
+        <p class="story__caption">On the shelf now &middot; <%= site.location.city %></p>
+        <% } %>
+      </div>
+      <div class="story__copy reveal reveal--2">
+        <p class="label"><span class="label__num"><%= num() %></span><span <%- i('story.label') %>><%= t('story.label') %></span></p>
+        <h2 class="story__statement" id="story-title"><%- rich(site.story.statement) %></h2>
+        <% site.story.paragraphs.forEach(function (para) { %><p><%= para %></p><% }) %>
+        <ul class="facts">
+          <% facts.forEach(function (f) { %>
+          <li class="fact"><span class="fact__num"><%= f.num %></span><span class="fact__text"><strong><%= f.title %></strong><%= f.text %></span></li>
+          <% }) %>
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -136,8 +229,8 @@
       <%- include('components/section-head', { key: 'houses', titleId: 'houses-title', num: num() }) %>
       <div class="houses-rail reveal">
         <div class="houses">
-          <% site.houses.forEach(function (h) { %><p class="house"><%= h %></p><% }) %>
-          <% site.houses.forEach(function (h) { %><p class="house" aria-hidden="true"><%= h %></p><% }) %>
+          <% houses.forEach(function (h) { %><p class="house"><%= h %></p><% }) %>
+          <% houses.forEach(function (h) { %><p class="house" aria-hidden="true"><%= h %></p><% }) %>
         </div>
       </div>
       <p class="houses-note" <%- i('houses.note') %>><%= t('houses.note') %></p>
@@ -196,24 +289,42 @@
   </section>
 
   <!-- Order -->
-  <section class="section tone--<%= hasReviews ? 'stone' : 'ivory' %>" id="order" aria-labelledby="order-title">
+  <section class="section tone--bg" id="order" aria-labelledby="order-title">
     <div class="container">
-      <%- include('components/section-head', { key: 'order', titleId: 'order-title', num: num(), lead: true }) %>
+      <div class="order">
+        <div class="order__panel notch notch--ink">
+          <p class="label"><span class="label__num"><%= num() %></span><span <%- i('order.label') %>><%= t('order.label') %></span></p>
+          <h2 class="sec-title" id="order-title" <%- i('order.title') %>><%= t('order.title').replace(/\*/g, '') %></h2>
+          <p class="sec-lead" <%- i('order.lead') %>><%= t('order.lead') %></p>
+          <div class="order__cta">
+            <%- include('components/button', { href: fmt.genericLink(), external: true, ico: 'whatsapp', label: t('cta.whatsapp'), i18n: 'cta.whatsapp', size: 'lg' }) %>
+            <%- include('components/button', { href: 'tel:' + site.contact.phone, ico: 'phone', label: site.contact.phoneDisplay, variant: 'outline', size: 'lg' }) %>
+          </div>
+        </div>
+        <div class="order__glass notch" data-shader data-src="<%= distAsset('hero/island.js') %>" data-lazy aria-hidden="true">
+          <span class="hero-shader__stage" data-stage></span>
+          <% if (heroProducts[0]) { %><%- include('components/photo', { p: heroProducts[0], cls: 'order__bottle', alt: '', variant: 'lg', sizes: '(min-width: 900px) 40vw, 90vw' }) %><% } %>
+        </div>
+      </div>
+
       <div class="cblocks reveal">
-        <a class="cblock" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener">
+        <a class="cblock notch" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener">
           <span class="cblock__kicker">WhatsApp</span>
           <span class="cblock__title">Message us</span>
           <span class="cblock__sub">The quickest way. We reply personally.</span>
+          <span class="cblock__go" aria-hidden="true"><%- icon('arrow-ur') %></span>
         </a>
-        <a class="cblock" href="tel:<%= site.contact.phone %>">
+        <a class="cblock notch" href="tel:<%= site.contact.phone %>">
           <span class="cblock__kicker">Telephone</span>
           <span class="cblock__title"><%= site.contact.phoneDisplay %></span>
           <span class="cblock__sub">Call during opening hours.</span>
+          <span class="cblock__go" aria-hidden="true"><%- icon('arrow-ur') %></span>
         </a>
-        <a class="cblock" href="<%= site.contact.tiktok %>" target="_blank" rel="noopener">
+        <a class="cblock notch" href="<%= site.contact.tiktok %>" target="_blank" rel="noopener">
           <span class="cblock__kicker">TikTok</span>
           <span class="cblock__title"><%= site.contact.tiktokHandle %></span>
           <span class="cblock__sub">See the bottles in motion.</span>
+          <span class="cblock__go" aria-hidden="true"><%- icon('arrow-ur') %></span>
         </a>
       </div>
 
@@ -221,7 +332,7 @@
       <ol class="steps">
         <% site.howToOrder.forEach(function (s, n) { %>
         <li class="step reveal reveal--<%= n + 1 %>">
-          <span class="step__num" aria-hidden="true"><%= ROMAN[n] %></span>
+          <span class="step__num" aria-hidden="true"><%= String(n + 1).padStart(2, '0') %></span>
           <div><h4 class="step__title"><%= s.title %></h4><p><%= s.text %></p></div>
         </li>
         <% }) %>

@@ -15,7 +15,10 @@ const {
   saveReviewImage,
   removeProductImage,
   removeReviewImage,
+  listProductFiles,
 } = require('../lib/images');
+const { heroProducts } = require('../lib/hero');
+const { SLOTS, siteImage, isCustom, saveSiteImage, removeSiteImage } = require('../lib/siteImages');
 
 const router = express.Router();
 const intId = (req) => Number.parseInt(req.params.id, 10);
@@ -144,6 +147,18 @@ const productFromForm = (value, existing) =>
     updated_at: '',
   });
 
+/** Columns that describe a saved photo (empty when there is none). */
+const photoFields = (shot) =>
+  shot
+    ? { image: shot.base, img_w: shot.width, img_h: shot.height, cutout: shot.cutout ? 1 : 0 }
+    : { image: '' };
+const keepPhoto = (p) => ({
+  image: p.image,
+  img_w: p.imageW,
+  img_h: p.imageH,
+  cutout: p.cutout ? 1 : 0,
+});
+
 function uniqueSlug(base, exceptId = 0) {
   const root = slugify(base) || 'perfume';
   let slug = root;
@@ -167,11 +182,27 @@ router.post('/products', singleImage('photo'), async (req, res) => {
       isNew: true,
     });
   }
-  const image = req.file ? await saveProductImage(req.file.buffer) : '';
+  const shot = req.file ? await saveProductImage(req.file.buffer) : null;
   const slug = uniqueSlug(slugSource(value));
-  const id = products.create({ ...value, slug, image });
+  const id = products.create({
+    ...value,
+    description_status: 'approved',
+    slug,
+    ...photoFields(shot),
+  });
   return res.redirect(`/admin?saved=${id}`);
 });
+
+/** Editing any of the copy saves it as the approved version; otherwise the Approved box decides. */
+function descriptionStatus(existing, value, body) {
+  const edited =
+    value.description !== existing.description ||
+    value.description_am !== existing.descriptionAm ||
+    value.tagline_en !== existing.tagline ||
+    value.tagline_am !== existing.taglineAm ||
+    value.meta_description !== existing.metaDescription;
+  return edited || body.description_approved === 'on' ? 'approved' : 'draft';
+}
 
 router.get('/products/:id/edit', (req, res, next) => {
   const p = products.get(intId(req));
@@ -193,8 +224,13 @@ router.post('/products/:id', singleImage('photo'), async (req, res, next) => {
       isNew: false,
     });
   }
-  const image = req.file ? await saveProductImage(req.file.buffer) : existing.image;
-  products.update(existing.id, { ...value, slug: existing.slug, image });
+  const shot = req.file ? await saveProductImage(req.file.buffer) : null;
+  products.update(existing.id, {
+    ...value,
+    description_status: descriptionStatus(existing, value, req.body),
+    slug: existing.slug,
+    ...(shot ? photoFields(shot) : keepPhoto(existing)),
+  });
   if (req.file) await removeProductImage(existing.image);
   return res.redirect(`/admin?saved=${existing.id}`);
 });
@@ -231,6 +267,85 @@ router.post('/products/:id/move', (req, res, next) => {
   if (!p) return next();
   products.move(p.id, req.body.dir === 'up' ? -1 : 1);
   return res.redirect(`/admin#p-${p.id}`);
+});
+
+/* ---------- Image library ---------- */
+
+const formatBytes = (n) =>
+  n >= 1024 * 1024
+    ? `${(n / 1024 / 1024).toFixed(1)} MB`
+    : `${Math.max(1, Math.round(n / 1024))} KB`;
+
+router.get('/images', async (req, res) => {
+  const list = products.list();
+  const onDisk = await listProductFiles();
+  const hero = heroProducts(list).map((p) => p.id);
+  const used = new Set(list.map((p) => p.image).filter(Boolean));
+  const items = list.map((p) => {
+    const disk = onDisk.get(p.image);
+    const usage = [];
+    if (p.image) {
+      usage.push('Collection card', 'Product page');
+      const n = hero.indexOf(p.id);
+      if (n >= 0) usage.push(`Hero card ${n + 1}`);
+      if (hero[0] === p.id) usage.push('Order section');
+    }
+    return {
+      p,
+      usage,
+      missing: !!p.image && !disk,
+      size: disk ? formatBytes(disk.bytes) : '',
+      widths: disk ? disk.widths : [],
+    };
+  });
+  const orphans = [...onDisk.entries()]
+    .filter(([base]) => !used.has(base))
+    .map(([base, d]) => ({ base, size: formatBytes(d.bytes), widths: d.widths }));
+  const slots = Object.entries(SLOTS).map(([key, def]) => ({
+    key,
+    ...def,
+    url: siteImage(key),
+    custom: isCustom(key),
+  }));
+  res.render('admin/images', { items, orphans, slots, active: 'images' });
+});
+
+router.post('/images/product/:id', singleImage('photo'), async (req, res, next) => {
+  const p = products.get(intId(req));
+  if (!p) return next();
+  if (req.uploadError || !req.file) {
+    return res.redirect(
+      `/admin/images?error=${encodeURIComponent(req.uploadError || 'Choose a photo first.')}`
+    );
+  }
+  const shot = await saveProductImage(req.file.buffer);
+  products.setPhoto(p.id, photoFields(shot));
+  await removeProductImage(p.image);
+  return res.redirect('/admin/images?saved=1');
+});
+
+router.post('/images/orphan', async (req, res) => {
+  const base = String(req.body.base || '');
+  const inUse = products.list().some((p) => p.image === base);
+  if (base && !inUse) await removeProductImage(base);
+  return res.redirect('/admin/images?deleted=1');
+});
+
+router.post('/images/site/:slot', singleImage('photo'), async (req, res, next) => {
+  if (!SLOTS[req.params.slot]) return next();
+  if (req.uploadError || !req.file) {
+    return res.redirect(
+      `/admin/images?error=${encodeURIComponent(req.uploadError || 'Choose a photo first.')}`
+    );
+  }
+  await saveSiteImage(req.params.slot, req.file.buffer);
+  return res.redirect('/admin/images?saved=1');
+});
+
+router.post('/images/site/:slot/reset', async (req, res, next) => {
+  if (!SLOTS[req.params.slot]) return next();
+  await removeSiteImage(req.params.slot);
+  return res.redirect('/admin/images?deleted=1');
 });
 
 /* ---------- Reviews ---------- */

@@ -52,6 +52,13 @@ set `ADMIN_PASSWORD` in `.env` and start again.
 4. **Reviews**: add real customer feedback (name, text, rating, optional screenshot). With zero reviews
    the whole section is hidden on the website.
 
+### Descriptions
+
+Each perfume has an English description, a card tagline, a search (meta) description and Amharic versions of the description and tagline. The first drafts were written
+by `npm run descriptions` and are listed in `DESCRIPTIONS-REVIEW.md`. They show on the site straight away, and the dashboard tags them **Draft text** until you open Edit, correct them and
+tick **Approved** (saving any change to the text also approves it). The Amharic is marked *Needs native review* until someone who speaks Amharic ticks **Amharic reviewed**.
+The language toggle switches the product text too. Longevity and projection show on a product page only after you set them (0 means not set).
+
 ## Changing business details
 
 Everything is in **`config/site.js`**: brand copy, tagline, TikTok link, location, **working hours**,
@@ -61,15 +68,16 @@ Interface strings for the English/Amharic toggle live in `config/i18n.js`
 (have a native speaker review the Amharic text; add a language by adding an object there and a button in `views/partials/header.ejs`).
 
 To add the founder's photo, put a 480x600 image in `public/img/` and set `founderPhoto` in `config/site.js`.
-The hero picture is `public/img/hero.svg`; replace it with a real photograph (about 1200x1000) and update the `src` in `views/home.ejs`.
+The hero cards are your real products (featured ones first), so uploading a product photo in `/admin` updates the hero automatically. Photograph each bottle on plain white; the cards colour it by scent family.
+The hero quote is the first customer review that has text; with no reviews it shows the founder's line from `config/site.js`.
 
 ## Design
 
-The look (near-white and neutral grey, one lime accent, Urbanist, pill controls) is documented in
+The look (paper and ink, notched 28px colour cards by scent family, Bricolage Grotesque headings, amber as the only accent) is documented in
 **`DESIGN.md`**, with tokens in `public/css/tokens.css`. The live component sheet is at `/styleguide`
-(hidden from search engines). Dark mode follows the system setting.
+(hidden from search engines). Light, Dark and System themes are switched from the header; see the Theme section of `DESIGN.md`.
 
-Photo tip: product cards multiply the picture onto a light grey backdrop, so photograph bottles on a plain white background.
+Photo tip: photograph each bottle on a plain white or light background; the site lifts the backdrop off and places the bottle on the scent-colour card. Upload from the product form or from **Images** in the admin (usage, replace, orphan clean-up, founder portrait and share image).
 
 ## Scripts
 
@@ -78,6 +86,9 @@ Photo tip: product cards multiply the picture onto a light grey backdrop, so pho
 | `npm run dev`                     | Development server with auto-restart                         |
 | `npm start`                       | Builds minified CSS/JS (`prestart`), then starts the server  |
 | `npm run build`                   | Only builds `public/dist` (run this when deploying with PM2) |
+| `npm run import:images`           | Creates products from the photos in `public/img/originals` (`-- --replace-samples`, `-- --reset`) |
+| `node scripts/make-og.js`         | Rebuilds `public/img/og-default.png` from the hero bottles   |
+| `npm run descriptions`            | Fills empty descriptions, taglines and meta descriptions (drafts) from `scripts/descriptions-data.js`; writes `DESCRIPTIONS-REVIEW.md`; never overwrites your text |
 | `npm run seed`                    | (Re)creates the SAMPLE perfumes; never touches your products |
 | `npm run build:assets`            | Regenerates favicons and the social card from `favicon.svg`  |
 | `node scripts/contrast.js`        | Prints the WCAG contrast ratios of the colour pairs in use   |
@@ -142,3 +153,10 @@ views/     EJS templates (partials/, admin/)
 public/    css/, js/ (source), fonts/, img/, dist/ (generated)
 scripts/   build.js (esbuild), build-assets.js (icons), contrast.js
 ```
+
+## Hero shader
+
+Two spots on the home page (the centre hero card and the panel beside the order text) have an animated amber glass behind a bottle photo (the `shaders` package,
+React island in `public/js/hero/`). It is optional polish and never sits behind text: without WebGPU, with reduced motion, data saver, 4 or fewer cores,
+or a 2g connection the CSS amber gradient shows instead. The bundle is about 780 KB gzipped and loads only on the home page, after first paint.
+To remove it, delete the `data-shader` attributes from `views/components/hero-card.ejs` and `views/home.ejs`; for a much lighter option see "Shader island" in `DESIGN.md`.

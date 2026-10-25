@@ -18,6 +18,7 @@ function rich(text) {
 
 /** English markup is remembered on first translation so it can be restored exactly. */
 function translate(strings) {
+  translateProducts(document, true);
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     el.dataset.en ??= el.innerHTML;
     const text = strings[el.dataset.i18n];
@@ -29,7 +30,27 @@ function translate(strings) {
   });
 }
 
+/** Product copy carries its Amharic text in data-am; the English text is kept to switch back. */
+function translateProducts(root, toAmharic) {
+  root.querySelectorAll('[data-am]').forEach((el) => {
+    if (toAmharic) {
+      el.dataset.enText ??= el.textContent;
+      el.textContent = el.dataset.am;
+      el.lang = 'am';
+    } else if (el.dataset.enText !== undefined) {
+      el.textContent = el.dataset.enText;
+      el.removeAttribute('lang');
+    }
+  });
+}
+
+/** Called after new markup is inserted (the product panel), so it follows the chosen language. */
+export function refreshLanguage(root) {
+  if (current === 'am') translateProducts(root, true);
+}
+
 function restoreEnglish() {
+  translateProducts(document, false);
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     if (el.dataset.en !== undefined) el.innerHTML = el.dataset.en;
   });
@@ -43,14 +64,9 @@ async function setLanguage(buttons, lang) {
   else restoreEnglish();
   current = lang;
   document.documentElement.lang = lang;
-  buttons.forEach((button) => {
-    button.textContent = lang === 'am' ? 'EN' : 'አማ';
-    button.lang = lang === 'am' ? 'en' : 'am';
-    button.setAttribute(
-      'aria-label',
-      lang === 'am' ? 'EN - switch language to English' : 'አማ - switch language to Amharic'
-    );
-  });
+  buttons.forEach((button) =>
+    button.setAttribute('aria-pressed', String(button.dataset.langSet === lang))
+  );
   try {
     localStorage.setItem(KEY, lang);
   } catch {
@@ -59,10 +75,12 @@ async function setLanguage(buttons, lang) {
 }
 
 export function initLanguage() {
-  const buttons = [...document.querySelectorAll('[data-lang-toggle]')];
+  const buttons = [...document.querySelectorAll('[data-lang-set]')];
   if (!buttons.length) return;
   buttons.forEach((button) =>
-    button.addEventListener('click', () => setLanguage(buttons, current === 'en' ? 'am' : 'en'))
+    button.addEventListener('click', () => {
+      if (button.dataset.langSet !== current) setLanguage(buttons, button.dataset.langSet);
+    })
   );
   let saved = 'en';
   try {

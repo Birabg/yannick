@@ -1,0 +1,13 @@
+<%
+  /* params: kind = 'cycle' (one round button: light, dark, system) or 'group' (three labelled buttons, for the mobile menu) */
+%><% if (kind === 'group') { %>
+<div class="theme-group" role="group" aria-label="Colour theme">
+  <% [['light', 'Light', 'sun'], ['dark', 'Dark', 'moon'], ['system', 'System', 'monitor']].forEach(function (o) { %>
+  <button class="theme-group__btn" type="button" data-theme-set="<%= o[0] %>" aria-pressed="false"><%- icon(o[2]) %><span><%= o[1] %></span></button>
+  <% }) %>
+</div>
+<% } else { %>
+<button class="theme-btn" type="button" data-theme-cycle aria-pressed="false" aria-label="Colour theme: System. Press to change.">
+  <%- icon('sun', 'theme-btn__sun') %><%- icon('moon', 'theme-btn__moon') %><%- icon('monitor', 'theme-btn__auto') %>
+</button>
+<% } %>

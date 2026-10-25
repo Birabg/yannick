@@ -52,6 +52,54 @@ db.exec(`
   );
 `);
 
+// Columns added after the first release; each is added once to databases that predate it.
+const ADDED_COLUMNS = {
+  img_w: 'INTEGER NOT NULL DEFAULT 0',
+  img_h: 'INTEGER NOT NULL DEFAULT 0',
+  img_alt: "TEXT NOT NULL DEFAULT ''",
+  focus_x: 'INTEGER NOT NULL DEFAULT 50',
+  focus_y: 'INTEGER NOT NULL DEFAULT 50',
+  fit: "TEXT NOT NULL DEFAULT 'cover'",
+  tint: "TEXT NOT NULL DEFAULT ''",
+  needs_details: 'INTEGER NOT NULL DEFAULT 0',
+  cutout: 'INTEGER NOT NULL DEFAULT 0',
+  description_en: "TEXT NOT NULL DEFAULT ''",
+  description_am: "TEXT NOT NULL DEFAULT ''",
+  tagline_en: "TEXT NOT NULL DEFAULT ''",
+  tagline_am: "TEXT NOT NULL DEFAULT ''",
+  meta_description: "TEXT NOT NULL DEFAULT ''",
+  description_status: "TEXT NOT NULL DEFAULT 'approved'", // 'draft' | 'approved'
+  am_reviewed: 'INTEGER NOT NULL DEFAULT 0',
+};
+const have = new Set(
+  db
+    .prepare('PRAGMA table_info(products)')
+    .all()
+    .map((c) => c.name)
+);
+for (const [col, def] of Object.entries(ADDED_COLUMNS)) {
+  if (!have.has(col)) db.exec(`ALTER TABLE products ADD COLUMN ${col} ${def}`);
+}
+
+const PRODUCT_DEFAULTS = {
+  img_w: 0,
+  img_h: 0,
+  img_alt: '',
+  focus_x: 50,
+  focus_y: 50,
+  fit: 'cover',
+  tint: '',
+  needs_details: 0,
+  cutout: 0,
+  description_en: '',
+  description_am: '',
+  tagline_en: '',
+  tagline_am: '',
+  meta_description: '',
+  description_status: 'approved',
+  am_reviewed: 0,
+};
+
 const splitList = (s) =>
   String(s || '')
     .split(',')
@@ -73,7 +121,14 @@ function toProduct(r) {
     family: r.family,
     longevity: r.longevity,
     projection: r.projection,
-    description: r.description,
+    // `description` is the older column; description_en supersedes it once set.
+    description: r.description_en || r.description,
+    descriptionAm: r.description_am,
+    tagline: r.tagline_en,
+    taglineAm: r.tagline_am,
+    metaDescription: r.meta_description,
+    descriptionDraft: r.description_status === 'draft',
+    amReviewed: r.am_reviewed === 1,
     notes: {
       top: splitList(r.top_notes),
       heart: splitList(r.heart_notes),
@@ -81,6 +136,17 @@ function toProduct(r) {
     },
     badges: splitList(r.badges),
     image: r.image,
+    imageW: r.img_w,
+    imageH: r.img_h,
+    imageAlt: r.img_alt,
+    focusX: r.focus_x,
+    focusY: r.focus_y,
+    fit: r.fit,
+    cutout: r.cutout === 1,
+    tint: r.tint,
+    // Flagged by hand, or while the owner still has to confirm a price, size or concentration.
+    needsDetails: r.needs_details === 1 || r.price <= 0 || !r.size || !r.concentration,
+    needsDetailsFlag: r.needs_details === 1,
     inStock: r.in_stock === 1,
     isSample: r.is_sample === 1,
     sortOrder: r.sort_order,
@@ -106,12 +172,16 @@ const products = {
       .prepare(
         `INSERT INTO products (slug, name, brand, price, size, concentration, category, collections,
           family, longevity, projection, description, top_notes, heart_notes, base_notes, badges,
-          image, in_stock, is_sample, sort_order)
+          image, img_w, img_h, img_alt, focus_x, focus_y, fit, tint, needs_details, cutout,
+          description_en, description_am, tagline_en, tagline_am, meta_description,
+          description_status, am_reviewed, in_stock, is_sample, sort_order)
          VALUES (@slug, @name, @brand, @price, @size, @concentration, @category, @collections,
           @family, @longevity, @projection, @description, @top_notes, @heart_notes, @base_notes,
-          @badges, @image, @in_stock, @is_sample, @sort_order)`
+          @badges, @image, @img_w, @img_h, @img_alt, @focus_x, @focus_y, @fit, @tint,
+          @needs_details, @cutout, @description_en, @description_am, @tagline_en, @tagline_am,
+          @meta_description, @description_status, @am_reviewed, @in_stock, @is_sample, @sort_order)`
       )
-      .run({ ...p, sort_order: top });
+      .run({ ...PRODUCT_DEFAULTS, ...p, sort_order: top });
     return Number(info.lastInsertRowid);
   },
 
@@ -121,12 +191,23 @@ const products = {
         concentration=@concentration, category=@category, collections=@collections, family=@family,
         longevity=@longevity, projection=@projection, description=@description,
         top_notes=@top_notes, heart_notes=@heart_notes, base_notes=@base_notes, badges=@badges,
-        image=@image, in_stock=@in_stock, is_sample=@is_sample, updated_at=datetime('now')
+        image=@image, img_w=@img_w, img_h=@img_h, img_alt=@img_alt, focus_x=@focus_x,
+        focus_y=@focus_y, fit=@fit, tint=@tint, needs_details=@needs_details,
+        cutout=@cutout, description_en=@description_en, description_am=@description_am,
+        tagline_en=@tagline_en, tagline_am=@tagline_am, meta_description=@meta_description,
+        description_status=@description_status, am_reviewed=@am_reviewed, in_stock=@in_stock, is_sample=@is_sample, updated_at=datetime('now')
        WHERE id=@id`
-    ).run({ ...p, id });
+    ).run({ ...PRODUCT_DEFAULTS, ...p, id });
   },
 
   remove: (id) => db.prepare('DELETE FROM products WHERE id = ?').run(id),
+
+  setPhoto: (id, { image, img_w, img_h, cutout }) =>
+    db
+      .prepare(
+        "UPDATE products SET image = ?, img_w = ?, img_h = ?, cutout = ?, updated_at = datetime('now') WHERE id = ?"
+      )
+      .run(image, img_w, img_h, cutout, id),
 
   setStock: (id, inStock) =>
     db

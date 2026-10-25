@@ -43,9 +43,11 @@ h1 em,
 h2 em,
 h3 em,
 .em {
-  color: var(--soft);
-  font-style: normal;
-  font-weight: inherit;
+  color: inherit;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
 }
 
 p {
@@ -85,11 +87,11 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid var(--c-accent);
+  outline: 2px solid var(--c-focus);
   outline-offset: 2px;
 }
 .tone--inv :focus-visible {
-  outline-color: var(--c-inv-accent);
+  outline-color: var(--c-focus);
 }
 
 /* Amharic: no uppercase, no tracking, taller lines, upright accents. */
@@ -103,6 +105,7 @@ button {
 :lang(am) h2 em,
 :lang(am) h3 em,
 :lang(am) .em {
+  font-family: inherit;
   font-style: normal;
   font-weight: 700;
 }
@@ -132,7 +135,7 @@ button {
   z-index: 300;
   padding: var(--s-1) var(--s-2);
   background: var(--c-accent);
-  color: var(--c-bg);
+  color: var(--c-on-accent);
   transform: translateY(-200%);
 }
 .skip-link:focus {
@@ -161,7 +164,7 @@ button {
   font-weight: 500;
 }
 .label__num {
-  color: var(--accent);
+  color: var(--accent-text);
   font-size: var(--t-label);
   font-variant-numeric: tabular-nums;
   font-weight: 700;
@@ -172,7 +175,7 @@ button {
   width: 48px;
   height: 1px;
   margin-left: var(--s-2);
-  background: var(--rule);
+  background: var(--amber);
   vertical-align: middle;
 }
 

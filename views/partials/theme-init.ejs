@@ -1,0 +1,16 @@
+<%# Runs before the stylesheet so the page never flashes the wrong theme. Choice: light | dark | system (default). %>
+<meta name="theme-color" content="#fbfaf7">
+<script nonce="<%= cspNonce %>">
+(function () {
+  var pref = 'system';
+  try {
+    var saved = localStorage.getItem('ys-theme');
+    if (saved === 'light' || saved === 'dark') pref = saved;
+  } catch (e) {}
+  var dark = pref === 'dark' || (pref === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  var root = document.documentElement;
+  root.setAttribute('data-theme', dark ? 'dark' : 'light');
+  root.setAttribute('data-theme-pref', pref);
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', dark ? '#100e0c' : '#fbfaf7');
+})();
+</script>
