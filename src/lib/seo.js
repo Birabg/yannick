@@ -1,8 +1,10 @@
 const site = require('../../config/site');
 const { siteUrl } = require('../env');
 const { productLabel } = require('./format');
+const { photoUrl } = require('./photo');
+const { siteImage } = require('./siteImages');
 
-const imageUrl = (p, variant = 'lg') => `/uploads/products/${p.image}-${variant}.webp`;
+const imageUrl = photoUrl;
 
 function storeSchema() {
   return {
@@ -11,7 +13,7 @@ function storeSchema() {
     name: site.brand.name,
     description: site.brand.description,
     url: siteUrl,
-    image: `${siteUrl}/img/og-default.png`,
+    image: `${siteUrl}${siteImage('share')}`,
     telephone: site.contact.phone,
     currenciesAccepted: site.currency,
     address: {
@@ -33,15 +35,18 @@ function productSchema(p) {
     brand: { '@type': 'Brand', name: p.brand },
     sku: p.slug,
     ...(p.image && { image: [`${siteUrl}${imageUrl(p)}`] }),
-    offers: {
-      '@type': 'Offer',
-      url: `${siteUrl}/perfume/${p.slug}`,
-      priceCurrency: site.currency,
-      price: String(p.price),
-      itemCondition: 'https://schema.org/NewCondition',
-      availability: p.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      seller: { '@type': 'Organization', name: site.brand.name },
-    },
+    // No price yet means no offer: structured data must not carry a made-up number.
+    ...(p.price > 0 && {
+      offers: {
+        '@type': 'Offer',
+        url: `${siteUrl}/perfume/${p.slug}`,
+        priceCurrency: site.currency,
+        price: String(p.price),
+        itemCondition: 'https://schema.org/NewCondition',
+        availability: p.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        seller: { '@type': 'Organization', name: site.brand.name },
+      },
+    }),
   };
 }
 

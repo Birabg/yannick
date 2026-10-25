@@ -1,0 +1,69 @@
+/* The light / dark / system switch. Shared by the site and the admin. */
+/* ---------- theme switch ---------- */
+.theme-btn {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--c-line);
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color var(--d-fast) var(--ease);
+}
+.theme-btn:hover {
+  background: var(--c-chip);
+}
+.theme-btn .icon {
+  display: none;
+  grid-area: 1 / 1;
+  width: 20px;
+  height: 20px;
+}
+:root[data-theme-pref='light'] .theme-btn__sun,
+:root[data-theme-pref='dark'] .theme-btn__moon,
+:root[data-theme-pref='system'] .theme-btn__auto {
+  display: block;
+}
+.site-header__theme {
+  display: inline-flex;
+}
+.theme-group {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  padding: 4px;
+  border: 1px solid var(--c-inv-border);
+  border-radius: var(--r-pill);
+}
+.theme-group__btn {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-inv-text);
+  font: inherit;
+  font-size: var(--t-small);
+  font-weight: 600;
+  cursor: pointer;
+}
+.theme-group__btn .icon {
+  width: 18px;
+  height: 18px;
+}
+.theme-group__btn[aria-pressed='true'] {
+  background: var(--amber);
+  color: var(--ink);
+}
+.theme-group__btn:not([aria-pressed='true']):hover {
+  background: var(--inv-chip);
+}

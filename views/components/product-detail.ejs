@@ -1,17 +1,15 @@
 <%
   /* params: p (product), sheet (true inside the panel, false on the full page) */
   const label = fmt.productLabel(p);
-  const fam = fmt.famKey(p);
-  const hasImage = !!p.image;
-  const src = hasImage ? imageUrl(p, 'lg') : '/img/bottle-placeholder.svg';
+  const fam = fmt.cardColor(p);
   const H = sheet ? 'h2' : 'h1';
   const acts = [['Top', p.notes.top], ['Heart', p.notes.heart], ['Base', p.notes.base]].filter(function (a) { return a[1].length; });
-  const meters = [['Longevity', p.longevity], ['Projection', p.projection]];
+  const meters = [['Longevity', p.longevity], ['Projection', p.projection]].filter(function (m) { return m[1] > 0; });
 %>
 <article class="detail fam--<%= fam %><%= sheet ? '' : ' detail--page' %>">
   <div class="detail__photo">
     <div class="photo">
-      <img class="photo__img" src="<%= src %>"<% if (hasImage) { %> srcset="<%= imageUrl(p, 'sm') %> 480w, <%= imageUrl(p, 'lg') %> 1000w" sizes="(min-width: 900px) 600px, 100vw"<% } %> width="1000" height="1250" alt="<%= label %> bottle"<%- sheet ? '' : ' fetchpriority="high"' %>>
+      <%- include('photo', { p: p, variant: 'lg', eager: !sheet, sizes: '(min-width: 900px) 600px, 100vw' }) %>
       <div class="photo__flags">
         <% if (!p.inStock) { %><%- include('badge', { kind: 'soldout', label: 'Sold out' }) %><% } %>
         <% if (p.isSample) { %><%- include('badge', { kind: 'sample', label: 'Sample' }) %><% } %>
@@ -23,9 +21,10 @@
     <p class="detail__brand"><%= p.brand %></p>
     <<%= H %> class="detail__name"<%- sheet ? ' id="sheet-title"' : '' %>><%= p.name %></<%= H %>>
     <p class="detail__meta"><%= [p.size, p.concentration, p.family].filter(Boolean).join(' · ') %></p>
-    <p class="detail__price"><small><%= site.currency %></small><%= p.price.toLocaleString('en-US') %></p>
+    <p class="detail__price<%= p.price > 0 ? '' : ' is-ask' %>"><% if (p.price > 0) { %><small><%= site.currency %></small><%= p.price.toLocaleString('en-US') %><% } else { %>Ask for price<% } %></p>
 
-    <% if (p.description) { %><p class="detail__text"><%= p.description %></p><% } %>
+    <% if (p.tagline) { %><p class="detail__tagline"<% if (p.taglineAm) { %> data-am="<%= p.taglineAm %>"<% } %>><%= p.tagline %></p><% } %>
+    <% if (p.description) { %><p class="detail__text"<% if (p.descriptionAm) { %> data-am="<%= p.descriptionAm %>"<% } %>><%= p.description %></p><% } %>
 
     <% if (acts.length) { %>
     <div class="pyramid" role="list" aria-label="Fragrance notes">
@@ -38,6 +37,7 @@
     </div>
     <% } %>
 
+    <% if (meters.length) { %>
     <div class="meters">
       <% meters.forEach(function (m) { %>
       <div class="meter">
@@ -48,6 +48,7 @@
       </div>
       <% }) %>
     </div>
+    <% } %>
 
     <div class="detail__actions">
       <%- include('button', {

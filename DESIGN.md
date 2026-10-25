@@ -1,88 +1,134 @@
 # Yannick Scents: design system
 
 Source of truth for the look. Tokens live in `public/css/tokens.css`; the live sheet is at `/styleguide`.
-The system is the **formicai.dev kit (Livery v1)**, applied one area per commit
-(`git log --grep "livery(formicai.dev v1)"`). It replaced the earlier classic ivory/bordeaux design (commit `16665ff`);
-`git revert` the area commits, or check out that commit, to go back.
+Earlier versions: classic ivory/bordeaux is commit `16665ff`; the formicai.dev kit is branch `livery/formicai-dev-v1`.
 
-A light interface on a near-white neutral background where a lime accent marks the next step.
-Type is Urbanist set tight at large sizes, controls are fully rounded, depth comes from soft neutral shadows.
+An editorial storefront: a clean paper page, huge tight grotesk headings, and notched colour cards (one bottle each)
+that carry the energy. Ink does the work, amber is the only brand accent.
 
 ## Principles
 
-1. **One accent, used sparingly.** Lime (`--c-accent`) is for primary actions, links, active states and focus. Nothing else.
-2. **Soft, neutral depth.** 1px rings and one faint float shadow (`0 4px 24px rgb(0 0 0 / 0.04)`). Never tinted.
-3. **Big type, quiet body.** Tight headings (tracking -0.02em), calm 16px body.
-4. **Rounded and approachable.** Pills for buttons, tabs and fields; 14 to 16px for cards.
+1. **Paper and ink first.** Most of the page is `#FBFAF7` and `#14110F`. Colour comes from the scent-family cards.
+2. **Amber is for fills, hover and the shader, never for text.** Amber or yellow text on a light background fails AA. On amber, text is ink. Amber carries buttons on dark areas, hover states and highlights.
+3. **One shape.** Every card, FAQ block, order block, panel and photo uses the same 28px radius and the same notch.
+4. **Huge type, quiet body.** Headings are Bricolage Grotesque 700 with tight tracking; body is calm 16px Urbanist.
+5. **Hairlines, not shadows.** 1px ink at 10% separates things; there are no coloured shadows.
 
-Never: coloured shadows, a second accent, positive tracking on headings, square buttons, all-caps button labels, a second display typeface.
+Never: amber or yellow text on white, a second brand accent, fake people, invented testimonials, text on top of the shader.
 
 ## Colour
 
-| Token         | Light          | Dark           | Use                               |
-| ------------- | -------------- | -------------- | --------------------------------- |
-| `--c-bg`      | `#FFFFFF`      | `#131312`      | Page                              |
-| `--c-surface` | `#F4F4F2`      | `#1C1C1B`      | Alternate bands                   |
-| `--c-chip`    | `#E9E9E9`      | `#232322`      | Badges, skeletons, image backdrop |
-| `--c-text`    | `#1A1A1A`      | `#F0EFEC`      | Text                              |
-| `--c-muted`   | `#5C5C5C`      | `#B0AEAA`      | Secondary text                    |
-| `--c-accent`  | `#557611`      | `#A5E12A`      | Actions, links, focus             |
-| `--c-border`  | `#E5E5E5`      | `#2A2A29`      | 1px lines                         |
-| `--c-danger`  | `#A3231C`      | `#FF8D85`      | Errors only                       |
-| `--c-inv-*`   | `#131312` band | `#1C1C1B` band | Inverse section (journey, footer) |
+| Token                                                                                  | Value                                                        | Use                                                  |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| `--paper`                                                                              | `#FBFAF7`                                                    | Page, text on ink                                    |
+| `--stone`                                                                              | `#F2EFE8`                                                    | Bands, FAQ and order blocks                          |
+| `--ink`                                                                                | `#14110F`                                                    | Text, primary buttons, order panel                   |
+| `--amber` `--gold` `--sun`                                                             | `#FFA100` `#FFC800` `#FFDA00`                                | Hover, the shader, the heading marker, buttons on ink |
+| `--fam-fresh` / `--fam-woody` / `--fam-oriental` / `--fam-men` / `--fam-women` / `--fam-none` | `#E9F056` `#1F5A43` `#D9651C` `#8FC6EE` `#F3C3D0` `#CFE0C6` | Card, pill and panel backdrops by scent family |
 
-The dark theme follows the system setting (`prefers-color-scheme`); there is no toggle.
-`node scripts/contrast.js` checks every pair in both themes (all at least 4.5:1).
-`--c-surface` (`#F4F4F2`) is lighter than the kit's `#E9E9E9` so large bands stay calm; the kit's grey is used for chips and image backdrops.
+A product's colour is its scent family (Fresh & Citrus, Woody Aromatic, Oriental & Gourmand), else its category (men, women), else the neutral sage
+(`cardColor()` in `src/lib/format.js`). Text on a family colour is ink, except on woody green where it is paper (`--card-fg`).
+A product's text colour on a family card is set by `--card-fg`.
+
+## Theme
+
+Light, Dark or System (default). The header button cycles Light, Dark, System (44px, `aria-pressed`, labelled); the mobile menu has a three-way group.
+The choice is kept in `localStorage` (inside try/catch) and an inline, nonce-protected script in `<head>` (`views/partials/theme-init.ejs`) sets `data-theme`, `color-scheme` and `<meta name="theme-color">` before paint, so there is no flash. On System the page follows the OS live.
+Admin uses the same tokens and toggle.
+
+| Semantic token             | Light     | Dark                      |
+| -------------------------- | --------- | ------------------------- |
+| `--bg`                     | `#FBFAF7` | `#100E0C`                 |
+| `--surface` / `--surface-2` | paper / `#F2EFE8` | `#1A1714` / `#231F1B` |
+| `--text`                   | `#14110F` | `#F4EFE6`                 |
+| `--text-muted`             | ink, softened | `#B3A89A`             |
+| `--border`                 | ink 10%   | `rgba(255,255,255,.12)`   |
+| `--accent` / `--accent-contrast` | ink / paper | amber `#FFA100` / ink |
+| `--focus`                  | ink       | amber                     |
+
+Family colours are deepened a step in dark so cards sit comfortably on the near-black page. Photos get `--photo-filter` (brightness .92 in dark); the shader stays amber with a darker vignette (`--vignette`).
+Colour-only 200ms transition (`html.theme-anim`), off under reduced motion. The legacy `--c-*` names are aliases of the semantic tokens. `node scripts/contrast.js` checks every pair in both themes (all at least 4.5:1, focus ring 3:1).
 
 ## Type
 
-Urbanist (OFL, self-hosted in `public/fonts/`), one family for everything. Amharic falls back to Noto Sans Ethiopic, loaded only when needed.
+- **Bricolage Grotesque** (OFL, variable weight) for headings and wordmark. Hero `--t-hero` 45 to 112px, weight 700, tracking -0.055em, line height 0.92. Section titles `--t-l` 36 to 68px.
+- **Urbanist** for body and UI. 16px / 1.7, max 65ch.
+- **Caveat** only for signatures (the quote on the home page).
+- Amharic falls back to Noto Sans Ethiopic, loaded only when needed, with no tracking and taller lines.
+- Section labels are small and numbered: `01 ── The Collection`. Accent words in headings get a marker stroke (ink text on an amber band).
 
-- Hero `--t-xl` 40 to 72px, section titles `--t-l` 30 to 48px, `--t-m` 24 to 30px, `--t-s` 20px.
-- Body 16px / 1.7, max 65ch. Small 14px. Labels 12px, sentence case.
-- Weights 400, 500 (headings 500, prices 700). Tabular figures everywhere.
-- The kit's 12px body is not used: 16px keeps phone text readable.
-- A word wrapped in `*asterisks*` in config strings becomes the muted second tone of a title.
+## The notch
 
-## Space, shape, depth
+A rounded step cut from the top-right corner of a card, as if a tab were removed. It is built with a CSS mask, not images, so it scales cleanly:
+`--notch-mask` in `hero.css` stacks five gradient layers (two rectangles, a rounded outer corner, the lower strip, a rounded inner corner),
+driven by `--nw` (width, 64px), `--nh` (height, 52px) and `--nr` (corner radius, 16px). Small cards use 48 / 40 / 12.
+A 40px round button (ink, amber on hover) sits in the cut-out: an arrow on product and order cards, a plus on FAQ blocks.
+Use `.notch` for a block with text (the mask is on a pseudo-element so the content is never clipped), or apply `mask: var(--notch-mask)` to a photo.
 
-- Container 1080px, section padding 80px on desktop (56px on phones), header 56px sticky with a hairline.
-- Space scale in 8px steps (`--s-1` to `--s-9`).
-- Radii: 6px chips, 8px fields, 14 to 16px cards, pill (9999px) buttons, tabs, search and sort.
-- Borders 1px `--c-border`; focus ring 2px `--c-accent`, offset 2px.
+## Hero
+
+Header: wordmark, centred nav (Home, Collection, Find your scent, Story, FAQ), then a search icon, an outline pill "Order on WhatsApp" and the `EN | አማ` control.
+It is transparent over the hero and turns into a paper bar with a hairline after 40px.
+
+Headline "A Good Scent / Speaks First" centred (three lines on phones), each word sliding up out of a mask. Left of it a rotating TikTok badge (text on a circle around a play button, linking to
+the TikTok; the spin stops under reduced motion). Right of it three round bottle thumbnails and a plus that jumps to the collection (no people avatars).
+
+Below, five tall notched cards in a staggered rhythm (outer cards tallest, the centre one lowest and shortest), two small cards tucked under the first and last,
+and an ink "Explore the Collection" button under the centre card. The cards are real products, featured first (`heroProducts` in `src/routes/public.js`), so replacing a
+photo in the admin updates the hero. Photos are white-background WebP multiplied onto the family colour. Each card lifts and shows name and price on hover (always visible on touch),
+tilts a few degrees toward the cursor on desktop, and enters with a 60ms stagger. The first card image is preloaded.
+
+Phones: the row becomes a horizontal scroll-snap carousel with the next card peeking (arrow keys scroll it), the badge sits above the headline, the button sits under the carousel,
+and the existing bottom bar offers Call and WhatsApp. Tablets show three cards with the rhythm kept.
+
+Foot of the hero: left, a short quote with a large mark and a handwritten signature. It is the first admin review that has text; with no reviews it is the founder's own line from
+`config/site.js`, signed "Yannick". Never invented. Right, "01 Find your scent" with the line "Answer 3 questions and we pick your bottle" and an arrow to the quiz.
+
+### Shader island
+
+`public/js/hero/GlassBackground.tsx` (Swirl, ChromaFlow, FlutedGlass from `shaders/react`) is mounted by `island.tsx` only into elements marked `data-shader`: the centre hero card (behind its bottle)
+and the panel next to the order text. It is never behind text. One esbuild bundle (`public/dist/js/hero/island.js`), loaded only on the home page, never in `/admin`.
+
+- `public/js/hero-shader.js` needs all of: WebGPU with a real adapter, no `prefers-reduced-motion`, no `saveData`, more than 4 cores, not 2g. Otherwise the CSS gradient stays (it is always there underneath).
+- The centre card mounts after first paint, when the browser is idle. The order panel waits until it is 400px from the viewport. Both fade in over 600ms.
+- Rendering is capped at 1.5 device pixels per CSS pixel (the stage is shrunk and scaled back up by CSS). The package pauses itself when off-screen; browsers pause frames in hidden tabs.
+- Touch screens get a slow automatic drift in place of a cursor. An error boundary drops the shader if it throws. Telemetry is disabled.
+- Size: about 2.7 MB raw, about 780 KB gzip, well above a 200 KB budget. The lighter option is a hand-written WebGL fragment shader of about 3 KB with the same rules.
 
 ## Components
 
-- **Button**: pill, 48px min height, sentence case, weight 500. Primary = solid lime; secondary = outlined; dark = solid text colour. Hover darkens by mixing with black, no movement.
-- **Tab**: pill chip with a 1px border; selected = filled with the text colour.
-- **Card** (product): 16px corners, 1px border, 16px padding, 4:5 image on `--c-chip`. Hover: border darkens, float shadow. Nothing moves.
-- **Tag**: 6px chip. New = lime, Best seller = text colour, Sample = dashed outline.
-- **Panel**: right drawer from 760px, bottom sheet with 16px top corners below; native `<dialog>`, focus trapped.
-- **Meter**: five 6px pills; filled ones are lime.
-- **Fields**: 8px radius (search and sort are pills), 1px border, accent ring on focus, inline errors in `--c-danger`.
-- **States**: loading (shimmer, spinner), empty, error, disabled and sold out are all designed; see `/styleguide`.
+- **Button**: pill, 48px min, sentence case. Primary = ink fill (amber on ink areas); hover = amber. Outline = 1px ink; hover fills ink.
+- **Pill** (filters, moods): outline pill; the active one wears its family colour (fresh lime, woody green, oriental orange, men sky, women pink; others ink).
+- **Product card**: a notched colour photo (4:5) with the words on the page below it. Hover lifts the bottle slightly; the arrow turns amber.
+- **Panel**: right drawer from 760px, bottom sheet below; the photo at the top keeps the family colour. 28px corners.
+- **Note cards**: three notched colour cards (Top, Heart, Base) with a typographic list of real notes.
+- **FAQ**: stone blocks, notched, with the plus in the notch. **Order**: an ink notched panel with the text, a shader panel with a bottle photo beside it, then three stone blocks.
+- **Fields**: pill search and sort, 1px `--c-line` outline, visible focus ring.
 
 ## Motion
 
-- Default 150ms `ease` for colour; panels and shadows 300ms; reveals 700ms.
-- Scroll reveal: clip-path wipe (`cubic-bezier(0.23, 1, 0.32, 1)`), staggered 120ms.
-- Hero copy enters with a 420ms fade from a 4px blur.
-- Skeleton shimmer 1.4s; spinner 1.1s; the houses rail scrolls once per 80s and pauses on hover.
-- Everything above stops under `prefers-reduced-motion` (the rail becomes a wrapped grid).
+Transform and opacity only, except the one-off blur-free word reveal (a mask slide). Words slide up 800ms staggered 80ms; cards rise and fade 800ms staggered 60ms;
+the badge turns once per 22s; sections reveal with a clip wipe. Everything stops under `prefers-reduced-motion`, and tilt is desktop-only.
 
-## Details
+## Space and depth
 
-Tabular numerals, fine grain on dark bands, filled gradient on the hero's second line, masked rail edges, thin scrollbars, accent selection colour.
+Container 1240px, space in 8px steps, sections 64 to 104px, header 72px. Radii: 28px cards, pill buttons and fields. Rules are 1px ink at 10%.
 
 ## Voice
 
-Concise, calm, conversational. Sentences around 11 words, sentence-case headings, no exclamation marks, buttons of about three words ("Order on WhatsApp", "Find your scent"). No invented reviews, numbers or claims.
+Concise, calm, conversational; sentence-case copy, three-word buttons ("Order on WhatsApp", "Find your scent"). No invented reviews, numbers or claims.
 
 ## Accessibility
 
-AA contrast in both themes, 48px touch targets, visible focus, native dialog and details, reduced motion respected, Amharic typography overrides (no letter-spacing, taller lines).
+AA contrast in both themes, 48px targets (44px for the header icon and language control), visible focus, native dialog and details, a keyboard-operable carousel
+(focus it and use the arrow keys, or tab through the cards), reduced motion respected.
 
 ## Imagery
 
-Photograph bottles on plain white: the card multiplies the picture onto `--c-chip`. Sample products carry a dashed "Sample" tag until replaced.
+Real product photos live in `public/img/originals/` (never served, never altered). `src/lib/images.js` is the single pipeline for the importer and admin uploads:
+orient, flatten, strip metadata, lift a plain studio backdrop off (`src/lib/cutout.js`, so the bottle keeps its true colours), trim, 4% margin, WebP at 480/960/1600 (never enlarged).
+Width and height are stored on the product so every `<img>` has dimensions (no layout shift); `views/components/photo.ejs` writes `srcset`/`sizes`. Only the first hero image is eager with `fetchpriority="high"` and a preload; the rest are lazy.
+Per product: focus point (`fx-N/fy-N` classes), fit (cover or contain), card colour override (`tint`), alt text. A broken or missing image falls back to `/img/bottle-placeholder.svg`.
+Unknown facts are never invented: no price shows "Ask for price", and the admin flags the product "Needs details" until price, size and concentration exist.
+Our Story shows a shelf of three real bottles until a founder portrait is uploaded in `/admin/images`; no stand-in person.
+See `IMAGE-INVENTORY.md` for every file and the owner checklist.

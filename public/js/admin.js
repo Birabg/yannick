@@ -1,4 +1,9 @@
 import { toast } from './toast.js';
+import { initTheme } from './theme.js';
+import { initPhotos } from './photo.js';
+
+initTheme();
+initPhotos();
 
 const MAX_PHOTO = 5 * 1024 * 1024;
 const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -234,11 +239,22 @@ if (previewForm) {
       [field('size').value, field('concentration').value].filter(Boolean).join(' · ') || '100ml'
     );
     const price = Number.parseInt(field('price').value.replace(/\D/g, ''), 10);
-    set('[data-preview-price]', Number.isFinite(price) ? price.toLocaleString('en-US') : '0');
+    set(
+      '[data-preview-price]',
+      price > 0 ? `ETB ${price.toLocaleString('en-US')}` : 'Ask for price'
+    );
 
     const checked = (name) =>
       [...previewForm.querySelectorAll(`input[name="${name}"]:checked`)].map((c) => c.value);
-    const family = families.find((key) => checked('collections').includes(key)) || 'none';
+    const category = field('category').value;
+    const family =
+      field('tint').value ||
+      families.find((key) => checked('collections').includes(key)) ||
+      (category === 'men' || category === 'women' ? category : 'none');
+
+    const img = card.querySelector('[data-preview-img]');
+    img.style.objectPosition = `${field('focus_x').value}% ${field('focus_y').value}%`;
+    img.classList.toggle('fit-contain', field('fit').value === 'contain');
     card.className = `card fam--${family}`;
     card.classList.toggle('is-soldout', field('in_stock').value === '0');
 
@@ -252,7 +268,33 @@ if (previewForm) {
   previewForm.addEventListener('input', update);
   previewForm.addEventListener('change', update);
   previewForm.addEventListener('photo', (event) => {
-    card.querySelector('[data-preview-img]').src = event.detail;
+    const img = card.querySelector('[data-preview-img]');
+    img.removeAttribute('srcset');
+    img.src = event.detail;
   });
   update();
 }
+
+/* ---------- Image library: choosing a file uploads it ---------- */
+document.addEventListener('change', (event) => {
+  const input = event.target.closest('input[data-autosubmit]');
+  if (!input?.files?.length) return;
+  if (input.files[0].size > MAX_PHOTO) {
+    toast('The photo is larger than 5 MB.', 'error');
+    input.value = '';
+    return;
+  }
+  input.form.requestSubmit();
+});
+
+/* ---------- Character counters on the description fields ---------- */
+document.querySelectorAll('[data-count]').forEach((field) => {
+  const out = document.querySelector(`[data-counter-for="${field.name}"]`);
+  if (!out) return;
+  const update = () => {
+    const n = field.value.length;
+    out.textContent = `${n} / ${out.dataset.max}`;
+  };
+  field.addEventListener('input', update);
+  update();
+});

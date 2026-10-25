@@ -1,9 +1,7 @@
 <%
   /* params: p (product), order (position in featured order) */
   const label = fmt.productLabel(p);
-  const fam = fmt.famKey(p);
-  const hasImage = !!p.image;
-  const src = hasImage ? imageUrl(p, 'sm') : '/img/bottle-placeholder.svg';
+  const fam = fmt.cardColor(p);
   const haystack = [p.name, p.brand, p.family, p.notes.top, p.notes.heart, p.notes.base].flat().join(' ').toLowerCase();
 %>
 <li class="grid__item" data-card
@@ -13,8 +11,8 @@
     data-order="<%= order %>" data-search="<%= haystack %>">
   <article class="card fam--<%= fam %><%= p.inStock ? '' : ' is-soldout' %>">
     <div class="card__media">
-      <div class="photo">
-        <img class="photo__img" src="<%= src %>"<% if (hasImage) { %> srcset="<%= imageUrl(p, 'sm') %> 480w, <%= imageUrl(p, 'lg') %> 1000w" sizes="(min-width: 1280px) 380px, (min-width: 760px) 30vw, 92vw"<% } %> width="480" height="600" loading="lazy" decoding="async" alt="<%= label %> bottle">
+      <div class="photo <%= photo.ratioClass(p) %>">
+        <%- include('photo', { p: p, sizes: '(min-width: 1280px) 380px, (min-width: 760px) 30vw, 92vw' }) %>
         <div class="photo__flags">
           <% if (!p.inStock) { %><%- include('badge', { kind: 'soldout', label: 'Sold out' }) %><% } %>
           <% if (p.isSample) { %><%- include('badge', { kind: 'sample', label: 'Sample' }) %><% } %>
@@ -26,9 +24,10 @@
     <div class="card__body">
       <p class="card__brand"><%= p.brand %></p>
       <h3 class="card__name"><a class="card__link" href="/perfume/<%= p.slug %>" data-open-product><%= p.name %></a></h3>
+      <% if (p.tagline) { %><p class="card__tagline"<% if (p.taglineAm) { %> data-am="<%= p.taglineAm %>"<% } %>><%= p.tagline %></p><% } %>
       <p class="card__line">
-        <span><%= [p.size, p.concentration].filter(Boolean).join(' · ') %></span>
-        <span class="card__price"><%= site.currency %> <%= p.price.toLocaleString('en-US') %></span>
+        <% if (p.size || p.concentration) { %><span><%= [p.size, p.concentration].filter(Boolean).join(' · ') %></span><% } %>
+        <span class="card__price<%= p.price > 0 ? '' : ' is-ask' %>"><%= fmt.price(p.price) %></span>
       </p>
     </div>
   </article>

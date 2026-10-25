@@ -1,10 +1,9 @@
 /**
- * Generates the favicon set, the social share card and the paper-grain tile.
+ * Generates the favicon set and the social share card.
  * Run with `npm run build:assets`; the outputs in public/ are committed.
  */
 const fs = require('node:fs');
 const path = require('node:path');
-const crypto = require('node:crypto');
 const sharp = require('sharp');
 
 const pub = path.join(__dirname, '..', 'public');
@@ -26,33 +25,17 @@ function ico(pngBuffer, size) {
   return Buffer.concat([header, pngBuffer]);
 }
 
-/** 240px tile of faint ink specks; tiles seamlessly because every pixel is independent. */
-async function grain() {
-  const size = 240;
-  const raw = Buffer.alloc(size * size * 4);
-  const noise = crypto.randomBytes(size * size);
-  for (let i = 0; i < size * size; i++) {
-    raw[i * 4] = 20;
-    raw[i * 4 + 1] = 17;
-    raw[i * 4 + 2] = 15;
-    raw[i * 4 + 3] = noise[i] > 215 ? Math.round((noise[i] - 215) * 1.1) : 0;
-  }
-  await sharp(raw, { raw: { width: size, height: size, channels: 4 } })
-    .png({ compressionLevel: 9 })
-    .toFile(path.join(pub, 'img', 'grain.png'));
-}
-
 async function shareCard() {
   const card = Buffer.from(`
     <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
-      <rect width="1200" height="630" fill="#ff5a1f"/>
+      <rect width="1200" height="630" fill="#ffa100"/>
       <rect x="28" y="28" width="1144" height="574" fill="none" stroke="#14110f" stroke-width="6"/>
       <g font-family="Arial Black, Arial, Helvetica, sans-serif" fill="#14110f" font-weight="900">
-        <text x="70" y="215" font-size="150" letter-spacing="-8">A GOOD SCENT</text>
-        <text x="70" y="355" font-size="150" letter-spacing="-8">SPEAKS FIRST.</text>
+        <text x="70" y="215" font-size="150" letter-spacing="-8">A good scent</text>
+        <text x="70" y="355" font-size="150" letter-spacing="-8">speaks first.</text>
       </g>
       <rect x="70" y="440" width="560" height="84" rx="10" fill="#14110f"/>
-      <text x="100" y="496" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="40" font-weight="900" fill="#f4efe6" letter-spacing="1">YANNICK SCENTS</text>
+      <text x="100" y="496" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="40" font-weight="900" fill="#f7f3ec" letter-spacing="1">Yannick Scents</text>
       <text x="1130" y="496" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" fill="#14110f">Addis Ababa</text>
     </svg>`);
   await sharp(card)
@@ -67,9 +50,8 @@ async function main() {
   write('icon-192.png', await png(192));
   write('icon-512.png', await png(512));
   write('favicon.ico', ico(await png(48), 48));
-  await grain();
   await shareCard();
-  console.log('Icons, grain tile and share card written to public/');
+  console.log('Icons and share card written to public/');
 }
 
 main().catch((err) => {

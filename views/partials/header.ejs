@@ -1,37 +1,38 @@
 <%
   const base = path === '/' ? '' : '/';
-  const left = [['story', 'nav.story'], ['collection', 'nav.collection'], ['notes', 'nav.notes'], ['houses', 'nav.houses']];
-  const right = [['find', 'nav.find'], ...(locals.hasReviews ? [['reviews', 'nav.reviews']] : []), ['faq', 'nav.faq']];
+  const links = [['top', 'nav.home'], ['collection', 'nav.collection'], ['find', 'nav.find'], ['story', 'nav.story'], ['faq', 'nav.faq']];
 %>
-<header class="site-header">
+<header class="site-header<%= path === '/' ? ' site-header--over' : '' %>">
   <div class="container site-header__inner">
-    <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
-      <%- icon('menu') %><%- icon('close') %>
-    </button>
-
     <a class="logo" href="/">Yannick <em>Scents</em></a>
 
     <nav class="nav" id="site-nav" aria-label="Main">
-      <ul class="nav__list nav__list--left">
-        <% left.forEach(function (item) { %>
-        <li><a class="nav__link" href="<%= base %>#<%= item[0] %>" <%- i(item[1]) %>><%= t(item[1]) %></a></li>
-        <% }) %>
-      </ul>
-      <ul class="nav__list nav__list--right">
-        <% right.forEach(function (item) { %>
+      <ul class="nav__list">
+        <% links.forEach(function (item) { %>
         <li><a class="nav__link" href="<%= base %>#<%= item[0] %>" <%- i(item[1]) %>><%= t(item[1]) %></a></li>
         <% }) %>
         <li class="nav__mobile-only"><a class="nav__link" href="<%= base %>#order" <%- i('nav.order') %>><%= t('nav.order') %></a></li>
-        <li><a class="nav__link nav__link--cta" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener" <%- i('cta.whatsapp') %>><%= t('cta.whatsapp') %></a></li>
-        <li class="nav__lang"><button class="lang-toggle" type="button" data-lang-toggle aria-label="አማ - switch language to Amharic" lang="am">አማ</button></li>
       </ul>
+      <div class="nav__actions">
+        <a class="nav__search" href="<%= base %>#collection" data-search-link aria-label="Search perfumes"><%- icon('search') %></a>
+        <a class="btn btn--sm btn--outline nav__cta" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener" <%- i('cta.whatsapp') %>><%= t('cta.whatsapp') %></a>
+        <%- include('theme-toggle', { kind: 'cycle' }) %>
+        <%- include('lang') %>
+      </div>
       <div class="nav__extra">
         <%- include('../components/button', { href: fmt.genericLink(), external: true, ico: 'whatsapp', label: t('cta.whatsapp'), i18n: 'cta.whatsapp', size: 'lg', block: true }) %>
         <%- include('../components/button', { href: 'tel:' + site.contact.phone, ico: 'phone', label: site.contact.phoneDisplay, variant: 'outline', size: 'lg', block: true }) %>
-        <button class="lang-toggle lang-toggle--menu" type="button" data-lang-toggle aria-label="አማ - switch language to Amharic" lang="am">አማ</button>
+        <%- include('theme-toggle', { kind: 'group' }) %>
+        <%- include('lang') %>
       </div>
     </nav>
 
-    <a class="icon-btn header-wa" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener" aria-label="Order on WhatsApp"><%- icon('whatsapp') %></a>
+    <div class="site-header__tools">
+      <a class="icon-btn header-wa" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener" aria-label="Order on WhatsApp"><%- icon('whatsapp') %></a>
+      <span class="site-header__theme"><%- include('theme-toggle', { kind: 'cycle' }) %></span>
+      <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+        <%- icon('menu') %><%- icon('close') %>
+      </button>
+    </div>
   </div>
 </header>

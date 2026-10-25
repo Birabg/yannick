@@ -11,6 +11,23 @@
 </p>
 <% } %>
 
+<% const needing = products.filter(function (p) { return p.needsDetails; }).length; %>
+<% if (needing) { %>
+<p class="alert alert--warn" role="note">
+  <strong><%= needing %> perfume<%= needing === 1 ? '' : 's' %> need details.</strong>
+  Those tagged <span class="sticker sticker--needs">Needs details</span> have no price, size or concentration yet, so the site shows &ldquo;Ask for price&rdquo;.
+  Open each one with Edit to complete it.
+</p>
+<% } %>
+
+<% const drafts = products.filter(function (p) { return p.descriptionDraft; }).length; %>
+<% if (drafts) { %>
+<p class="alert alert--warn" role="note">
+  <strong><%= drafts %> description<%= drafts === 1 ? ' is a' : 's are' %> draft<%= drafts === 1 ? '' : 's' %>.</strong>
+  Those tagged <span class="sticker sticker--draft">Draft text</span> are live on the site but written for you to check. Open Edit, correct anything wrong (the Amharic needs a native speaker), then tick <em>Approved</em>.
+</p>
+<% } %>
+
 <% if (products.length === 0) { %>
 <div class="empty">
   <p class="empty__title">No perfumes yet.</p>
@@ -27,12 +44,14 @@
 <ul class="plist" id="plist">
   <% products.forEach(function (p, idx) { %>
   <li class="prow<%= p.inStock ? '' : ' is-soldout' %>" id="p-<%= p.id %>" data-id="<%= p.id %>" data-search="<%= (p.name + ' ' + p.brand).toLowerCase() %>">
-    <img class="prow__img" src="<%= p.image ? imageUrl(p, 'sm') : '/img/bottle-placeholder.svg' %>" width="60" height="75" alt="" loading="lazy">
+    <%- include('../components/photo', { p: p, cls: 'prow__img', alt: '', sizes: '60px' }) %>
     <div class="prow__main">
       <p class="prow__name"><%= p.name %></p>
-      <p class="prow__meta"><%= p.brand %> &middot; <%= p.size %> &middot; <strong><%= fmt.price(p.price) %></strong></p>
+      <p class="prow__meta"><%= [p.brand, p.size].filter(Boolean).join(' · ') %> &middot; <strong><%= fmt.price(p.price) %></strong></p>
       <p class="prow__pills">
         <% if (p.isSample) { %><span class="sticker sticker--sample">Sample</span><% } %>
+        <% if (p.descriptionDraft) { %><span class="sticker sticker--draft" title="The text is live on the site; open Edit and tick Approved when you are happy with it">Draft text</span><% } %>
+        <% if (p.needsDetails) { %><span class="sticker sticker--needs" title="Add the price, size and concentration">Needs details</span><% } %>
         <span class="sticker <%= p.inStock ? 'sticker--new' : 'sticker--soldout' %>" data-stock-pill><%= p.inStock ? 'In stock' : 'Sold out' %></span>
         <span class="sticker sticker--bestseller" data-feature-pill<%= p.badges.includes('featured') ? '' : ' hidden' %>>Featured</span>
       </p>

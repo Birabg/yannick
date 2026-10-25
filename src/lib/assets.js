@@ -23,4 +23,10 @@ function asset(name) {
   return `/${file}?v=${version(file)}`;
 }
 
-module.exports = { asset };
+/** URL of a code-split bundle that only exists as a build output (the hero shader island). */
+function distAsset(name) {
+  const file = `dist/js/${name}`;
+  return `/${file}?v=${version(file)}`;
+}
+
+module.exports = { asset, distAsset };

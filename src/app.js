@@ -8,9 +8,11 @@ const rateLimit = require('express-rate-limit');
 const site = require('../config/site');
 const i18n = require('../config/i18n');
 const { root, isProd, siteUrl, uploadsDir } = require('./env');
-const { asset } = require('./lib/assets');
+const { asset, distAsset } = require('./lib/assets');
 const format = require('./lib/format');
 const { imageUrl } = require('./lib/seo');
+const photo = require('./lib/photo');
+const { siteImage, isCustom: siteImageIsCustom } = require('./lib/siteImages');
 const publicRoutes = require('./routes/public');
 const seoRoutes = require('./routes/seo');
 const adminRoutes = require('./routes/admin');
@@ -68,6 +70,8 @@ function createApp() {
   );
   app.use(compression());
 
+  // The untouched originals are a backup, not part of the site.
+  app.use('/img/originals', (req, res) => res.sendStatus(404));
   app.use('/uploads', express.static(uploadsDir, forever));
   app.use('/dist', express.static(path.join(root, 'public/dist'), forever));
   app.use('/fonts', express.static(path.join(root, 'public/fonts'), forever));
@@ -82,8 +86,12 @@ function createApp() {
       site,
       siteUrl,
       asset,
+      distAsset,
       fmt: format,
       imageUrl,
+      photo,
+      siteImage,
+      siteImageIsCustom,
       criticalCss,
       icon: (name, cls = '') =>
         `<svg class="icon ${cls}" aria-hidden="true" focusable="false"><use href="#i-${name}"/></svg>`,

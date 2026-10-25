@@ -1,0 +1,8 @@
+<%
+  /* params: p (product), cls, sizes, variant ('sm' or 'lg', default 'sm'), eager, alt (default: "<label> bottle", '' for decorative) */
+  const has = !!p.image;
+  const variant = locals.variant || 'sm';
+  const dims = has ? photo.photoSize(p, variant) : { width: 400, height: 500 };
+  const alt = locals.alt !== undefined ? locals.alt : (p.imageAlt || (fmt.productLabel(p) + ' bottle'));
+  const classes = [locals.cls || 'photo__img', has ? photo.focusClass(p) + ' fit-' + p.fit + (p.cutout ? ' is-cutout' : '') : 'is-fallback'].join(' ');
+%><img class="<%= classes %>" src="<%= has ? photo.photoUrl(p, variant) : '/img/bottle-placeholder.svg' %>"<% if (has && photo.widthsOf(p).length > 1) { %> srcset="<%= photo.srcset(p) %>" sizes="<%= locals.sizes || '100vw' %>"<% } %> width="<%= dims.width %>" height="<%= dims.height %>" alt="<%= alt %>"<%- locals.eager ? ' fetchpriority="high"' : ' loading="lazy"' %> decoding="async" data-photo<%- locals.attrs ? " " + attrs : "" %>>

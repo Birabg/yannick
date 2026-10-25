@@ -1,13 +1,21 @@
 <%
   const swatches = [
-    ['Background', '--c-bg', '#FFFFFF / #131312', 'Page background (light / dark)'],
-    ['Surface', '--c-surface', '#F4F4F2 / #1C1C1B', 'Alternate bands, disabled fields'],
-    ['Chip', '--c-chip', '#E9E9E9 / #232322', 'Badges, skeletons, meter tracks, image backdrops'],
-    ['Text', '--c-text', '#1A1A1A / #F0EFEC', 'Body text and headings'],
-    ['Muted', '--c-muted', '#5C5C5C / #B0AEAA', 'Secondary text (5.5:1 or better)'],
-    ['Accent', '--c-accent', '#557611 / #A5E12A', 'The one accent: primary actions, links, focus'],
-    ['Border', '--c-border', '#E5E5E5 / #2A2A29', '1px borders and rings'],
-    ['Danger', '--c-danger', '#A3231C / #FF8D85', 'Errors only'],
+    ['Paper', '--c-bg', '#FBFAF7 / #14110F', 'Page background (light / dark)', 'bg'],
+    ['Stone', '--c-surface', '#F2EFE8 / #1D1915', 'Alternate bands, FAQ and order blocks', 'surface'],
+    ['Chip', '--c-chip', '#ECE9E1 / #2A241E', 'Badges, skeletons, meter tracks', 'chip'],
+    ['Ink', '--c-text', '#14110F / #FBFAF7', 'Text, primary buttons, the order panel', 'text'],
+    ['Muted', '--c-muted', '#5E5750 / #B9AD9D', 'Secondary text (5.3:1 or better)', 'muted'],
+    ['Amber', '--amber', '#FFA100', 'Fills, hover, the shader. Never text on light.', 'amber'],
+    ['Gold', '--gold', '#FFC800', 'Shader and gradient', 'gold'],
+    ['Sun', '--sun', '#FFDA00', 'Shader highlight, hover on dark', 'sun'],
+    ['Fresh & Citrus', '--fam-fresh', '#E9F056', 'Card, pill and panel backdrop. Ink text.', 'fresh'],
+    ['Woody Aromatic', '--fam-woody', '#1F5A43', 'Card, pill and panel backdrop. Paper text.', 'woody'],
+    ['Oriental & Gourmand', '--fam-oriental', '#D9651C', 'Card, pill and panel backdrop. Ink text.', 'oriental'],
+    ['Men', '--fam-men', '#8FC6EE', 'Backdrop when no family is set. Ink text.', 'men'],
+    ['Women', '--fam-women', '#F3C3D0', 'Backdrop when no family is set. Ink text.', 'women'],
+    ['Neutral', '--fam-none', '#CFE0C6', 'Backdrop for everything else. Ink text.', 'none'],
+    ['Hairline', '--c-border', 'ink 10% / paper 14%', '1px rules and cards', 'border'],
+    ['Danger', '--c-danger', '#A3231C / #FF9188', 'Errors only', 'danger'],
   ];
   const sample = function (extra) {
     return Object.assign({
@@ -37,7 +45,7 @@
       <h2 class="sg-h" id="sg-colour">Colour</h2>
       <ul class="sg-swatches">
         <% swatches.forEach(function (s) { %>
-        <li class="sg-swatch"><span class="sg-swatch__chip sg-c-<%= s[1].slice(4) %>"></span><strong><%= s[0] %></strong><code><%= s[2] %></code><span><%= s[3] %></span></li>
+        <li class="sg-swatch"><span class="sg-swatch__chip sg-c-<%= s[4] %>"></span><strong><%= s[0] %></strong><code><%= s[2] %></code><span><%= s[3] %></span></li>
         <% }) %>
       </ul>
     </div>
@@ -46,15 +54,15 @@
   <section class="section tone--inv" id="type" aria-labelledby="sg-type">
     <div class="container">
       <h2 class="sg-h" id="sg-type">Type</h2>
-      <p class="label">Urbanist, weight 500, tracking -0.02em on large sizes</p>
-      <p class="sg-xl">A Good Scent <em>Speaks</em> First</p>
+      <p class="label">Bricolage Grotesque, weight 700, tracking -0.055em, two lines on desktop and three on phones</p>
+      <p class="sg-xl">A good scent <em>speaks</em> first</p>
       <p class="label">Section title</p>
       <p class="sec-title">The <em>Collection</em></p>
       <p class="label">Heading M / S</p>
       <p class="sg-m">One perfume, three acts</p>
       <p class="sg-s">Top, Heart, Base</p>
-      <p class="label">Body and UI: Urbanist, 16px, 1.7 line height, 65ch measure</p>
-      <p class="sg-lead">Original bottles from six houses, delivered free in Addis.</p>
+      <p class="label">Body and UI: Urbanist, 16px, 1.7 line height, 65ch measure. Signatures: Caveat</p>
+      <p class="sg-lead">Original bottles from famous houses, delivered free in Addis.</p>
       <p>Body text is 16px on every screen so a phone in daylight stays readable. Paragraphs never run wider than about 65 characters.</p>
       <p class="sg-small">Small text is 14px. Labels are 12px, sentence case, no capitals.</p>
       <p class="label">Amharic: Noto Sans Ethiopic</p>

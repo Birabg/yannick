@@ -1,4 +1,5 @@
 import { prefersReducedMotion } from './motion.js';
+import { refreshLanguage } from './i18n.js';
 
 const LOADING = `
   <div class="sheet__loading" role="status" aria-label="Loading perfume details">
@@ -32,6 +33,7 @@ export function initSheet() {
       const response = await fetch(`${path}?partial=1`);
       if (!response.ok) throw new Error(String(response.status));
       body.innerHTML = await response.text();
+      refreshLanguage(body);
     } catch {
       body.innerHTML = FAILED;
     }

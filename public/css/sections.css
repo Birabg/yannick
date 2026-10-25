@@ -16,7 +16,7 @@
   letter-spacing: -0.015em;
 }
 .sec-title em {
-  color: var(--soft);
+  color: inherit;
 }
 .sec-lead {
   max-width: 46ch;
@@ -64,7 +64,7 @@
   line-height: 1.1;
 }
 .story__statement em {
-  color: var(--c-muted);
+  color: inherit;
 }
 .story__copy p {
   max-width: 52ch;
@@ -86,7 +86,7 @@
   border-bottom: 1px solid var(--c-border);
 }
 .fact__num {
-  color: var(--c-accent);
+  color: var(--c-accent-text);
   font-family: var(--font-display);
   font-size: 1.9rem;
   line-height: 1;
@@ -182,71 +182,6 @@
   }
 }
 
-/* ---------- III. Olfactory journey (ink) ---------- */
-.journey {
-  display: grid;
-  gap: var(--s-6);
-}
-.journey .sec-head {
-  margin-bottom: 0;
-}
-.journey__tiers {
-  display: grid;
-  gap: var(--s-2);
-}
-.tier {
-  padding: var(--s-3);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-card);
-  background: var(--c-card-inv, transparent);
-}
-.tier__num {
-  display: block;
-  margin-bottom: var(--s-1);
-  color: var(--soft);
-  font-size: var(--t-label);
-  font-weight: 700;
-}
-.tier__title {
-  font-size: var(--t-m);
-}
-.tier__time {
-  margin: var(--s-1) 0 var(--s-2);
-  color: var(--soft);
-  font-size: var(--t-small);
-}
-.tier__text {
-  margin: 0 0 var(--s-2);
-  max-width: 44ch;
-  color: var(--fg);
-}
-.tier__notes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-1);
-  margin: 0;
-  padding: 0;
-  font-size: var(--t-small);
-}
-.tier__notes li {
-  padding: 0.2rem 0.75rem;
-  border: 1px solid var(--rule);
-  border-radius: var(--r-pill);
-}
-@media (min-width: 960px) {
-  .journey {
-    grid-template-columns: repeat(12, 1fr);
-    gap: 0 var(--s-4);
-    align-items: center;
-  }
-  .journey .sec-head {
-    grid-column: 1 / 6;
-  }
-  .journey__tiers {
-    grid-column: 7 / -1;
-  }
-}
-
 /* ---------- IV. Houses ---------- */
 .houses-rail {
   overflow: hidden;
@@ -339,7 +274,7 @@
   background: var(--c-border);
 }
 .quiz__dot.is-done {
-  background: var(--c-accent);
+  background: var(--c-muted);
 }
 .quiz__dot.is-now {
   background: var(--c-text);
@@ -378,7 +313,7 @@
   right: var(--s-2);
   width: 24px;
   height: 1px;
-  background: var(--c-accent);
+  background: var(--c-text);
   opacity: 0;
   transform: translateX(-8px);
   transition:
@@ -424,7 +359,7 @@
   aspect-ratio: 4 / 5;
 }
 .quiz__pick-rank {
-  color: var(--c-accent);
+  color: var(--c-accent-text);
   font-family: var(--font-display);
   font-size: 1.1rem;
 }
@@ -544,7 +479,7 @@
   display: none;
 }
 .faq summary:hover {
-  color: var(--c-accent);
+  color: var(--c-accent-text);
 }
 .faq__icon {
   position: relative;
@@ -558,7 +493,7 @@
   position: absolute;
   inset: 50% 0 auto;
   height: 1px;
-  background: var(--c-accent);
+  background: var(--c-text);
   transition: transform var(--d-base) var(--ease);
 }
 .faq__icon::after {
@@ -627,7 +562,7 @@
   transition: color var(--d-base) var(--ease);
 }
 .cblock:hover .cblock__title {
-  color: var(--c-accent);
+  color: var(--c-accent-text);
 }
 .cblock__sub {
   color: var(--c-muted);
@@ -646,7 +581,7 @@
   border-top: 1px solid var(--c-border);
 }
 .step__num {
-  color: var(--c-accent);
+  color: var(--c-accent-text);
   font-family: var(--font-display);
   font-size: 2rem;
   line-height: 1;
@@ -709,7 +644,7 @@
   }
 }
 
-/* ---------- Footer (ink, brass hairlines) ---------- */
+/* ---------- Footer (ink) ---------- */
 .site-footer {
   padding-top: var(--s-7);
   border-top: 1px solid var(--rule);
@@ -736,7 +671,7 @@
 }
 .footer__title {
   margin-bottom: var(--s-2);
-  color: var(--c-accent-inv);
+  color: var(--c-inv-accent);
   font-family: var(--font-body);
   font-size: var(--t-label);
   font-weight: 500;
@@ -780,7 +715,7 @@
 }
 .error-page__code {
   margin-bottom: var(--s-2);
-  color: var(--c-accent);
+  color: var(--c-accent-text);
   font-family: var(--font-display);
   font-size: clamp(6rem, 3rem + 20vw, 16rem);
   line-height: 0.85;

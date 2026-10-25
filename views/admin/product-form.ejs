@@ -27,8 +27,8 @@
       <label class="field<%= fld('name') %>"><span class="field__label">Name *</span><input name="name" value="<%= p.name %>" maxlength="80" required placeholder="Bleu de Chanel"><%- err('name') %></label>
       <label class="field<%= fld('brand') %>"><span class="field__label">Brand *</span><input name="brand" value="<%= p.brand %>" maxlength="60" required list="brands" placeholder="Chanel"><%- err('brand') %></label>
       <datalist id="brands"><% site.houses.forEach(function (h) { %><option value="<%= h %>"><% }) %></datalist>
-      <label class="field<%= fld('price') %>"><span class="field__label">Price (ETB) *</span><input name="price" value="<%= p.price || '' %>" inputmode="numeric" required data-numeric placeholder="15000"><%- err('price') %></label>
-      <label class="field<%= fld('size') %>"><span class="field__label">Size *</span><input name="size" value="<%= p.size %>" maxlength="20" required placeholder="100ml"><%- err('size') %></label>
+      <label class="field<%= fld('price') %>"><span class="field__label">Price (ETB)</span><input name="price" value="<%= p.price || '' %>" inputmode="numeric" data-numeric placeholder="Leave empty to show &quot;Ask for price&quot;"><%- err('price') %></label>
+      <label class="field<%= fld('size') %>"><span class="field__label">Size</span><input name="size" value="<%= p.size %>" maxlength="20" placeholder="100ml"><%- err('size') %></label>
       <label class="field"><span class="field__label">Concentration</span>
         <select name="concentration">
           <option value="">-</option>
@@ -71,7 +71,25 @@
 
   <fieldset class="box">
     <legend>Description and notes</legend>
-    <label class="field"><span class="field__label">Description</span><textarea name="description" rows="4" maxlength="1200"><%= p.description %></textarea></label>
+    <div class="copy-head">
+      <% if (p.descriptionDraft) { %><span class="sticker sticker--draft">Draft, please review</span><% } %>
+      <p class="hint">Edit freely. Saving changes to the text, tagline or meta description keeps them as the approved version. The site shows the text whether it is a draft or approved.</p>
+    </div>
+    <label class="field"><span class="field__label">Description <span class="counter" data-counter-for="description" data-max="1200" aria-live="polite"></span></span>
+      <textarea name="description" rows="5" maxlength="1200" data-count><%= p.description %></textarea>
+      <span class="hint">2 or 3 sentences, about 35 to 55 words: what it smells like, when it suits, an optional styling tip.</span></label>
+    <label class="field"><span class="field__label">Card tagline <span class="counter" data-counter-for="tagline_en" data-max="60" aria-live="polite"></span></span>
+      <input name="tagline_en" value="<%= p.tagline %>" maxlength="60" data-count placeholder="Bright citrus for hot afternoons"></label>
+    <label class="field"><span class="field__label">Search description (meta) <span class="counter" data-counter-for="meta_description" data-max="155" aria-live="polite"></span></span>
+      <textarea name="meta_description" rows="2" maxlength="155" data-count><%= p.metaDescription %></textarea>
+      <span class="hint">Shown by Google under the page title. At most 155 characters. Left empty, the start of the description is used.</span></label>
+    <label class="field"><span class="field__label">Amharic description <span class="counter" data-counter-for="description_am" data-max="1200" aria-live="polite"></span>
+      <% if (!p.amReviewed && (p.descriptionAm || p.taglineAm)) { %><span class="sticker sticker--draft">Needs native review</span><% } %></span>
+      <textarea name="description_am" rows="5" maxlength="1200" lang="am" data-count><%= p.descriptionAm %></textarea></label>
+    <label class="field"><span class="field__label">Amharic tagline <span class="counter" data-counter-for="tagline_am" data-max="80" aria-live="polite"></span></span>
+      <input name="tagline_am" value="<%= p.taglineAm %>" maxlength="80" lang="am" data-count></label>
+    <label class="check check--box"><input type="checkbox" name="am_reviewed" <%= p.amReviewed ? 'checked' : '' %>><span><strong>Amharic reviewed.</strong> A native speaker has read the Amharic text and it is right.</span></label>
+    <label class="check check--box"><input type="checkbox" name="description_approved" <%= !p.descriptionDraft ? 'checked' : '' %>><span><strong>Approved.</strong> Untick to keep the English text marked as a draft.</span></label>
     <p class="hint">Notes: separate with commas, for example <em>Bergamot, Pink Pepper, Grapefruit</em>.</p>
     <div class="grid-3">
       <% [['top_notes', 'Top notes', p.notes.top], ['heart_notes', 'Heart notes', p.notes.heart], ['base_notes', 'Base notes', p.notes.base]].forEach(function (n) { %>
@@ -79,15 +97,33 @@
       <% }) %>
     </div>
     <div class="grid-2">
-      <label class="field"><span class="field__label">Longevity: <output data-out="longevity"><%= p.longevity %></output> / 5</span><input type="range" name="longevity" min="1" max="5" value="<%= p.longevity %>" data-range="longevity"></label>
-      <label class="field"><span class="field__label">Projection: <output data-out="projection"><%= p.projection %></output> / 5</span><input type="range" name="projection" min="1" max="5" value="<%= p.projection %>" data-range="projection"></label>
+      <label class="field"><span class="field__label">Longevity: <output data-out="longevity"><%= p.longevity || 'not set' %></output> / 5</span><input type="range" name="longevity" min="0" max="5" value="<%= p.longevity %>" data-range="longevity"></label>
+      <label class="field"><span class="field__label">Projection: <output data-out="projection"><%= p.projection %></output> / 5</span><input type="range" name="projection" min="0" max="5" value="<%= p.projection %>" data-range="projection"></label>
     </div>
   </fieldset>
 
   <fieldset class="box">
     <legend>Photo</legend>
     <%- include('_dropzone', { name: 'photo', src: p.image ? imageUrl(p, 'sm') : '', alt: 'Photo preview' }) %>
-    <p class="hint">Tip: shoot the bottle on a plain white background. The website tints it with the scent family colour.</p>
+    <p class="hint">Tip: shoot the bottle on a plain white background. The website tints it with the card colour. The photo is saved in three sizes, keeping its shape.</p>
+    <div class="grid-2">
+      <label class="field"><span class="field__label">Photo fit</span>
+        <select name="fit">
+          <option value="cover" <%= p.fit === 'cover' ? 'selected' : '' %>>Fill the card (crop around the focus point)</option>
+          <option value="contain" <%= p.fit === 'contain' ? 'selected' : '' %>>Show the whole bottle</option>
+        </select>
+      </label>
+      <label class="field"><span class="field__label">Card colour</span>
+        <select name="tint">
+          <option value="">Automatic (from scent family or category)</option>
+          <% [['fresh', 'Lime'], ['woody', 'Deep green'], ['oriental', 'Burnt orange'], ['men', 'Sky'], ['women', 'Pink'], ['none', 'Sage']].forEach(function (t) { %><option value="<%= t[0] %>" <%= p.tint === t[0] ? 'selected' : '' %>><%= t[1] %></option><% }) %>
+        </select>
+      </label>
+      <label class="field"><span class="field__label">Focus, left to right: <output data-out="focus_x"><%= p.focusX %></output>%</span><input type="range" name="focus_x" min="0" max="100" step="10" value="<%= p.focusX %>" data-range="focus_x"></label>
+      <label class="field"><span class="field__label">Focus, top to bottom: <output data-out="focus_y"><%= p.focusY %></output>%</span><input type="range" name="focus_y" min="0" max="100" step="10" value="<%= p.focusY %>" data-range="focus_y"></label>
+    </div>
+    <label class="field"><span class="field__label">Photo description (alt text)</span><input name="img_alt" value="<%= p.imageAlt %>" maxlength="140" placeholder="Describe the bottle for people who cannot see it"></label>
+    <label class="check check--box"><input type="checkbox" name="needs_details" <%= p.needsDetailsFlag ? 'checked' : '' %>><span><strong>Flag for review.</strong> Keeps the &ldquo;Needs details&rdquo; tag on. It also appears by itself while the price, size or concentration is empty.</span></label>
   </fieldset>
 
   <div class="form__actions">
@@ -101,7 +137,7 @@
   <article class="card fam--<%= fam %>" data-preview-card>
     <div class="card__media">
       <div class="photo">
-        <img class="photo__img" src="<%= p.image ? imageUrl(p, 'sm') : '/img/bottle-placeholder.svg' %>" width="480" height="600" alt="" data-preview-img>
+        <%- include('../components/photo', { p: p, alt: '', sizes: '320px', attrs: 'data-preview-img' }) %>
         <div class="photo__flags" data-preview-flags></div>
       </div>
     </div>
@@ -110,7 +146,7 @@
       <h3 class="card__name" data-preview-name><%= p.name || 'Perfume name' %></h3>
       <p class="card__line">
         <span data-preview-meta><%= [p.size, p.concentration].filter(Boolean).join(' · ') || '100ml' %></span>
-        <span class="card__price"><%= site.currency %> <span data-preview-price><%= p.price ? p.price.toLocaleString('en-US') : '0' %></span></span>
+        <span class="card__price" data-preview-price><%= fmt.price(p.price) %></span>
       </p>
     </div>
   </article>

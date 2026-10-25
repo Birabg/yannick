@@ -1,4 +1,5 @@
 const site = require('../../config/site');
+const { TINTS } = require('./format');
 
 const COLLECTION_KEYS = site.collections
   .map((c) => c.key)
@@ -42,20 +43,25 @@ function parseProduct(body) {
   const size = str(body.size, 20);
   const price = Number.parseInt(String(body.price ?? '').replace(/[^\d]/g, ''), 10);
   const category = CATEGORY_KEYS.includes(body.category) ? body.category : '';
-  const rating = (v) => Math.min(5, Math.max(1, Number.parseInt(v, 10) || 3));
+  const rating = (v) => Math.min(5, Math.max(0, Number.parseInt(v, 10) || 0));
 
   if (!name) bad('name', 'Name is required.');
   if (!brand) bad('brand', 'Brand is required.');
-  if (!size) bad('size', 'Size is required (for example 100ml).');
-  if (!Number.isInteger(price) || price <= 0 || price > 10_000_000) {
-    bad('price', 'Enter a valid price in ETB.');
+  // Price and size may stay empty until the owner confirms them; the card then says "Ask for price".
+  const rawPrice = String(body.price ?? '').replace(/[^\d]/g, '');
+  if (rawPrice && (!Number.isInteger(price) || price > 10_000_000)) {
+    bad('price', 'Enter a valid price in ETB, or leave it empty.');
   }
+  const step = (v) =>
+    Math.min(100, Math.max(0, Math.round((Number.parseInt(v, 10) || 50) / 10) * 10));
   if (!category) bad('category', 'Choose a category.');
 
   // The Men / Women shelves follow the category automatically.
   const collections = asArray(body.collections).filter((c) => COLLECTION_KEYS.includes(c));
   if (category === 'men' || category === 'unisex') collections.unshift('men');
   if (category === 'women' || category === 'unisex') collections.unshift('women');
+
+  const description = multiline(body.description, 1200);
 
   return {
     errors,
@@ -64,20 +70,32 @@ function parseProduct(body) {
       name,
       brand,
       size,
-      price,
+      price: Number.isInteger(price) ? price : 0,
       category,
       concentration: str(body.concentration, 40),
       collections: JSON.stringify([...new Set(collections)]),
       family: str(body.family, 60),
       longevity: rating(body.longevity),
       projection: rating(body.projection),
-      description: multiline(body.description, 1200),
+      description: description,
+      description_en: description,
+      description_am: multiline(body.description_am, 1200),
+      tagline_en: str(body.tagline_en, 60),
+      tagline_am: str(body.tagline_am, 80),
+      meta_description: str(body.meta_description, 155),
+      am_reviewed: body.am_reviewed === 'on' ? 1 : 0,
       top_notes: tags(body.top_notes),
       heart_notes: tags(body.heart_notes),
       base_notes: tags(body.base_notes),
       badges: asArray(body.badges)
         .filter((b) => BADGE_KEYS.includes(b))
         .join(','),
+      img_alt: str(body.img_alt, 140),
+      focus_x: step(body.focus_x),
+      focus_y: step(body.focus_y),
+      fit: body.fit === 'contain' ? 'contain' : 'cover',
+      tint: TINTS.includes(body.tint) ? body.tint : '',
+      needs_details: body.needs_details === 'on' ? 1 : 0,
       in_stock: body.in_stock === '0' ? 0 : 1,
       is_sample: body.is_sample === 'on' ? 1 : 0,
     },

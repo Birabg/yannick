@@ -24,3 +24,22 @@ esbuild
     logLevel: 'info',
   })
   .catch(() => process.exit(1));
+
+// The hero shader is a React island: its own bundle, loaded only on the home page and never in /admin.
+esbuild
+  .build({
+    entryPoints: [path.join(pub, 'js/hero/island.tsx')],
+    outdir: path.join(pub, 'dist/js/hero'),
+    bundle: true,
+    // one file: the package lazy-loads 200 effect modules, which would be 200 requests
+    splitting: false,
+    minify: true,
+    format: 'esm',
+    jsx: 'automatic',
+    target: ['es2022', 'chrome113', 'safari26'],
+    define: { 'process.env.NODE_ENV': '"production"' },
+    legalComments: 'none',
+    metafile: false,
+    logLevel: 'info',
+  })
+  .catch(() => process.exit(1));

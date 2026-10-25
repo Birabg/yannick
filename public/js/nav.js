@@ -5,6 +5,12 @@ export function initNav() {
   const nav = document.getElementById('site-nav');
   const header = document.querySelector('.site-header');
   if (!toggle || !nav) return;
+
+  // Over the hero the header is transparent; after 40px of scrolling it becomes a solid bar.
+  const solidify = () => header.classList.toggle('is-solid', window.scrollY > 40);
+  // Reading scrollY forces a layout, so the first check waits until after the first paint.
+  requestAnimationFrame(solidify);
+  window.addEventListener('scroll', solidify, { passive: true });
   const root = document.documentElement;
   const isOpen = () => root.classList.contains('nav-open');
 

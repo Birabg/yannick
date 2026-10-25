@@ -1,0 +1,731 @@
+/* One visual system: huge grotesk headings, numbered labels, 28px notched cards, pill controls.
+   Loaded after the component sheets, so it is the last word on shape and type. */
+:root {
+  --section: clamp(4rem, 3rem + 4vw, 6.5rem);
+}
+
+/* ---------- type ---------- */
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+h1 em,
+h2 em,
+h3 em,
+.em {
+  font-family: inherit;
+  font-style: normal;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+.sec-title {
+  font-size: var(--t-l);
+  font-weight: 700;
+  letter-spacing: -0.055em;
+  line-height: 0.96;
+}
+/* the accent word gets a marker stroke: ink text on amber, never amber text */
+.sec-title em {
+  background: linear-gradient(transparent 62%, var(--amber) 62% 92%, transparent 92%);
+}
+.sec-head {
+  max-width: 62rem;
+  margin-bottom: var(--s-6);
+}
+.sec-lead {
+  max-width: 44ch;
+}
+.label {
+  gap: var(--s-1);
+  color: var(--c-text);
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+.label__num {
+  color: var(--c-text);
+  font-size: var(--t-small);
+}
+.label__num::after {
+  width: 32px;
+  background: var(--c-line);
+}
+.logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+}
+.logo em {
+  font-family: inherit;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: -0.045em;
+}
+.nav__link {
+  font-weight: 600;
+}
+
+/* ---------- the notch, as a utility: a masked background layer, content stays whole ---------- */
+.notch {
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--r-card);
+}
+.notch::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--notch-bg, var(--c-surface));
+  -webkit-mask: var(--notch-mask);
+  mask: var(--notch-mask);
+}
+.notch--ink {
+  --notch-bg: var(--notch-ink);
+  --c-text: var(--paper);
+  --soft: var(--c-inv-muted);
+  --c-muted: var(--c-inv-muted);
+  --c-btn-bg: var(--amber);
+  --c-btn-fg: var(--ink);
+  --c-focus: var(--amber);
+  --c-line: rgb(251 250 247 / 0.6);
+  color: var(--paper);
+}
+.notch--ink .btn:hover {
+  --b-bg: var(--sun);
+  --b-border: var(--sun);
+}
+
+/* ---------- header: wordmark, centred nav, search and a pill ---------- */
+.nav__search {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  transition: background-color var(--d-fast) var(--ease);
+}
+.nav__search:hover {
+  background: var(--c-chip);
+}
+.nav__cta {
+  min-height: 44px;
+}
+.lang {
+  border-color: var(--c-line);
+}
+.site-header {
+  border-bottom-color: var(--c-border);
+}
+
+/* ---------- filters: pills like the header's, active pill wears its family colour ---------- */
+.tab {
+  border-color: var(--c-line);
+  font-weight: 600;
+}
+.tab:hover {
+  background: var(--c-chip);
+}
+.tab[aria-pressed='true'] {
+  border-color: var(--c-text);
+  background: var(--c-text);
+  color: var(--c-bg);
+}
+.tab[data-filter='fresh'][aria-pressed='true'] {
+  border-color: var(--ink);
+  background: var(--fam-fresh);
+  color: var(--ink);
+}
+.tab[data-filter='woody'][aria-pressed='true'] {
+  border-color: var(--fam-woody);
+  background: var(--fam-woody);
+  color: var(--paper);
+}
+.tab[data-filter='oriental'][aria-pressed='true'] {
+  border-color: var(--ink);
+  background: var(--fam-oriental);
+  color: var(--ink);
+}
+.tab[data-filter='men'][aria-pressed='true'] {
+  border-color: var(--ink);
+  background: var(--fam-men);
+  color: var(--ink);
+}
+.tab[data-filter='women'][aria-pressed='true'] {
+  border-color: var(--ink);
+  background: var(--fam-women);
+  color: var(--ink);
+}
+.search input,
+.sort select,
+.field input,
+.field select,
+.field textarea {
+  border-color: var(--c-line);
+}
+
+/* ---------- product card: a notched colour photo, the words sit on the page ---------- */
+.card {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+.card:hover,
+.card:focus-within {
+  border-color: transparent;
+  box-shadow: none;
+}
+.photo {
+  border-radius: var(--r-card);
+  background: var(--card, var(--c-photo));
+}
+.card .photo {
+  -webkit-mask: var(--notch-mask);
+  mask: var(--notch-mask);
+}
+.card__media {
+  overflow: visible;
+}
+.card__media::after {
+  content: '';
+  position: absolute;
+  z-index: 4;
+  top: 6px;
+  right: 6px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ink)
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fbfaf7' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M7 17L17 7M8 7h9v9'/></svg>")
+    center / 18px no-repeat;
+  pointer-events: none;
+  transition: background-color var(--d-fast) var(--ease);
+}
+.card:hover .card__media::after,
+.card:focus-within .card__media::after {
+  background-color: var(--amber);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2314110f' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M7 17L17 7M8 7h9v9'/></svg>");
+}
+.card:hover .photo__img {
+  transform: scale(1.04);
+}
+.card__body {
+  padding: var(--s-2) 0 0;
+}
+.card__name {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.card__brand {
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.grid {
+  gap: var(--s-5) var(--s-3);
+  align-items: start;
+}
+
+/* ---------- FAQ: notched blocks, the plus sits in the notch ---------- */
+.faq {
+  display: grid;
+  gap: 12px;
+  border: 0;
+}
+.faq details {
+  position: relative;
+  isolation: isolate;
+  padding: 0 var(--s-4);
+  border: 0;
+  border-radius: var(--r-card);
+}
+.faq details::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--c-surface);
+  -webkit-mask: var(--notch-mask);
+  mask: var(--notch-mask);
+}
+.faq summary {
+  min-height: 84px;
+  padding: var(--s-3) 4.5rem var(--s-3) 0;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.faq__icon {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--c-btn-bg);
+  transition: background-color var(--d-fast) var(--ease);
+}
+.faq__icon::before,
+.faq__icon::after {
+  inset: 50% auto auto 50%;
+  width: 14px;
+  height: 2px;
+  margin: -1px 0 0 -7px;
+  background: var(--c-btn-fg);
+}
+.faq summary:hover .faq__icon {
+  background: var(--amber);
+}
+.faq summary:hover .faq__icon::before,
+.faq summary:hover .faq__icon::after {
+  background: var(--ink);
+}
+.faq details p {
+  padding-right: 4.5rem;
+}
+
+/* ---------- order blocks ---------- */
+.cblock {
+  position: relative;
+  padding: var(--s-4) var(--s-4) var(--s-4);
+  border: 0;
+  background: none;
+}
+.cblock:hover {
+  box-shadow: none;
+}
+.cblock__title {
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  font-size: var(--t-m);
+}
+.cblock:hover .cblock__title {
+  color: inherit;
+}
+.cblock__go {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--c-btn-bg);
+  color: var(--c-btn-fg);
+  transition: background-color var(--d-fast) var(--ease);
+}
+.cblock:hover .cblock__go {
+  background: var(--amber);
+  color: var(--ink);
+}
+.cblocks {
+  gap: 12px;
+}
+@media (min-width: 760px) {
+  .cblocks {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.order {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.order__panel {
+  padding: var(--s-5) var(--s-4) var(--s-4);
+}
+.order__panel .sec-title {
+  font-size: var(--t-xl);
+  max-width: 12ch;
+}
+.order__panel .sec-lead {
+  color: var(--c-inv-muted);
+}
+.order__panel .label__num::after {
+  background: var(--amber);
+}
+.order__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+}
+.order__cta .btn--outline {
+  --b-fg: var(--paper);
+  --b-border: rgb(251 250 247 / 0.6);
+}
+.order__cta .btn--outline:hover {
+  --b-bg: var(--paper);
+  --b-fg: var(--ink);
+  --b-border: var(--paper);
+}
+.order__glass {
+  position: relative;
+  min-height: 18rem;
+  overflow: hidden;
+  background:
+    radial-gradient(90% 60% at 20% 8%, var(--sun) 0%, rgb(255 218 0 / 0) 70%),
+    radial-gradient(80% 70% at 90% 40%, var(--gold) 0%, rgb(255 200 0 / 0) 70%),
+    linear-gradient(165deg, var(--gold) 0%, var(--amber) 100%);
+  -webkit-mask: var(--notch-mask);
+  mask: var(--notch-mask);
+}
+.order__glass::before {
+  display: none;
+}
+.order__glass .hero-shader__stage {
+  position: absolute;
+  inset: 0;
+}
+.order__bottle {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  transform: scale(1.12);
+}
+@media (min-width: 900px) {
+  .order {
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+  .order__glass {
+    min-height: 0;
+  }
+}
+.steps {
+  gap: 12px;
+}
+.step__num {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+.step__title {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+/* ---------- notes: three notched colour cards ---------- */
+.nc-grid {
+  display: grid;
+  gap: 12px;
+}
+.nc__top {
+  position: relative;
+  min-height: 15rem;
+  padding: var(--s-4) var(--s-4) var(--s-3);
+  border-radius: var(--r-card);
+  background: var(--card);
+  color: var(--card-fg);
+  -webkit-mask: var(--notch-mask);
+  mask: var(--notch-mask);
+}
+.nc__num {
+  margin: 0 0 var(--s-5);
+  font-size: var(--t-small);
+  font-weight: 700;
+}
+.nc__title {
+  font-size: var(--t-xl);
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+}
+.nc__time {
+  margin: var(--s-1) 0 0;
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+.nc__text {
+  margin: var(--s-3) 0 var(--s-2);
+  max-width: 34ch;
+}
+.nc__notes {
+  border-top: 1px solid var(--c-border);
+}
+.nc__notes li {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--c-border);
+  font-family: var(--font-display);
+  font-size: var(--t-s);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+@media (min-width: 900px) {
+  .nc-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-3);
+  }
+}
+
+/* ---------- mood ---------- */
+.mood__picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1);
+  margin-bottom: var(--s-4);
+}
+.mood__btn {
+  min-height: 3rem;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-text);
+  font-size: var(--t-body);
+  font-weight: 600;
+  transition:
+    background-color var(--d-fast) var(--ease),
+    color var(--d-fast) var(--ease);
+}
+.mood__btn:hover {
+  background: var(--c-chip);
+}
+.mood__btn[aria-checked='true'] {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.mood__btn--morning[aria-checked='true'] {
+  background: var(--fam-fresh);
+}
+.mood__btn--evening[aria-checked='true'] {
+  background: var(--fam-oriental);
+}
+.mood__btn--night[aria-checked='true'] {
+  border-color: var(--fam-woody);
+  background: var(--fam-woody);
+  color: var(--paper);
+}
+.mood__line {
+  margin-bottom: var(--s-2);
+  font-family: var(--font-display);
+  font-size: var(--t-m);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.mood__list {
+  display: grid;
+  gap: 12px;
+}
+@media (min-width: 900px) {
+  .mood__list {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-3);
+  }
+}
+.pick {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr) auto;
+  gap: var(--s-2);
+  align-items: center;
+  padding: var(--s-2);
+  border-radius: var(--r-card);
+  background: var(--c-bg);
+}
+.pick__img {
+  display: block;
+  width: 4rem;
+  height: 5rem;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--card);
+}
+@media (min-width: 900px) {
+  .pick {
+    grid-template-columns: 1fr;
+    align-items: start;
+    padding: var(--s-2);
+  }
+  .pick__img {
+    width: 100%;
+    height: 14rem;
+  }
+}
+.pick__brand {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.pick__name {
+  font-size: var(--t-s);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+.pick__name a {
+  color: inherit;
+}
+.pick__meta {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: var(--t-small);
+}
+.pick__order {
+  min-height: 3rem;
+}
+.mood__panel.is-in .pick {
+  animation: rise 600ms var(--ease-out) both;
+}
+.mood__panel.is-in .pick:nth-child(2) {
+  animation-delay: 60ms;
+}
+.mood__panel.is-in .pick:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+/* ---------- panel: the family colour on top, 28px corners ---------- */
+.sheet {
+  border-radius: var(--r-card) var(--r-card) 0 0;
+}
+@media (min-width: 760px) {
+  .sheet {
+    border-radius: var(--r-card) 0 0 var(--r-card);
+  }
+}
+.detail__name {
+  font-weight: 700;
+  letter-spacing: -0.05em;
+}
+
+/* ---------- the rest of the page ---------- */
+.story__frame,
+.quiz__panel,
+.review {
+  border-radius: var(--r-card);
+}
+.btn--sm {
+  min-height: 44px;
+}
+
+.quiz__aside .sec-title {
+  font-size: clamp(2.1rem, 1.5rem + 2.6vw, 3.6rem);
+}
+
+/* ---------- photos: focus point, fit, theme ---------- */
+/* The focus point (fx-N, fy-N, steps of 10) keeps the bottle in frame when a photo is cropped to a card. */
+.photo__img,
+.hc__img,
+.pick__photo,
+.stack__img,
+.order__bottle {
+  object-position: var(--fx, 50%) var(--fy, 50%);
+  filter: var(--photo-filter);
+}
+.photo__img,
+.hc__img,
+.pick__photo,
+.stack__img {
+  object-fit: cover;
+}
+/* Tall studio shots show the whole bottle; their white backdrop blends into the card colour. */
+.photo__img.fit-contain,
+.hc__img.fit-contain,
+.pick__photo.fit-contain,
+.stack__img.fit-contain {
+  object-fit: contain;
+  padding: 4% 3% 5%;
+}
+.hc__img.is-fallback,
+.photo__img.is-fallback,
+.pick__photo.is-fallback,
+.stack__img.is-fallback {
+  object-fit: contain;
+  object-position: 50% 50%;
+}
+.pick__photo,
+.stack__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: multiply;
+}
+.stack__img {
+  transform: scale(1.35);
+}
+.pick__photo {
+  transform: scale(1.1);
+}
+.order__bottle {
+  object-fit: contain;
+  padding: 6% 8%;
+}
+.is-ask,
+.card__price.is-ask {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.detail__price.is-ask {
+  font-size: var(--t-m);
+}
+
+/* the amber glass: a darker vignette in the dark theme keeps text over it readable */
+.hc__glass::after,
+.order__glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(110% 90% at 50% 45%, transparent 35%, var(--vignette) 100%);
+  pointer-events: none;
+}
+:root[data-theme='dark'] .card__media::after {
+  background-color: var(--amber);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2314110f' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M7 17L17 7M8 7h9v9'/></svg>");
+}
+:root[data-theme='dark'] .card:hover .card__media::after,
+:root[data-theme='dark'] .card:focus-within .card__media::after {
+  background-color: var(--sun);
+}
+
+/* Photos are shown exactly as supplied, with their own backdrop (no blending onto the card colour). */
+.photo__img,
+.hc__img,
+.pick__photo,
+.stack__img,
+.order__bottle,
+.lib__img {
+  mix-blend-mode: normal;
+}
+
+/* ---------- story: the shelf stands in until a founder portrait is uploaded ---------- */
+.story__frame--shelf {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4%;
+  padding: 0 7% 13%;
+  border-radius: var(--r-card);
+  background: var(--fam-none);
+  -webkit-mask: var(--notch-mask);
+  mask: var(--notch-mask);
+}
+.story__frame--shelf::after {
+  content: '';
+  position: absolute;
+  right: 7%;
+  bottom: 13%;
+  left: 7%;
+  height: 2px;
+  background: var(--ink);
+  opacity: 0.55;
+}
+.shelf__img {
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+  height: auto;
+  max-height: 62%;
+  object-fit: contain;
+  object-position: 50% 100%;
+  filter: var(--photo-filter);
+}
+.story__photo:hover .shelf__img {
+  transform: none;
+}

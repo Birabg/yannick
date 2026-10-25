@@ -162,20 +162,35 @@ const SAMPLES = [
 ];
 
 /** A flat, softly toned bottle on white (the site tints it with the stone backdrop), labelled SAMPLE. */
-function bottleSvg([liquid, glass]) {
+/** Mixes a hex colour with white, so a dark liquid still reads once it is multiplied onto a coloured card. */
+function lighten(hex, amount) {
+  const n = parseInt(hex.slice(1), 16);
+  const mix = (c) => Math.round(c + (255 - c) * amount);
+  return `rgb(${mix(n >> 16)},${mix((n >> 8) & 255)},${mix(n & 255)})`;
+}
+
+/**
+ * A flat placeholder flacon on white: pale glass with an ink outline, a lit liquid, an ink cap.
+ * White is the backdrop on purpose: the site multiplies product photos onto each card's colour,
+ * so a real photo on white replaces this art with no other change.
+ */
+function bottleSvg([liquid]) {
+  const juice = lighten(liquid, 0.55);
   return Buffer.from(`
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="1000" height="1250">
       <rect width="400" height="500" fill="#ffffff"/>
-      <ellipse cx="200" cy="442" rx="112" ry="9" fill="#e4dccd"/>
-      <rect x="172" y="70" width="56" height="64" fill="#2a211c"/>
-      <rect x="164" y="128" width="72" height="12" fill="#a68a5b"/>
-      <rect x="190" y="140" width="20" height="22" fill="#d6c7ae"/>
-      <path d="M110 440 V240 Q110 176 176 164 H224 Q290 176 290 240 V440 Z" fill="${glass}"/>
-      <rect x="120" y="270" width="160" height="160" fill="${liquid}"/>
-      <rect x="124" y="200" width="9" height="226" fill="#f6efe2" opacity="0.7"/>
-      <rect x="156" y="318" width="88" height="76" fill="#f7f3ec"/>
-      <rect x="156" y="318" width="88" height="76" fill="none" stroke="#a68a5b"/>
-      <text x="200" y="362" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="600" font-size="12" letter-spacing="3" fill="#1c1714">SAMPLE</text>
+      <ellipse cx="200" cy="452" rx="104" ry="8" fill="#d9d4ca"/>
+      <rect x="168" y="62" width="64" height="56" rx="6" fill="#14110f"/>
+      <rect x="176" y="112" width="48" height="12" rx="3" fill="#14110f"/>
+      <path id="g" d="M174 124 H226 V142 C226 158 296 160 296 204 V420 C296 440 284 452 264 452 H136 C116 452 104 440 104 420 V204 C104 160 174 158 174 142 Z" fill="#fbf9f4"/>
+      <clipPath id="c"><path d="M174 124 H226 V142 C226 158 296 160 296 204 V420 C296 440 284 452 264 452 H136 C116 452 104 440 104 420 V204 C104 160 174 158 174 142 Z"/></clipPath>
+      <rect x="100" y="236" width="200" height="220" fill="${juice}" clip-path="url(#c)"/>
+      <rect x="100" y="236" width="200" height="4" fill="#ffffff" opacity="0.7" clip-path="url(#c)"/>
+      <rect x="122" y="196" width="10" height="212" rx="5" fill="#ffffff" opacity="0.85"/>
+      <rect x="152" y="300" width="96" height="84" rx="4" fill="#ffffff"/>
+      <rect x="152" y="300" width="96" height="84" rx="4" fill="none" stroke="#14110f" stroke-width="1.5"/>
+      <text x="200" y="349" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="12" letter-spacing="3" fill="#14110f">SAMPLE</text>
+      <path d="M174 124 H226 V142 C226 158 296 160 296 204 V420 C296 440 284 452 264 452 H136 C116 452 104 440 104 420 V204 C104 160 174 158 174 142 Z" fill="none" stroke="#14110f" stroke-width="2.5" stroke-linejoin="round"/>
     </svg>`);
 }
 
@@ -188,7 +203,7 @@ async function main() {
 
   // New products are added at the top, so insert in reverse to keep this list's order.
   for (const s of [...SAMPLES].reverse()) {
-    const image = await saveProductImage(bottleSvg(s.colors));
+    const shot = await saveProductImage(bottleSvg(s.colors));
     products.create({
       slug: slugify(slugSource(s)),
       name: s.name,
@@ -206,7 +221,10 @@ async function main() {
       heart_notes: s.heart,
       base_notes: s.base,
       badges: s.badges.join(','),
-      image,
+      image: shot.base,
+      img_w: shot.width,
+      img_h: shot.height,
+      cutout: shot.cutout ? 1 : 0,
       in_stock: 1,
       is_sample: 1,
     });
