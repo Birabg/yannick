@@ -31,7 +31,7 @@ router.get('/perfume/:slug', (req, res, next) => {
 
   // The collection modal fetches this fragment so it shares one template with the full page.
   if (req.query.partial === '1') {
-    return res.render('partials/product-detail', { p: product, modal: true });
+    return res.render('components/product-detail', { p: product, sheet: true });
   }
 
   const label = `${product.brand} ${product.name} ${product.size}`;

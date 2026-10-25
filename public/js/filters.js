@@ -1,8 +1,11 @@
+import { prefersReducedMotion } from './motion.js';
+
 const SORTERS = {
   featured: (a, b) => a.dataset.order - b.dataset.order,
   low: (a, b) => a.dataset.price - b.dataset.price,
   high: (a, b) => b.dataset.price - a.dataset.price,
 };
+const EASE = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
 export function initFilters() {
   const grid = document.getElementById('grid');
@@ -11,26 +14,60 @@ export function initFilters() {
   const chips = [...document.querySelectorAll('[data-filter]')];
   const search = document.getElementById('search');
   const sort = document.getElementById('sort');
-  const count = document.querySelector('[data-count]');
+  const count = document.querySelector('[data-count-label]');
   const empty = document.querySelector('[data-empty]');
   const state = { filter: 'all', query: '', sort: 'featured' };
 
-  function render() {
+  const isVisible = (card) => !card.hidden;
+
+  function apply() {
     const query = state.query.trim().toLowerCase();
-    let visible = 0;
     cards.forEach((card) => {
       const inFilter =
         state.filter === 'all' || card.dataset.collections.split(' ').includes(state.filter);
-      const inQuery = !query || card.dataset.search.includes(query);
-      card.hidden = !(inFilter && inQuery);
-      if (!card.hidden) visible += 1;
+      card.hidden = !(inFilter && (!query || card.dataset.search.includes(query)));
     });
-
     [...cards].sort(SORTERS[state.sort]).forEach((card) => grid.append(card));
+  }
 
-    count.textContent = `${visible} ${visible === 1 ? 'perfume' : 'perfumes'}`;
-    empty.hidden = visible > 0;
-    grid.hidden = visible === 0;
+  /** FLIP: measure, change the DOM, then animate each card from its old spot (transform/opacity only). */
+  function render() {
+    const animate = !prefersReducedMotion();
+    const before = new Map();
+    if (animate)
+      cards.filter(isVisible).forEach((card) => before.set(card, card.getBoundingClientRect()));
+
+    apply();
+
+    const visible = cards.filter(isVisible);
+    if (animate) {
+      visible.forEach((card) => {
+        const from = before.get(card);
+        if (!from) {
+          card.animate(
+            [
+              { opacity: 0, transform: 'translateY(12px)' },
+              { opacity: 1, transform: 'none' },
+            ],
+            { duration: 600, easing: EASE }
+          );
+          return;
+        }
+        const to = card.getBoundingClientRect();
+        const dx = from.left - to.left;
+        const dy = from.top - to.top;
+        if (!dx && !dy) return;
+        card.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], {
+          duration: 600,
+          easing: EASE,
+        });
+      });
+    }
+
+    const n = visible.length;
+    count.textContent = `${n} ${n === 1 ? 'perfume' : 'perfumes'}`;
+    empty.hidden = n > 0;
+    grid.hidden = n === 0;
   }
 
   const press = (active) =>
@@ -51,11 +88,13 @@ export function initFilters() {
     state.sort = sort.value;
     render();
   });
-  document.querySelector('[data-reset]')?.addEventListener('click', () => {
-    state.filter = 'all';
-    state.query = '';
-    search.value = '';
-    press(chips.find((chip) => chip.dataset.filter === 'all'));
-    render();
-  });
+  document.querySelectorAll('[data-reset]').forEach((button) =>
+    button.addEventListener('click', () => {
+      state.filter = 'all';
+      state.query = '';
+      search.value = '';
+      press(chips.find((chip) => chip.dataset.filter === 'all'));
+      render();
+    })
+  );
 }

@@ -1,25 +1,24 @@
 <%- include('_head', { seo: { title: 'Perfumes' } }) %>
 <div class="page-head">
   <h1>Perfumes <span class="count"><%= products.length %></span></h1>
-  <a class="btn btn-primary" href="/admin/products/new"><%- icon('plus') %>Add perfume</a>
+  <%- include('../components/button', { href: '/admin/products/new', ico: 'plus', label: 'Add perfume', variant: 'primary' }) %>
 </div>
 
 <% if (hasSamples) { %>
 <p class="alert alert--warn" role="note">
-  <strong>Sample items.</strong> Perfumes marked <span class="pill pill--sample">SAMPLE</span> are placeholders with made-up prices and drawn bottles.
-  Edit each one with your real details and photo (or delete it) before the site goes live.
+  <strong>Sample items.</strong> Perfumes tagged <span class="sticker sticker--sample">Sample</span> are placeholders with made-up prices and drawn bottles.
+  Edit each one with your real details and photo, or delete it, before the site goes live.
 </p>
 <% } %>
-<% if (query.saved) { %><p class="alert alert--ok" role="status">Saved.</p><% } %>
-<% if (query.deleted) { %><p class="alert alert--ok" role="status">Perfume deleted.</p><% } %>
 
 <% if (products.length === 0) { %>
-<div class="empty-admin">
-  <p>No perfumes yet.</p>
-  <a class="btn btn-primary" href="/admin/products/new">Add your first perfume</a>
+<div class="empty">
+  <p class="empty__title">No perfumes yet.</p>
+  <p>Add your first bottle and it shows up on the website straight away.</p>
+  <%- include('../components/button', { href: '/admin/products/new', ico: 'plus', label: 'Add your first perfume', variant: 'primary' }) %>
 </div>
 <% } else { %>
-<div class="searchbar">
+<div class="searchbar search">
   <label class="sr-only" for="admin-search">Search perfumes</label>
   <%- icon('search') %>
   <input id="admin-search" type="search" placeholder="Search by name or brand" autocomplete="off" data-admin-search>
@@ -27,30 +26,30 @@
 
 <ul class="plist" id="plist">
   <% products.forEach(function (p, idx) { %>
-  <li class="prow<%= p.inStock ? '' : ' is-soldout' %>" id="p-<%= p.id %>" data-search="<%= (p.name + ' ' + p.brand).toLowerCase() %>">
+  <li class="prow<%= p.inStock ? '' : ' is-soldout' %>" id="p-<%= p.id %>" data-id="<%= p.id %>" data-search="<%= (p.name + ' ' + p.brand).toLowerCase() %>">
     <img class="prow__img" src="<%= p.image ? imageUrl(p, 'sm') : '/img/bottle-placeholder.svg' %>" width="60" height="75" alt="" loading="lazy">
     <div class="prow__main">
       <p class="prow__name"><%= p.name %></p>
       <p class="prow__meta"><%= p.brand %> &middot; <%= p.size %> &middot; <strong><%= fmt.price(p.price) %></strong></p>
       <p class="prow__pills">
-        <% if (p.isSample) { %><span class="pill pill--sample">SAMPLE</span><% } %>
-        <span class="pill <%= p.inStock ? 'pill--ok' : 'pill--off' %>"><%= p.inStock ? 'In stock' : 'Sold out' %></span>
-        <% if (p.badges.includes('featured')) { %><span class="pill pill--gold">Featured</span><% } %>
+        <% if (p.isSample) { %><span class="sticker sticker--sample">Sample</span><% } %>
+        <span class="sticker <%= p.inStock ? 'sticker--new' : 'sticker--soldout' %>" data-stock-pill><%= p.inStock ? 'In stock' : 'Sold out' %></span>
+        <span class="sticker sticker--bestseller" data-feature-pill<%= p.badges.includes('featured') ? '' : ' hidden' %>>Featured</span>
       </p>
     </div>
     <div class="prow__actions">
-      <form method="post" action="/admin/products/<%= p.id %>/stock">
+      <form method="post" action="/admin/products/<%= p.id %>/stock" data-async="stock">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <button class="btn btn-outline btn-sm" type="submit"><%= p.inStock ? 'Mark sold out' : 'Mark in stock' %></button>
+        <button class="btn btn--paper btn--sm" type="submit"><span data-label><%= p.inStock ? 'Mark sold out' : 'Mark in stock' %></span><span class="btn__spinner" aria-hidden="true"></span></button>
       </form>
-      <form method="post" action="/admin/products/<%= p.id %>/feature">
+      <form method="post" action="/admin/products/<%= p.id %>/feature" data-async="feature">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <button class="btn btn-outline btn-sm" type="submit"><%- icon('star') %><%= p.badges.includes('featured') ? 'Unfeature' : 'Feature' %></button>
+        <button class="btn btn--paper btn--sm" type="submit"><%- icon('star') %><span data-label><%= p.badges.includes('featured') ? 'Unfeature' : 'Feature' %></span><span class="btn__spinner" aria-hidden="true"></span></button>
       </form>
-      <a class="btn btn-outline btn-sm" href="/admin/products/<%= p.id %>/edit"><%- icon('edit') %>Edit</a>
+      <%- include('../components/button', { href: '/admin/products/' + p.id + '/edit', ico: 'edit', label: 'Edit', variant: 'paper', size: 'sm' }) %>
       <form method="post" action="/admin/products/<%= p.id %>/delete" data-confirm="Delete &ldquo;<%= p.name %>&rdquo;? This also removes its photo and cannot be undone.">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <button class="btn btn-outline btn-sm btn-danger-text" type="submit"><%- icon('trash') %>Delete</button>
+        <button class="btn btn--paper btn--sm btn--danger-text" type="submit"><%- icon('trash') %><span>Delete</span></button>
       </form>
       <span class="prow__move">
         <form method="post" action="/admin/products/<%= p.id %>/move">
@@ -66,7 +65,7 @@
   </li>
   <% }) %>
 </ul>
-<p class="muted" data-admin-empty hidden>No perfumes match your search.</p>
+<div class="empty" data-admin-empty hidden><p class="empty__title">No match.</p><p>No perfumes match your search.</p></div>
 <p class="muted hint">Order here is the order shown on the website under &ldquo;Featured&rdquo; sorting.</p>
 <% } %>
 <%- include('_foot') %>

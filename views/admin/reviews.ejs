@@ -1,14 +1,12 @@
 <%- include('_head', { seo: { title: 'Reviews' } }) %>
 <div class="page-head">
   <h1>Reviews <span class="count"><%= reviews.length %></span></h1>
-  <a class="btn btn-primary" href="/admin/reviews/new"><%- icon('plus') %>Add review</a>
+  <%- include('../components/button', { href: '/admin/reviews/new', ico: 'plus', label: 'Add review', variant: 'primary' }) %>
 </div>
 <p class="muted">Only add real feedback from real customers. The Reviews section stays hidden on the website until you add at least one.</p>
-<% if (query.saved) { %><p class="alert alert--ok" role="status">Saved.</p><% } %>
-<% if (query.deleted) { %><p class="alert alert--ok" role="status">Review deleted.</p><% } %>
 
 <% if (reviews.length === 0) { %>
-<div class="empty-admin"><p>No reviews yet.</p></div>
+<div class="empty"><p class="empty__title">No reviews yet.</p><p>Nothing is shown on the website until you add one.</p></div>
 <% } else { %>
 <ul class="plist">
   <% reviews.forEach(function (r) { %>
@@ -19,10 +17,10 @@
       <p class="prow__meta"><%= r.text.length > 140 ? r.text.slice(0, 140) + '…' : r.text %></p>
     </div>
     <div class="prow__actions">
-      <a class="btn btn-outline btn-sm" href="/admin/reviews/<%= r.id %>/edit"><%- icon('edit') %>Edit</a>
+      <%- include('../components/button', { href: '/admin/reviews/' + r.id + '/edit', ico: 'edit', label: 'Edit', variant: 'paper', size: 'sm' }) %>
       <form method="post" action="/admin/reviews/<%= r.id %>/delete" data-confirm="Delete the review from <%= r.name %>? This cannot be undone.">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <button class="btn btn-outline btn-sm btn-danger-text" type="submit"><%- icon('trash') %>Delete</button>
+        <button class="btn btn--paper btn--sm btn--danger-text" type="submit"><%- icon('trash') %><span>Delete</span></button>
       </form>
     </div>
   </li>

@@ -1,8 +1,9 @@
+import { prefersReducedMotion } from './motion.js';
+
+/** Fades each `.reveal` element in the first time it scrolls into view. */
 export function initReveal() {
-  const items = document.querySelectorAll('.reveal');
-  if (!items.length) return;
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduced || !('IntersectionObserver' in window)) {
+  const items = [...document.querySelectorAll('.reveal')];
+  if (prefersReducedMotion() || !('IntersectionObserver' in window)) {
     items.forEach((el) => el.classList.add('is-visible'));
     return;
   }
@@ -10,8 +11,8 @@ export function initReveal() {
     (entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
-        entry.target.classList.add('is-visible');
         observer.unobserve(entry.target);
+        entry.target.classList.add('is-visible');
       });
     },
     { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }

@@ -19,6 +19,7 @@ const {
 
 const router = express.Router();
 const intId = (req) => Number.parseInt(req.params.id, 10);
+const wantsJson = (req) => req.get('accept')?.includes('application/json');
 
 router.use(
   session({
@@ -103,8 +104,8 @@ router.get('/', (req, res) => {
   });
 });
 
-const renderProductForm = (res, { p, errors = [], status = 200, isNew }) =>
-  res.status(status).render('admin/product-form', { p, errors, isNew, active: 'products' });
+const renderProductForm = (res, { p, errors = [], fields = {}, status = 200, isNew }) =>
+  res.status(status).render('admin/product-form', { p, errors, fields, isNew, active: 'products' });
 
 const blankProduct = () =>
   toProduct({
@@ -155,10 +156,16 @@ router.get('/products/new', (req, res) =>
 );
 
 router.post('/products', singleImage('photo'), async (req, res) => {
-  const { value, errors } = parseProduct(req.body);
+  const { value, errors, fields } = parseProduct(req.body);
   if (req.uploadError) errors.push(req.uploadError);
   if (errors.length) {
-    return renderProductForm(res, { p: productFromForm(value), errors, status: 422, isNew: true });
+    return renderProductForm(res, {
+      p: productFromForm(value),
+      errors,
+      fields,
+      status: 422,
+      isNew: true,
+    });
   }
   const image = req.file ? await saveProductImage(req.file.buffer) : '';
   const slug = uniqueSlug(slugSource(value));
@@ -175,12 +182,13 @@ router.get('/products/:id/edit', (req, res, next) => {
 router.post('/products/:id', singleImage('photo'), async (req, res, next) => {
   const existing = products.get(intId(req));
   if (!existing) return next();
-  const { value, errors } = parseProduct(req.body);
+  const { value, errors, fields } = parseProduct(req.body);
   if (req.uploadError) errors.push(req.uploadError);
   if (errors.length) {
     return renderProductForm(res, {
       p: productFromForm(value, existing),
       errors,
+      fields,
       status: 422,
       isNew: false,
     });
@@ -203,6 +211,7 @@ router.post('/products/:id/stock', (req, res, next) => {
   const p = products.get(intId(req));
   if (!p) return next();
   products.setStock(p.id, !p.inStock);
+  if (wantsJson(req)) return res.json({ ok: true, inStock: !p.inStock });
   return res.redirect(`/admin#p-${p.id}`);
 });
 
@@ -213,6 +222,7 @@ router.post('/products/:id/feature', (req, res, next) => {
     ? p.badges.filter((b) => b !== 'featured')
     : [...p.badges, 'featured'];
   products.setBadges(p.id, badges);
+  if (wantsJson(req)) return res.json({ ok: true, featured: badges.includes('featured') });
   return res.redirect(`/admin#p-${p.id}`);
 });
 
@@ -235,8 +245,8 @@ const blankReview = () => ({
   image_h: 0,
 });
 
-const renderReviewForm = (res, { r, errors = [], status = 200, isNew }) =>
-  res.status(status).render('admin/review-form', { r, errors, isNew, active: 'reviews' });
+const renderReviewForm = (res, { r, errors = [], fields = {}, status = 200, isNew }) =>
+  res.status(status).render('admin/review-form', { r, errors, fields, isNew, active: 'reviews' });
 
 router.get('/reviews', (req, res) =>
   res.render('admin/reviews', { reviews: reviews.list(), active: 'reviews' })
@@ -245,12 +255,13 @@ router.get('/reviews', (req, res) =>
 router.get('/reviews/new', (req, res) => renderReviewForm(res, { r: blankReview(), isNew: true }));
 
 router.post('/reviews', singleImage('screenshot'), async (req, res) => {
-  const { value, errors } = parseReview(req.body);
+  const { value, errors, fields } = parseReview(req.body);
   if (req.uploadError) errors.push(req.uploadError);
   if (errors.length) {
     return renderReviewForm(res, {
       r: { ...blankReview(), ...value },
       errors,
+      fields,
       status: 422,
       isNew: true,
     });
@@ -274,12 +285,13 @@ router.get('/reviews/:id/edit', (req, res, next) => {
 router.post('/reviews/:id', singleImage('screenshot'), async (req, res, next) => {
   const existing = reviews.get(intId(req));
   if (!existing) return next();
-  const { value, errors } = parseReview(req.body);
+  const { value, errors, fields } = parseReview(req.body);
   if (req.uploadError) errors.push(req.uploadError);
   if (errors.length) {
     return renderReviewForm(res, {
       r: { ...existing, ...value },
       errors,
+      fields,
       status: 422,
       isNew: false,
     });

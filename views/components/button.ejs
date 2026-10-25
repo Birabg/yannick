@@ -1,0 +1,6 @@
+<%
+  /* params: label, href?, variant (primary|ink|paper|outline), size (sm|lg), block, ico (icon name), external, i18n, type, aria, cls, attrs */
+  const variant = locals.variant || 'primary';
+  const classes = ['btn', 'btn--' + variant, locals.size ? 'btn--' + locals.size : '', locals.block ? 'btn--block' : '', locals.cls || ''].filter(Boolean).join(' ');
+  const tag = locals.href ? 'a' : 'button';
+%><<%= tag %> class="<%= classes %>"<% if (locals.href) { %> href="<%= href %>"<% if (locals.external) { %> target="_blank" rel="noopener"<% } %><% } else { %> type="<%= locals.type || 'button' %>"<% } %><% if (locals.aria) { %> aria-label="<%= aria %>"<% } %><%- locals.attrs ? ' ' + attrs : '' %>><%- locals.ico ? icon(locals.ico) : '' %><span<%- locals.i18n ? ' ' + i(locals.i18n) : '' %>><%= label %></span><span class="btn__spinner" aria-hidden="true"></span></<%= tag %>>

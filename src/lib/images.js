@@ -6,7 +6,7 @@ const { uploadsDir } = require('../env');
 
 const PRODUCT_DIR = path.join(uploadsDir, 'products');
 const REVIEW_DIR = path.join(uploadsDir, 'reviews');
-const PAPER = '#f1ebdf';
+const BACKDROP = '#ffffff';
 
 const token = () => crypto.randomBytes(8).toString('hex');
 
@@ -17,8 +17,8 @@ async function saveProductImage(buffer) {
   const render = (w, h, quality, suffix) =>
     sharp(buffer, { failOn: 'error' })
       .rotate()
-      .resize({ width: w, height: h, fit: 'contain', background: PAPER })
-      .flatten({ background: PAPER })
+      .resize({ width: w, height: h, fit: 'contain', background: BACKDROP })
+      .flatten({ background: BACKDROP })
       .webp({ quality })
       .toFile(path.join(PRODUCT_DIR, `${base}-${suffix}.webp`));
   await Promise.all([render(1000, 1250, 82, 'lg'), render(480, 600, 78, 'sm')]);

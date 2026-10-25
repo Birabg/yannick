@@ -1,12 +1,12 @@
 <%- include('partials/head') %>
-<main id="main" class="section error-page">
-  <div class="container container--narrow">
+<main id="main" class="error-page tone--ivory section">
+  <div class="container">
     <p class="error-page__code" aria-hidden="true">404</p>
-    <h1 class="section__title">This page could not be found</h1>
-    <p>The link may be old, or the perfume may no longer be listed. Let us help you find your scent instead.</p>
-    <div class="hero__cta">
-      <a class="btn btn-primary" href="/#collection">Browse the collection</a>
-      <a class="btn btn-wa" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener"><%- icon('whatsapp') %>Ask on WhatsApp</a>
+    <h1 class="sec-title">This page has <em>wandered off</em></h1>
+    <p class="sec-lead">The link may be old, or the perfume sold out and was taken down.</p>
+    <div class="error-page__actions">
+      <%- include('components/button', { href: '/', label: 'Back home', size: 'lg' }) %>
+      <%- include('components/button', { href: '/#collection', label: 'See the collection', variant: 'outline', size: 'lg' }) %>
     </div>
   </div>
 </main>

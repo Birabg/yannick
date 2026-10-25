@@ -1,47 +1,44 @@
 <%
   const base = path === '/' ? '' : '/';
 %>
-<footer class="site-footer">
+<footer class="site-footer tone--ink">
   <div class="container footer__grid">
     <div class="footer__brand">
-      <a class="brand" href="/" aria-label="<%= site.brand.name %> - home">
-        <%- icon('logo', 'brand__mark') %>
-        <span class="brand__name">Yannick <span>Scents</span></span>
-      </a>
-      <p><%= site.brand.tagline %>.</p>
+      <p class="footer__logo">Yannick <em>Scents</em></p>
+      <p class="footer__tag" <%- i('footer.tag') %>><%= t('footer.tag') %></p>
     </div>
 
     <nav aria-label="Footer">
       <h2 class="footer__title" <%- i('footer.explore') %>><%= t('footer.explore') %></h2>
       <ul class="footer__list">
-        <li><a href="<%= base %>#story" <%- i('nav.story') %>><%= t('nav.story') %></a></li>
-        <li><a href="<%= base %>#collection" <%- i('nav.collection') %>><%= t('nav.collection') %></a></li>
-        <li><a href="<%= base %>#houses" <%- i('nav.houses') %>><%= t('nav.houses') %></a></li>
-        <li><a href="<%= base %>#faq" <%- i('nav.faq') %>><%= t('nav.faq') %></a></li>
-        <li><a href="<%= base %>#order" <%- i('nav.order') %>><%= t('nav.order') %></a></li>
+        <li><a class="ulink" href="<%= base %>#story" <%- i('nav.story') %>><%= t('nav.story') %></a></li>
+        <li><a class="ulink" href="<%= base %>#collection" <%- i('nav.collection') %>><%= t('nav.collection') %></a></li>
+        <li><a class="ulink" href="<%= base %>#find" <%- i('nav.find') %>><%= t('nav.find') %></a></li>
+        <li><a class="ulink" href="<%= base %>#faq" <%- i('nav.faq') %>><%= t('nav.faq') %></a></li>
+        <li><a class="ulink" href="<%= base %>#order" <%- i('nav.order') %>><%= t('nav.order') %></a></li>
       </ul>
     </nav>
 
     <div>
       <h2 class="footer__title" <%- i('footer.contact') %>><%= t('footer.contact') %></h2>
       <ul class="footer__list">
-        <li><a href="tel:<%= site.contact.phone %>"><%- icon('phone') %><%= site.contact.phoneDisplay %></a></li>
-        <li><a href="<%= fmt.genericLink() %>" target="_blank" rel="noopener"><%- icon('whatsapp') %>WhatsApp</a></li>
-        <li><a href="<%= site.contact.tiktok %>" target="_blank" rel="noopener"><%- icon('tiktok') %><%= site.contact.tiktokHandle %></a></li>
-        <li><span><%- icon('pin') %><%= site.location.city %>, <%= site.location.country %></span></li>
+        <li><a class="ulink" href="tel:<%= site.contact.phone %>"><%= site.contact.phoneDisplay %></a></li>
+        <li><a class="ulink" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener">WhatsApp</a></li>
+        <li><a class="ulink" href="<%= site.contact.tiktok %>" target="_blank" rel="noopener">TikTok <%= site.contact.tiktokHandle %></a></li>
+        <li><span><%= site.location.city %>, <%= site.location.country %></span></li>
       </ul>
     </div>
   </div>
 
   <div class="container footer__legal">
-    <p>&copy; <%= year %> <%= site.brand.name %>. All rights reserved.</p>
-    <p class="footer__credit">Built by <a href="<%= site.contact.credit.url %>" target="_blank" rel="noopener"><%= site.contact.credit.label %></a></p>
+    <p>&copy; <%= year %> <%= site.brand.name %></p>
+    <p>Built by <a class="ulink" href="<%= site.contact.credit.url %>" target="_blank" rel="noopener"><%= site.contact.credit.label %></a></p>
   </div>
 </footer>
 
 <div class="mobile-bar" role="group" aria-label="Quick contact">
-  <a class="btn btn-outline" href="tel:<%= site.contact.phone %>"><%- icon('phone') %><span <%- i('cta.call') %>><%= t('cta.call') %></span></a>
-  <a class="btn btn-wa" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener"><%- icon('whatsapp') %><span>WhatsApp</span></a>
+  <a class="mobile-bar__link" href="tel:<%= site.contact.phone %>"><%- icon('phone') %><span <%- i('cta.call') %>><%= t('cta.call') %></span></a>
+  <a class="mobile-bar__link mobile-bar__link--wa" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener"><%- icon('whatsapp') %><span>WhatsApp</span></a>
 </div>
 
 <script type="module" src="<%= asset('main.js') %>"></script>

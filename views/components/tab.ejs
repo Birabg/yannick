@@ -1,0 +1,3 @@
+<%
+  /* params: filter (key), label, pressed, i18n */
+%><button type="button" class="tab" data-filter="<%= filter %>" aria-pressed="<%= locals.pressed ? 'true' : 'false' %>"><span<%- locals.i18n ? ' ' + i(locals.i18n) : '' %>><%= label %></span></button>

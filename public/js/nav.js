@@ -6,7 +6,6 @@ export function initNav() {
   const header = document.querySelector('.site-header');
   if (!toggle || !nav) return;
   const root = document.documentElement;
-
   const isOpen = () => root.classList.contains('nav-open');
 
   function setOpen(open) {
@@ -29,8 +28,11 @@ export function initNav() {
       return;
     }
     if (event.key !== 'Tab') return;
-    // Keep focus inside the header while the menu is open.
-    const items = [...header.querySelectorAll(FOCUSABLE)].filter((el) => el.offsetParent !== null);
+    // Keep focus inside the header and menu while the menu covers the page.
+    const items = [
+      ...header.querySelectorAll(FOCUSABLE),
+      ...nav.querySelectorAll(FOCUSABLE),
+    ].filter((el) => el.offsetParent !== null);
     const first = items[0];
     const last = items[items.length - 1];
     if (event.shiftKey && document.activeElement === first) {
@@ -43,7 +45,7 @@ export function initNav() {
   });
 
   // Growing past the mobile layout closes the menu.
-  window.matchMedia('(min-width: 960px)').addEventListener('change', (event) => {
+  window.matchMedia('(min-width: 1180px)').addEventListener('change', (event) => {
     if (event.matches) setOpen(false);
   });
 }

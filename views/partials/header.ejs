@@ -1,41 +1,37 @@
 <%
   const base = path === '/' ? '' : '/';
-  const nav = [
-    ['story', 'nav.story'],
-    ['collection', 'nav.collection'],
-    ['notes', 'nav.notes'],
-    ['houses', 'nav.houses'],
-    ...(locals.hasReviews ? [['reviews', 'nav.reviews']] : []),
-    ['faq', 'nav.faq'],
-    ['order', 'nav.order'],
-  ];
+  const left = [['story', 'nav.story'], ['collection', 'nav.collection'], ['notes', 'nav.notes'], ['houses', 'nav.houses']];
+  const right = [['find', 'nav.find'], ...(locals.hasReviews ? [['reviews', 'nav.reviews']] : []), ['faq', 'nav.faq']];
 %>
-<header class="site-header" id="top">
+<header class="site-header">
   <div class="container site-header__inner">
-    <a class="brand" href="/" aria-label="<%= site.brand.name %> - home">
-      <%- icon('logo', 'brand__mark') %>
-      <span class="brand__name">Yannick <span>Scents</span></span>
-    </a>
+    <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+      <%- icon('menu') %><%- icon('close') %>
+    </button>
+
+    <a class="logo" href="/">Yannick <em>Scents</em></a>
 
     <nav class="nav" id="site-nav" aria-label="Main">
-      <ul class="nav__list">
-        <% nav.forEach(function (item) { %>
-        <li><a href="<%= base %>#<%= item[0] %>" <%- i(item[1]) %>><%= t(item[1]) %></a></li>
+      <ul class="nav__list nav__list--left">
+        <% left.forEach(function (item) { %>
+        <li><a class="nav__link" href="<%= base %>#<%= item[0] %>" <%- i(item[1]) %>><%= t(item[1]) %></a></li>
         <% }) %>
       </ul>
+      <ul class="nav__list nav__list--right">
+        <% right.forEach(function (item) { %>
+        <li><a class="nav__link" href="<%= base %>#<%= item[0] %>" <%- i(item[1]) %>><%= t(item[1]) %></a></li>
+        <% }) %>
+        <li class="nav__mobile-only"><a class="nav__link" href="<%= base %>#order" <%- i('nav.order') %>><%= t('nav.order') %></a></li>
+        <li><a class="nav__link nav__link--cta" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener" <%- i('cta.whatsapp') %>><%= t('cta.whatsapp') %></a></li>
+        <li class="nav__lang"><button class="lang-toggle" type="button" data-lang-toggle aria-label="አማ - switch language to Amharic" lang="am">አማ</button></li>
+      </ul>
+      <div class="nav__extra">
+        <%- include('../components/button', { href: fmt.genericLink(), external: true, ico: 'whatsapp', label: t('cta.whatsapp'), i18n: 'cta.whatsapp', size: 'lg', block: true }) %>
+        <%- include('../components/button', { href: 'tel:' + site.contact.phone, ico: 'phone', label: site.contact.phoneDisplay, variant: 'outline', size: 'lg', block: true }) %>
+        <button class="lang-toggle lang-toggle--menu" type="button" data-lang-toggle aria-label="አማ - switch language to Amharic" lang="am">አማ</button>
+      </div>
     </nav>
 
-    <div class="site-header__actions">
-      <button class="icon-btn" type="button" data-lang-toggle aria-label="አማ - switch language to Amharic" lang="am">አማ</button>
-      <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to light theme">
-        <%- icon('sun', 'theme-icon theme-icon--sun') %><%- icon('moon', 'theme-icon theme-icon--moon') %>
-      </button>
-      <a class="btn btn-wa btn-sm header-cta" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener">
-        <%- icon('whatsapp') %><span <%- i('cta.whatsapp') %>><%= t('cta.whatsapp') %></span>
-      </a>
-      <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
-        <%- icon('menu', 'nav-toggle__open') %><%- icon('close', 'nav-toggle__close') %>
-      </button>
-    </div>
+    <a class="icon-btn header-wa" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener" aria-label="Order on WhatsApp"><%- icon('whatsapp') %></a>
   </div>
 </header>

@@ -20,7 +20,7 @@ const SAMPLES = [
     longevity: 4,
     projection: 4,
     badges: ['featured', 'bestseller'],
-    colors: ['#1d3557', '#a8c4e6'],
+    colors: ['#5b1a24', '#dccfba'],
     description:
       'A confident aromatic-woody scent: bright citrus over warm cedar and sandalwood. A refined all-rounder for office and evenings.',
     top: 'Grapefruit, Lemon, Mint, Pink Pepper',
@@ -39,7 +39,7 @@ const SAMPLES = [
     longevity: 4,
     projection: 4,
     badges: ['featured'],
-    colors: ['#8a5a2b', '#f1d9b0'],
+    colors: ['#8c7a66', '#d9ccb6'],
     description:
       'A fresh, sparkling opening settles into rose and jasmine over soft patchouli and vanilla. Elegant and easy to wear.',
     top: 'Orange, Bergamot, Grapefruit',
@@ -58,7 +58,7 @@ const SAMPLES = [
     longevity: 4,
     projection: 3,
     badges: ['new'],
-    colors: ['#5b2a86', '#e2c6f5'],
+    colors: ['#6b4a2f', '#d6c7ae'],
     description: 'Lavender meets orange blossom over warm vanilla. Bold and free-spirited.',
     top: 'Lavender, Mandarin, Blackcurrant',
     heart: 'Orange Blossom, Jasmine',
@@ -76,7 +76,7 @@ const SAMPLES = [
     longevity: 4,
     projection: 4,
     badges: ['new'],
-    colors: ['#16324f', '#9fd3e6'],
+    colors: ['#4a5648', '#d3d0c0'],
     description:
       'A modern fresh-woody fragrance: crisp apple and ginger over sage and amberwood. Clean and bold.',
     top: 'Apple, Ginger, Bergamot',
@@ -95,7 +95,7 @@ const SAMPLES = [
     longevity: 4,
     projection: 3,
     badges: [],
-    colors: ['#8c2f39', '#f4c7c3'],
+    colors: ['#7a4a3a', '#dccdb8'],
     description:
       'A warm, floral-vanilla signature with a touch of spice. Feminine and long lasting.',
     top: 'Bergamot, Pink Pepper, Blackcurrant',
@@ -114,7 +114,7 @@ const SAMPLES = [
     longevity: 3,
     projection: 3,
     badges: ['bestseller'],
-    colors: ['#6b2f1a', '#e8c9a8'],
+    colors: ['#3d3430', '#d4c8b6'],
     description:
       'A classic: crisp apple and warm cinnamon on a base of sandalwood and cedar. A dependable everyday scent at an accessible price.',
     top: 'Apple, Bergamot, Lemon',
@@ -133,7 +133,7 @@ const SAMPLES = [
     longevity: 4,
     projection: 4,
     badges: [],
-    colors: ['#2e2a24', '#d8b872'],
+    colors: ['#a68a5b', '#e0d3bb'],
     description:
       'A warm, rich evening scent with spice, amber and vanilla. Great value for its performance.',
     top: 'Bergamot, Cardamom',
@@ -152,7 +152,7 @@ const SAMPLES = [
     longevity: 3,
     projection: 3,
     badges: [],
-    colors: ['#0b5e75', '#bfeaf2'],
+    colors: ['#5f6b66', '#d6d2c4'],
     description:
       'Clean, bright and aquatic: citrus and rosemary over musk and cedar. Ideal for warm days.',
     top: 'Lemon, Bergamot, Rosemary, Neroli',
@@ -161,20 +161,21 @@ const SAMPLES = [
   },
 ];
 
-/** A simple drawn bottle in the sample's colours, labelled SAMPLE. */
-function bottleSvg([deep, light]) {
+/** A flat, softly toned bottle on white (the site tints it with the stone backdrop), labelled SAMPLE. */
+function bottleSvg([liquid, glass]) {
   return Buffer.from(`
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="1000" height="1250">
-      <rect width="400" height="500" fill="#f1ebdf"/>
-      <ellipse cx="200" cy="440" rx="120" ry="14" fill="#000" opacity="0.12"/>
-      <rect x="170" y="62" width="60" height="58" rx="6" fill="#b9975a"/>
-      <rect x="160" y="116" width="80" height="26" rx="5" fill="#c9a45c"/>
-      <rect x="98" y="146" width="204" height="284" rx="28" fill="${light}" stroke="${deep}" stroke-width="3"/>
-      <rect x="110" y="250" width="180" height="168" rx="20" fill="${deep}" opacity="0.85"/>
-      <rect x="122" y="164" width="14" height="236" rx="7" fill="#fff" opacity="0.35"/>
-      <rect x="150" y="296" width="130" height="82" rx="6" fill="#faf6ee" opacity="0.92"/>
-      <path d="M215 308l6 9-6 9-6-9z" fill="${deep}"/>
-      <text x="215" y="355" text-anchor="middle" font-family="Georgia, serif" font-size="17" letter-spacing="3" fill="${deep}">SAMPLE</text>
+      <rect width="400" height="500" fill="#ffffff"/>
+      <ellipse cx="200" cy="442" rx="112" ry="9" fill="#e4dccd"/>
+      <rect x="172" y="70" width="56" height="64" fill="#2a211c"/>
+      <rect x="164" y="128" width="72" height="12" fill="#a68a5b"/>
+      <rect x="190" y="140" width="20" height="22" fill="#d6c7ae"/>
+      <path d="M110 440 V240 Q110 176 176 164 H224 Q290 176 290 240 V440 Z" fill="${glass}"/>
+      <rect x="120" y="270" width="160" height="160" fill="${liquid}"/>
+      <rect x="124" y="200" width="9" height="226" fill="#f6efe2" opacity="0.7"/>
+      <rect x="156" y="318" width="88" height="76" fill="#f7f3ec"/>
+      <rect x="156" y="318" width="88" height="76" fill="none" stroke="#a68a5b"/>
+      <text x="200" y="362" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="600" font-size="12" letter-spacing="3" fill="#1c1714">SAMPLE</text>
     </svg>`);
 }
 

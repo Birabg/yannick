@@ -32,6 +32,11 @@ const tags = (v) =>
 /** Returns { value, errors }. `value` is ready for products.create / products.update. */
 function parseProduct(body) {
   const errors = [];
+  const fields = {};
+  const bad = (field, message) => {
+    errors.push(message);
+    fields[field] = message;
+  };
   const name = str(body.name, 80);
   const brand = str(body.brand, 60);
   const size = str(body.size, 20);
@@ -39,13 +44,13 @@ function parseProduct(body) {
   const category = CATEGORY_KEYS.includes(body.category) ? body.category : '';
   const rating = (v) => Math.min(5, Math.max(1, Number.parseInt(v, 10) || 3));
 
-  if (!name) errors.push('Name is required.');
-  if (!brand) errors.push('Brand is required.');
-  if (!size) errors.push('Size is required (for example 100ml).');
+  if (!name) bad('name', 'Name is required.');
+  if (!brand) bad('brand', 'Brand is required.');
+  if (!size) bad('size', 'Size is required (for example 100ml).');
   if (!Number.isInteger(price) || price <= 0 || price > 10_000_000) {
-    errors.push('Enter a valid price in ETB.');
+    bad('price', 'Enter a valid price in ETB.');
   }
-  if (!category) errors.push('Choose a category.');
+  if (!category) bad('category', 'Choose a category.');
 
   // The Men / Women shelves follow the category automatically.
   const collections = asArray(body.collections).filter((c) => COLLECTION_KEYS.includes(c));
@@ -54,6 +59,7 @@ function parseProduct(body) {
 
   return {
     errors,
+    fields,
     value: {
       name,
       brand,
@@ -80,13 +86,18 @@ function parseProduct(body) {
 
 function parseReview(body) {
   const errors = [];
+  const fields = {};
+  const bad = (field, message) => {
+    errors.push(message);
+    fields[field] = message;
+  };
   const name = str(body.name, 60);
   const text = multiline(body.text, 600);
   const rating = Number.parseInt(body.rating, 10);
-  if (!name) errors.push('Customer name is required.');
-  if (!text) errors.push('Review text is required.');
+  if (!name) bad('name', 'Customer name is required.');
+  if (!text) bad('text', 'Review text is required.');
   if (!(rating >= 1 && rating <= 5)) errors.push('Rating must be between 1 and 5.');
-  return { errors, value: { name, text, rating } };
+  return { errors, fields, value: { name, text, rating } };
 }
 
 function parsePasswordChange(body) {

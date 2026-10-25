@@ -1,0 +1,124 @@
+/* Hero: an editorial plate. Image fills the viewport; text is offset, never centred. */
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - var(--header-h));
+  background: var(--stone);
+}
+.hero__media {
+  position: relative;
+  flex: 1 1 52svh;
+  min-height: 300px;
+  overflow: hidden;
+  background: #e3d9c8;
+}
+.hero__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 62%;
+}
+.hero__copy {
+  padding: var(--s-4) var(--gutter) var(--s-5);
+  background: var(--ivory);
+}
+.hero__eyebrow {
+  margin: 0 0 var(--s-2);
+  color: var(--taupe);
+  font-size: var(--t-label);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.hero__title {
+  margin-bottom: var(--s-3);
+  font-size: var(--t-xl);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+}
+.hero__title span {
+  display: block;
+}
+.hero__title em {
+  color: var(--bordeaux);
+}
+.hero__text {
+  max-width: 34ch;
+  margin-bottom: var(--s-4);
+  color: var(--taupe);
+  font-size: var(--t-lead);
+  line-height: 1.55;
+}
+.hero__cta {
+  display: grid;
+  gap: var(--s-2);
+}
+.hero__facts {
+  display: grid;
+  gap: 2px;
+  margin-top: var(--s-4);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--hair);
+  color: var(--taupe);
+  font-size: var(--t-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+@media (min-width: 560px) {
+  .hero__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-1) var(--s-3);
+  }
+  .hero__facts li + li::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    margin-right: var(--s-3);
+    margin-left: calc(var(--s-3) * -0.5);
+    background: var(--brass);
+    vertical-align: middle;
+    transform: rotate(45deg);
+  }
+}
+:lang(am) .hero__title {
+  font-size: clamp(2.6rem, 1.6rem + 5vw, 5.5rem);
+  line-height: 1.2;
+}
+
+@media (min-width: 560px) {
+  .hero__cta {
+    grid-template-columns: repeat(2, max-content);
+  }
+}
+
+@media (min-width: 900px) {
+  .hero {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    background: var(--ivory);
+  }
+  .hero__media {
+    grid-column: 6 / -1;
+    grid-row: 1;
+    min-height: 0;
+  }
+  .hero__copy {
+    grid-column: 1 / 7;
+    grid-row: 1;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--s-6) var(--s-5) var(--s-6)
+      max(var(--gutter), calc((100vw - var(--container)) / 2));
+    background: transparent;
+  }
+  .hero__title {
+    margin-right: calc(var(--s-7) * -1);
+  }
+  .hero__title span:nth-child(2) {
+    padding-left: 1.1em;
+  }
+}

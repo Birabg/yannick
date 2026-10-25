@@ -2,14 +2,15 @@
 
   <dialog class="confirm" id="confirm-dialog" aria-labelledby="confirm-title">
     <form method="dialog">
-      <h2 id="confirm-title">Are you sure?</h2>
+      <h2 id="confirm-title">Delete this?</h2>
       <p id="confirm-text"></p>
       <div class="confirm__actions">
-        <button class="btn btn-outline" value="cancel">Cancel</button>
-        <button class="btn btn-danger" value="ok">Delete</button>
+        <button class="btn btn--paper" value="cancel"><span>Cancel</span></button>
+        <button class="btn btn--danger" value="ok"><span>Delete</span></button>
       </div>
     </form>
   </dialog>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
   <script type="module" src="<%= asset('admin.js') %>"></script>
 </body>
 </html>

@@ -1,0 +1,8 @@
+<%
+  /* params: key (i18n prefix: key.label / key.title / key.lead), titleId, num (roman numeral), lead (bool) */
+  const withLead = locals.lead === true;
+%><header class="sec-head reveal">
+  <p class="label"><% if (locals.num) { %><span class="label__num"><%= num %></span><% } %><span <%- i(key + '.label') %>><%= t(key + '.label') %></span></p>
+  <h2 class="sec-title" id="<%= titleId %>" <%- i(key + '.title') %>><%- rich(t(key + '.title')) %></h2>
+  <% if (withLead) { %><p class="sec-lead" <%- i(key + '.lead') %>><%= t(key + '.lead') %></p><% } %>
+</header>

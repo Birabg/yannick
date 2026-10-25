@@ -19,7 +19,7 @@ module.exports = {
     tagline: 'A Good Scent Speaks First',
     founder: 'Yannick',
     description:
-      '100% original designer fragrances for men and women in Addis Ababa. Chanel, Yves Saint Laurent, Valentino, Hugo Boss, Bentley and Azzaro, with free delivery across Addis Ababa. Order on WhatsApp or by phone.',
+      '100% original designer perfume in Addis Ababa. Chanel, YSL, Valentino, Hugo Boss, Bentley and Azzaro. Free delivery in Addis. Order on WhatsApp or call.',
   },
 
   contact: {
@@ -38,7 +38,7 @@ module.exports = {
     city: 'Addis Ababa',
     country: 'Ethiopia',
     countryCode: 'ET',
-    text: 'Addis Ababa, Ethiopia. Free delivery to your door anywhere in the city.',
+    text: 'Addis Ababa, Ethiopia. We deliver to your door anywhere in the city, free.',
   },
 
   // Replace with your real opening hours.
@@ -46,13 +46,20 @@ module.exports = {
     { days: 'Monday - Saturday', time: '9:00 AM - 8:00 PM' },
     { days: 'Sunday', time: '10:00 AM - 6:00 PM' },
   ],
-  hoursNote: 'Messages sent outside these hours are answered the next morning.',
+  hoursNote: 'Message outside these hours and we reply the next morning.',
 
   currency: 'ETB',
 
   houses: ['Chanel', 'Yves Saint Laurent', 'Valentino', 'Hugo Boss', 'Bentley', 'Azzaro'],
 
-  /** Public filter chips. `key` matches product collections; "men"/"women" come from category. */
+  /** The three scent families. Each gets its own colour across the whole site. */
+  families: [
+    { key: 'fresh', label: 'Fresh & Citrus' },
+    { key: 'woody', label: 'Woody Aromatic' },
+    { key: 'oriental', label: 'Oriental & Gourmand' },
+  ],
+
+  /** Public filter chips. "men"/"women" come from the product category. */
   collections: [
     { key: 'men', label: 'Men' },
     { key: 'women', label: 'Women' },
@@ -60,7 +67,7 @@ module.exports = {
     { key: 'woody', label: 'Woody Aromatic' },
     { key: 'oriental', label: 'Oriental & Gourmand' },
     { key: 'affordable', label: 'Affordable' },
-    { key: 'handpick', label: "Yannick's Hand Pick" },
+    { key: 'handpick', label: "Yannick's Selection" },
   ],
 
   categories: [
@@ -73,74 +80,104 @@ module.exports = {
 
   badges: [
     { key: 'featured', label: 'Featured' },
-    { key: 'new', label: 'New Arrival' },
+    { key: 'new', label: 'New' },
     { key: 'bestseller', label: 'Best Seller' },
   ],
 
-  story: [
-    'Yannick Scents is a small, personal perfume house in Addis Ababa. We bring in authentic designer bottles and help each customer find the one that feels like them.',
-    'No pressure and no guesswork: tell us what you like, what you wear and where you are going, and Yannick will guide you to a scent worth remembering.',
-  ],
+  story: {
+    statement: 'A small shop in Addis Ababa, and a *real person* on the other end of the chat.',
+    paragraphs: [
+      'Yannick Scents brings in original bottles from six houses, and helps you choose one you will actually wear.',
+      'Tell us what you like and what you can spend. Yannick replies personally, usually with two or three suggestions rather than a long list.',
+    ],
+  },
   founderPhoto: '/img/founder-placeholder.svg',
+
+  /** "Find your scent" guide. Budgets are in ETB; edit to match your range. */
+  quiz: {
+    who: [
+      { key: 'men', label: 'For him', sub: 'Men and boys' },
+      { key: 'women', label: 'For her', sub: 'Women and girls' },
+      { key: 'any', label: 'For anyone', sub: 'Show me everything' },
+    ],
+    vibe: [
+      { key: 'fresh', label: 'Fresh and clean', sub: 'Daytime, the office, warm days' },
+      { key: 'woody', label: 'Warm and woody', sub: 'Confident, everyday' },
+      { key: 'oriental', label: 'Sweet and rich', sub: 'Evenings, weddings, going out' },
+      { key: 'any', label: 'Surprise me', sub: 'Any style' },
+    ],
+    budget: [
+      { key: 'low', label: 'Up to 8,000', max: 8000 },
+      { key: 'mid', label: '8,000 to 13,000', min: 8000, max: 13000 },
+      { key: 'high', label: '13,000 and up', min: 13000 },
+      { key: 'any', label: 'No limit' },
+    ],
+  },
+
+  /** The three acts of a perfume, with example notes. */
+  journey: [
+    {
+      key: 'top',
+      title: 'Top',
+      time: 'The first fifteen minutes',
+      text: 'The first hello. Citrus, mint, pink pepper. It arrives quickly and fades quickly.',
+      notes: ['Bergamot', 'Grapefruit', 'Pink pepper'],
+    },
+    {
+      key: 'heart',
+      title: 'Heart',
+      time: 'The next hour or two',
+      text: 'The true character. Flowers, ginger, spice. This is what people notice on you.',
+      notes: ['Jasmine', 'Ginger', 'Nutmeg'],
+    },
+    {
+      key: 'base',
+      title: 'Base',
+      time: 'Until the next morning',
+      text: 'What lingers on your collar. Cedar, vanilla, amber, musk.',
+      notes: ['Cedar', 'Vanilla', 'Musk'],
+    },
+  ],
+
+  /** Three understated facts under the story. */
+  facts: [
+    { num: '6', title: 'Houses', text: 'Chanel, YSL, Valentino, Hugo Boss, Bentley, Azzaro.' },
+    { num: '100%', title: 'Original', text: 'No copies, and nothing "inspired by".' },
+    { num: '0', title: 'Delivery fee', text: 'Free to your door anywhere in Addis Ababa.' },
+  ],
 
   faq: [
     {
       q: 'Are the perfumes original?',
-      a: 'Yes. We sell only original designer fragrances, sourced from the houses listed on this site. If you have any doubt about a bottle, message us and we will gladly answer.',
+      a: 'Yes. We sell original designer bottles only, from the houses listed on this site. No copies, no "inspired by". If you have doubts about a bottle, message us and ask.',
     },
     {
       q: 'How does delivery work?',
-      a: 'Delivery inside Addis Ababa is free. After you order on WhatsApp or by phone we confirm the bottle, your address and a delivery time that suits you.',
+      a: 'Delivery inside Addis Ababa is free. You order on WhatsApp or by phone, we confirm the bottle, your address and a time that suits you, then we bring it.',
     },
     {
       q: 'How do I pay?',
-      a: 'We agree the payment method with you when you order. Ask us on WhatsApp which options are available for your delivery.',
+      a: 'We agree the payment method with you when you order. Ask on WhatsApp which options work for your delivery.',
     },
     {
       q: 'Can I return a bottle?',
-      a: 'Because fragrance is a personal product, opened bottles cannot be returned. If something is wrong with your order, contact us right away and we will make it right.',
+      a: 'Perfume is personal, so opened bottles cannot be returned. If something is wrong with your order, tell us right away and we will sort it out.',
     },
     {
       q: 'How do I choose a scent?',
-      a: 'Use the filters in the collection, or simply message us. Tell us the scents you already love, the occasion and your budget, and we will suggest a few bottles.',
+      a: 'Try "Find your scent" on this page: three questions and you get one to three bottles. Or message us the perfumes you already love and we will suggest similar ones.',
     },
   ],
 
   howToOrder: [
+    { title: 'Choose', text: 'Browse the collection, or let the guide narrow it to two or three.' },
     {
-      title: 'Choose',
-      text: 'Browse the collection and pick a scent, or ask us for a recommendation.',
+      title: 'Message',
+      text: 'WhatsApp opens with your bottle already written in. Send it, or call us.',
     },
     {
-      title: 'Message or call',
-      text: 'Tap Order on WhatsApp, call us, or send a TikTok DM. Your chosen bottle is filled in for you.',
-    },
-    {
-      title: 'We deliver',
-      text: 'We confirm the details and bring your bottle to your door in Addis Ababa, free of charge.',
-    },
-  ],
-
-  values: [
-    {
-      icon: 'shield',
-      title: '100% Original',
-      text: 'Authentic designer bottles only. Never copies, never imitations.',
-    },
-    {
-      icon: 'truck',
-      title: 'Free Delivery',
-      text: 'Delivered to your door anywhere in Addis Ababa at no extra cost.',
-    },
-    {
-      icon: 'user',
-      title: 'Personal Guidance',
-      text: 'Not sure what suits you? Yannick will help you choose, one message away.',
-    },
-    {
-      icon: 'growth',
-      title: 'A Growing House',
-      text: 'We are small and growing, and every customer matters to us.',
+      title: 'Delivered',
+      text: 'We confirm the details and bring it to your door in Addis. Free.',
     },
   ],
 };

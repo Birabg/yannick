@@ -61,6 +61,15 @@ Interface strings for the English/Amharic toggle live in `config/i18n.js`
 (have a native speaker review the Amharic text; add a language by adding an object there and a button in `views/partials/header.ejs`).
 
 To add the founder's photo, put a 480x600 image in `public/img/` and set `founderPhoto` in `config/site.js`.
+The hero picture is `public/img/hero.svg`; replace it with a real photograph (about 1200x1000) and update the `src` in `views/home.ejs`.
+
+## Design
+
+The look (ivory and stone paper, ink text, one bordeaux accent, Bodoni Moda + Jost) is documented in
+**`DESIGN.md`**, with tokens in `public/css/tokens.css`. The live component sheet is at `/styleguide`
+(hidden from search engines). Taupe text is `#6B5F54`, slightly darker than the original brief, so it passes AA contrast.
+
+Photo tip: product cards multiply the picture onto a stone backdrop, so photograph bottles on a plain white background.
 
 ## Scripts
 
@@ -70,7 +79,8 @@ To add the founder's photo, put a 480x600 image in `public/img/` and set `founde
 | `npm start`                       | Builds minified CSS/JS (`prestart`), then starts the server  |
 | `npm run build`                   | Only builds `public/dist` (run this when deploying with PM2) |
 | `npm run seed`                    | (Re)creates the SAMPLE perfumes; never touches your products |
-| `npm run build:icons`             | Regenerates favicons and the social card from `favicon.svg`  |
+| `npm run build:assets`            | Regenerates favicons and the social card from `favicon.svg`  |
+| `node scripts/contrast.js`        | Prints the WCAG contrast ratios of the colour pairs in use   |
 | `npm run lint` / `npm run format` | ESLint / Prettier                                            |
 
 ## Security notes
@@ -130,5 +140,5 @@ config/    site.js (business details, FAQ), i18n.js (UI strings)
 src/       app.js, server.js, db.js, seed.js, routes/, middleware/, lib/
 views/     EJS templates (partials/, admin/)
 public/    css/, js/ (source), fonts/, img/, dist/ (generated)
-scripts/   build.js (esbuild), build-icons.js
+scripts/   build.js (esbuild), build-assets.js (icons), contrast.js
 ```

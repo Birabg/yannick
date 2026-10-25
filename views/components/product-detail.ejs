@@ -1,0 +1,61 @@
+<%
+  /* params: p (product), sheet (true inside the panel, false on the full page) */
+  const label = fmt.productLabel(p);
+  const fam = fmt.famKey(p);
+  const hasImage = !!p.image;
+  const src = hasImage ? imageUrl(p, 'lg') : '/img/bottle-placeholder.svg';
+  const H = sheet ? 'h2' : 'h1';
+  const acts = [['Top', p.notes.top], ['Heart', p.notes.heart], ['Base', p.notes.base]].filter(function (a) { return a[1].length; });
+  const meters = [['Longevity', p.longevity], ['Projection', p.projection]];
+%>
+<article class="detail fam--<%= fam %><%= sheet ? '' : ' detail--page' %>">
+  <div class="detail__photo">
+    <div class="photo">
+      <img class="photo__img" src="<%= src %>"<% if (hasImage) { %> srcset="<%= imageUrl(p, 'sm') %> 480w, <%= imageUrl(p, 'lg') %> 1000w" sizes="(min-width: 900px) 600px, 100vw"<% } %> width="1000" height="1250" alt="<%= label %> bottle"<%- sheet ? '' : ' fetchpriority="high"' %>>
+      <div class="photo__flags">
+        <% if (!p.inStock) { %><%- include('badge', { kind: 'soldout', label: 'Sold out' }) %><% } %>
+        <% if (p.isSample) { %><%- include('badge', { kind: 'sample', label: 'Sample' }) %><% } %>
+        <% site.badges.filter(function (b) { return p.badges.includes(b.key) && b.key !== 'featured'; }).forEach(function (b) { %><%- include('badge', { kind: b.key, label: b.label }) %><% }) %>
+      </div>
+    </div>
+  </div>
+  <div class="detail__body">
+    <p class="detail__brand"><%= p.brand %></p>
+    <<%= H %> class="detail__name"<%- sheet ? ' id="sheet-title"' : '' %>><%= p.name %></<%= H %>>
+    <p class="detail__meta"><%= [p.size, p.concentration, p.family].filter(Boolean).join(' · ') %></p>
+    <p class="detail__price"><small><%= site.currency %></small><%= p.price.toLocaleString('en-US') %></p>
+
+    <% if (p.description) { %><p class="detail__text"><%= p.description %></p><% } %>
+
+    <% if (acts.length) { %>
+    <div class="pyramid" role="list" aria-label="Fragrance notes">
+      <% acts.forEach(function (a) { %>
+      <div class="pyramid__row" role="listitem">
+        <span class="pyramid__label"><%= a[0] %></span>
+        <p class="pyramid__notes"><%= a[1].join(', ') %></p>
+      </div>
+      <% }) %>
+    </div>
+    <% } %>
+
+    <div class="meters">
+      <% meters.forEach(function (m) { %>
+      <div class="meter">
+        <span class="meter__label"><%= m[0] %></span>
+        <span class="meter__bars" role="img" aria-label="<%= m[0] %>: <%= m[1] %> out of 5">
+          <% for (let n = 1; n <= 5; n++) { %><span class="meter__bar<%= n <= m[1] ? ' is-on' : '' %>"></span><% } %>
+        </span>
+      </div>
+      <% }) %>
+    </div>
+
+    <div class="detail__actions">
+      <%- include('button', {
+        href: fmt.orderLink(p), external: true, ico: 'whatsapp', variant: p.inStock ? 'primary' : 'outline',
+        label: p.inStock ? 'Order on WhatsApp' : 'Ask when back in stock'
+      }) %>
+      <%- include('button', { href: 'tel:' + site.contact.phone, ico: 'phone', variant: 'outline', label: 'Call ' + site.contact.phoneDisplay }) %>
+    </div>
+    <p class="detail__note">Free delivery anywhere in Addis Ababa.</p>
+  </div>
+</article>

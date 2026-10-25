@@ -1,0 +1,35 @@
+<%
+  /* params: p (product), order (position in featured order) */
+  const label = fmt.productLabel(p);
+  const fam = fmt.famKey(p);
+  const hasImage = !!p.image;
+  const src = hasImage ? imageUrl(p, 'sm') : '/img/bottle-placeholder.svg';
+  const haystack = [p.name, p.brand, p.family, p.notes.top, p.notes.heart, p.notes.base].flat().join(' ').toLowerCase();
+%>
+<li class="grid__item" data-card
+    data-slug="<%= p.slug %>" data-label="<%= label %>" data-name="<%= p.name %>" data-brand="<%= p.brand %>"
+    data-price="<%= p.price %>" data-price-text="<%= fmt.price(p.price) %>" data-category="<%= p.category %>"
+    data-collections="<%= p.collections.join(' ') %>" data-fam="<%= fam %>" data-instock="<%= p.inStock ? 1 : 0 %>"
+    data-order="<%= order %>" data-search="<%= haystack %>">
+  <article class="card fam--<%= fam %><%= p.inStock ? '' : ' is-soldout' %>">
+    <div class="card__media">
+      <div class="photo">
+        <img class="photo__img" src="<%= src %>"<% if (hasImage) { %> srcset="<%= imageUrl(p, 'sm') %> 480w, <%= imageUrl(p, 'lg') %> 1000w" sizes="(min-width: 1280px) 380px, (min-width: 760px) 30vw, 92vw"<% } %> width="480" height="600" loading="lazy" decoding="async" alt="<%= label %> bottle">
+        <div class="photo__flags">
+          <% if (!p.inStock) { %><%- include('badge', { kind: 'soldout', label: 'Sold out' }) %><% } %>
+          <% if (p.isSample) { %><%- include('badge', { kind: 'sample', label: 'Sample' }) %><% } %>
+          <% site.badges.filter(function (b) { return p.badges.includes(b.key) && b.key !== 'featured'; }).forEach(function (b) { %><%- include('badge', { kind: b.key, label: b.label }) %><% }) %>
+        </div>
+      </div>
+      <a class="card__media-link" href="/perfume/<%= p.slug %>" data-open-product tabindex="-1" aria-hidden="true"></a>
+    </div>
+    <div class="card__body">
+      <p class="card__brand"><%= p.brand %></p>
+      <h3 class="card__name"><a class="card__link" href="/perfume/<%= p.slug %>" data-open-product><%= p.name %></a></h3>
+      <p class="card__line">
+        <span><%= [p.size, p.concentration].filter(Boolean).join(' · ') %></span>
+        <span class="card__price"><%= site.currency %> <%= p.price.toLocaleString('en-US') %></span>
+      </p>
+    </div>
+  </article>
+</li>

@@ -1,20 +1,23 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <title><%= seo.title %> | <%= site.brand.name %></title>
+  <meta name="theme-color" content="#ff5a1f">
+  <title><%= seo.title %> | <%= site.brand.name %> Admin</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/bodoni-moda-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="<%= asset('admin.css') %>">
 </head>
-<body class="admin">
-  <%- include('../partials/icons') %>
+<body class="admin" data-csrf="<%= csrfToken %>"<% if (query.saved) { %> data-toast="Saved."<% } else if (query.deleted) { %> data-toast="Deleted."<% } else if (query.changed) { %> data-toast="Password changed."<% } %>>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <%- include('../components/icons') %>
   <% if (locals.showNav !== false) { %>
-  <header class="admin-bar">
+  <header class="admin-bar tone--ink">
     <div class="admin-bar__inner">
-      <a class="admin-bar__brand" href="/admin"><%- icon('logo') %><span>Yannick Scents <small>Admin</small></span></a>
+      <a class="admin-bar__brand" href="/admin"><span>Yannick <em>Scents</em> <small>Admin</small></span></a>
       <nav class="admin-nav" aria-label="Admin">
         <a href="/admin" <%- active === 'products' ? 'aria-current="page"' : '' %>>Perfumes</a>
         <a href="/admin/reviews" <%- active === 'reviews' ? 'aria-current="page"' : '' %>>Reviews</a>
@@ -23,7 +26,7 @@
       </nav>
       <form method="post" action="/admin/logout">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <button class="btn btn-outline btn-sm" type="submit">Log out</button>
+        <button class="btn btn--paper btn--sm" type="submit"><span>Log out</span></button>
       </form>
     </div>
   </header>

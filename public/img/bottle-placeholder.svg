@@ -1,9 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500" role="img" aria-label="Photo coming soon">
-  <rect width="400" height="500" fill="#f1ebdf"/>
-  <rect x="172" y="70" width="56" height="52" rx="5" fill="#b9975a"/>
-  <rect x="164" y="118" width="72" height="24" rx="4" fill="#c9a45c"/>
-  <rect x="100" y="150" width="200" height="270" rx="26" fill="#e3d9c6" stroke="#b9975a" stroke-width="2"/>
-  <rect x="118" y="290" width="164" height="110" rx="16" fill="#d4c6a9"/>
-  <path d="M200 215l7 11-7 11-7-11z" fill="#b9975a"/>
-  <text x="200" y="465" text-anchor="middle" font-family="Georgia, serif" font-size="20" fill="#6b5f4b" letter-spacing="3">PHOTO COMING SOON</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500" role="img" aria-label="Bottle placeholder">
+  <rect width="400" height="500" fill="#ffffff"/>
+  <ellipse cx="200" cy="442" rx="110" ry="9" fill="#e4dccd"/>
+  <rect x="172" y="70" width="56" height="64" fill="#2a211c"/>
+  <rect x="164" y="128" width="72" height="12" fill="#a68a5b"/>
+  <rect x="190" y="140" width="20" height="22" fill="#d6c7ae"/>
+  <path d="M110 440 V240 Q110 176 176 164 H224 Q290 176 290 240 V440 Z" fill="#d9ccb6"/>
+  <rect x="120" y="290" width="160" height="140" fill="#b99c78"/>
+  <rect x="124" y="200" width="9" height="226" fill="#f6efe2" opacity="0.7"/>
+  <rect x="158" y="330" width="84" height="64" fill="#f7f3ec"/>
+  <rect x="158" y="330" width="84" height="64" fill="none" stroke="#a68a5b"/>
+  <rect x="172" y="354" width="56" height="1.5" fill="#1c1714"/>
+  <rect x="180" y="368" width="40" height="1.5" fill="#6b5f54"/>
 </svg>

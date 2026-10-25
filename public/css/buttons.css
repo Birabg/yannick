@@ -1,77 +1,192 @@
-/* ---------- Buttons ---------- */
+/* Buttons: rectangular, 2px radius, small caps. Primary = bordeaux. */
 .btn {
+  --b-bg: var(--bordeaux);
+  --b-fg: var(--ivory);
+  --b-border: var(--bordeaux);
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--s-2);
-  min-height: 48px;
-  padding: 0.7rem 1.4rem;
-  border: 1.5px solid transparent;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 1rem;
+  gap: var(--s-1);
+  min-height: 52px;
+  padding: 0.85rem 1.75rem;
+  border: 1px solid var(--b-border);
+  border-radius: var(--r);
+  background: var(--b-bg);
+  color: var(--b-fg);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
   line-height: 1.2;
-  text-decoration: none;
   text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transition:
-    background-color 0.2s,
-    border-color 0.2s,
-    transform 0.2s var(--ease),
-    box-shadow 0.2s;
+    background-color var(--d-fast) var(--ease),
+    color var(--d-fast) var(--ease),
+    border-color var(--d-fast) var(--ease);
 }
-.btn:hover {
-  transform: translateY(-2px);
+.btn:hover,
+.btn.is-hover {
+  --b-bg: #45121a;
+  --b-border: #45121a;
 }
-.btn-primary {
-  background: var(--accent-fill);
-  color: var(--on-accent);
+.btn:active,
+.btn.is-active {
+  --b-bg: #340d13;
+  --b-border: #340d13;
 }
-.btn-primary:hover {
-  background: var(--accent-fill-hover);
+
+/* Secondary: hairline outline. `paper` is kept as an alias for scripts and admin. */
+.btn--outline,
+.btn--paper {
+  --b-bg: transparent;
+  --b-fg: var(--fg);
+  --b-border: var(--ink);
 }
-.btn-wa {
-  background: var(--wa);
-  color: var(--on-wa, #fff);
+.btn--outline:hover,
+.btn--outline.is-hover,
+.btn--paper:hover,
+.btn--paper.is-hover {
+  --b-bg: var(--ink);
+  --b-fg: var(--ivory);
+  --b-border: var(--ink);
 }
-.btn-wa:hover {
-  background: var(--wa-hover);
+.btn--outline:active,
+.btn--outline.is-active,
+.btn--paper:active,
+.btn--paper.is-active {
+  --b-bg: #000;
+  --b-fg: var(--ivory);
 }
-.btn-outline {
-  border-color: var(--line);
-  background: transparent;
-  color: var(--text);
+.tone--ink .btn--outline,
+.tone--ink .btn--paper {
+  --b-fg: var(--ivory);
+  --b-border: var(--brass);
 }
-.btn-outline:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+.tone--ink .btn--outline:hover,
+.tone--ink .btn--paper:hover {
+  --b-bg: var(--ivory);
+  --b-fg: var(--ink);
+  --b-border: var(--ivory);
 }
-.btn-sm {
-  min-height: 44px;
-  padding: 0.5rem 1rem;
-  font-size: 0.9375rem;
+
+/* Dark solid */
+.btn--ink {
+  --b-bg: var(--ink);
+  --b-fg: var(--ivory);
+  --b-border: var(--ink);
 }
-.btn-lg {
-  min-height: 56px;
-  padding: 0.9rem 2rem;
-  font-size: 1.0625rem;
+.btn--ink:hover,
+.btn--ink.is-hover {
+  --b-bg: var(--bordeaux);
+  --b-border: var(--bordeaux);
+}
+/* On dark sections the solid button inverts. */
+.tone--ink .btn--primary {
+  --b-bg: var(--ivory);
+  --b-fg: var(--ink);
+  --b-border: var(--ivory);
+}
+.tone--ink .btn--primary:hover {
+  --b-bg: var(--brass);
+  --b-border: var(--brass);
+}
+
+.btn--sm {
+  min-height: 48px;
+  padding: 0.6rem 1.15rem;
+  font-size: 0.75rem;
+}
+.btn--lg {
+  min-height: 58px;
+  padding-inline: 2.25rem;
+}
+.btn--block {
+  display: flex;
+  width: 100%;
+}
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  --b-bg: var(--stone);
+  --b-fg: var(--taupe);
+  --b-border: var(--hair);
+  cursor: not-allowed;
+}
+
+/* Loading */
+.btn__spinner {
+  display: none;
+  width: 1em;
+  height: 1em;
+  border: 1px solid currentcolor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 900ms linear infinite;
+}
+.btn[aria-busy='true'] .btn__spinner,
+.btn.is-loading .btn__spinner {
+  display: inline-block;
+}
+.btn[aria-busy='true'] {
+  pointer-events: none;
+  opacity: 0.8;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Text link with a drawn underline */
+.link {
+  position: relative;
+  display: inline-block;
+  padding-block: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.link::after,
+.ulink::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: currentcolor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--d-base) var(--ease);
+}
+.link:hover::after,
+.ulink:hover::after,
+.link:focus-visible::after {
+  transform: scaleX(1);
+}
+.ulink {
+  position: relative;
+  display: inline-block;
 }
 
 .icon-btn {
   display: inline-grid;
   place-items: center;
-  min-width: 44px;
-  min-height: 44px;
+  width: 48px;
+  height: 48px;
   padding: 0;
-  border: 1px solid var(--line);
-  border-radius: 999px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
   background: transparent;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  line-height: 1;
+  color: inherit;
+  transition:
+    border-color var(--d-fast) var(--ease),
+    background-color var(--d-fast) var(--ease);
 }
-.icon-btn:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--accent);
+.icon-btn:hover {
+  border-color: var(--ink);
 }
 .icon-btn:disabled {
   opacity: 0.35;

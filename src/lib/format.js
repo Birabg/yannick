@@ -19,6 +19,10 @@ const productLabel = (p) =>
 /** Text a product URL slug is built from, e.g. "bleu-de-chanel-100ml". */
 const slugSource = (p) => [brandPrefix(p), p.name, p.size].filter(Boolean).join(' ');
 
+/** The scent family that colours a product: fresh, woody, oriental, or none. */
+const famKey = (p) =>
+  ['fresh', 'woody', 'oriental'].find((k) => p.collections.includes(k)) || 'none';
+
 const waLink = (text) => `https://wa.me/${site.contact.whatsapp}?text=${encodeURIComponent(text)}`;
 
 const orderLink = (p) =>
@@ -45,6 +49,7 @@ module.exports = {
   abbreviate,
   productLabel,
   slugSource,
+  famKey,
   waLink,
   orderLink,
   genericLink,

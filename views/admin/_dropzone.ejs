@@ -1,0 +1,12 @@
+<%
+  /* params: name, src (current image url or ''), alt */
+%><div class="dropzone<%= src ? ' has-image' : '' %>" data-dropzone>
+  <img class="dropzone__img" src="<%= src || '/img/bottle-placeholder.svg' %>" width="160" height="200" alt="<%= alt %>" data-dropzone-img>
+  <div class="dropzone__text">
+    <span class="dropzone__icon"><%- icon('upload') %></span>
+    <p class="dropzone__title">Drag a photo here</p>
+    <p class="hint">or tap to choose. JPG, PNG or WebP, up to 5 MB. It is resized and converted automatically.</p>
+    <p class="field__error" role="alert" data-dropzone-error hidden></p>
+  </div>
+  <input class="dropzone__input" type="file" name="<%= name %>" accept="image/jpeg,image/png,image/webp" aria-label="Choose a photo">
+</div>

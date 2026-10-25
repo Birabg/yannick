@@ -1,90 +1,131 @@
+/* Design tokens. Source of truth: DESIGN.md */
+
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/inter-latin-wght-normal.woff2') format('woff2');
+  font-family: 'Bodoni Moda';
+  src: url('/fonts/bodoni-moda-latin-wght-normal.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Bodoni Moda';
+  src: url('/fonts/bodoni-moda-latin-wght-italic.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Jost';
+  src: url('/fonts/jost-latin-wght-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
+/* The Ethiopic faces download only when Amharic text is on the page. */
 @font-face {
-  font-family: 'Cormorant Garamond';
-  src: url('/fonts/cormorant-garamond-latin-wght-normal.woff2') format('woff2');
-  font-weight: 300 700;
+  font-family: 'Noto Serif Ethiopic';
+  src: url('/fonts/noto-serif-ethiopic-ethiopic-wght-normal.woff2') format('woff2');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+1200-139F, U+2D80-2DDF, U+AB00-AB2F;
 }
 @font-face {
-  font-family: 'Cormorant Garamond';
-  src: url('/fonts/cormorant-garamond-latin-wght-italic.woff2') format('woff2');
-  font-weight: 300 700;
-  font-style: italic;
+  font-family: 'Noto Sans Ethiopic';
+  src: url('/fonts/noto-sans-ethiopic-ethiopic-wght-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
   font-display: swap;
+  unicode-range: U+1200-139F, U+2D80-2DDF, U+AB00-AB2F;
 }
 
 :root {
-  --font-body:
-    'Inter', 'Noto Sans Ethiopic', 'Nyala', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Cormorant Garamond', 'Noto Serif Ethiopic', 'Nyala', Georgia, serif;
+  /* colour */
+  --ivory: #f7f3ec;
+  --stone: #eae3d7;
+  --white: #fdfbf7;
+  --ink: #1c1714;
+  --taupe: #6b5f54;
+  --taupe-dark: #b3a798;
+  --bordeaux: #5b1a24;
+  --brass: #a68a5b;
+  --hair: #d9d0c1;
+  --danger: #8c1d18;
+  --danger-bg: #f3e1de;
 
-  /* spacing scale */
-  --s-1: 0.25rem;
-  --s-2: 0.5rem;
-  --s-3: 0.75rem;
-  --s-4: 1rem;
-  --s-5: 1.5rem;
-  --s-6: 2rem;
-  --s-7: 3rem;
-  --s-8: 4.5rem;
-  --s-9: 6.5rem;
+  /* semantic (sections re-map these) */
+  --bg: var(--ivory);
+  --fg: var(--ink);
+  --soft: var(--taupe);
+  --rule: var(--hair);
+  --accent: var(--bordeaux);
 
-  --radius: 14px;
-  --radius-sm: 8px;
-  --container: 1180px;
-  --header-h: 68px;
-  --bar-h: 72px;
+  /* type */
+  --font-display: 'Bodoni Moda', 'Noto Serif Ethiopic', 'Didot', Georgia, serif;
+  --font-body: 'Jost', 'Noto Sans Ethiopic', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --t-xl: clamp(3rem, 1.6rem + 7.4vw, 7.5rem);
+  --t-l: clamp(2.4rem, 1.7rem + 3.4vw, 4.6rem);
+  --t-m: clamp(1.6rem, 1.3rem + 1.4vw, 2.2rem);
+  --t-s: clamp(1.35rem, 1.2rem + 0.6vw, 1.6rem);
+  --t-lead: clamp(1.2rem, 1.1rem + 0.5vw, 1.4rem);
+  --t-body: 1.0625rem;
+  --t-small: 0.9375rem;
+  --t-label: 0.78rem;
+
+  /* space: 8px scale */
+  --s-1: 0.5rem;
+  --s-2: 1rem;
+  --s-3: 1.5rem;
+  --s-4: 2rem;
+  --s-5: 3rem;
+  --s-6: 4rem;
+  --s-7: 6rem;
+  --s-8: 8rem;
+  --s-9: 10rem;
+  --section: clamp(6rem, 4rem + 8vw, 10rem);
+
+  /* shape */
+  --r: 2px;
+  --line: 1px solid var(--rule);
+  --container: 1240px;
+  --gutter: 1.25rem;
+  --header-h: 72px;
+  --bar-h: 56px;
+
+  /* motion */
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --d-fast: 300ms;
+  --d-base: 500ms;
+  --d-slow: 800ms;
+  --d-image: 900ms;
+}
+@media (min-width: 760px) {
+  :root {
+    --gutter: 2rem;
+    --header-h: 88px;
+  }
+}
+@media (min-width: 1200px) {
+  :root {
+    --gutter: 3rem;
+  }
 }
 
-/* Dark is the signature look; light is the ivory alternative. */
-:root,
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --bg: #0e0c0a;
-  --bg-alt: #151210;
-  --surface: #1b1814;
-  --surface-2: #231f1a;
-  --text: #f4ede0;
-  --muted: #b8ad9b;
-  --line: rgba(244, 237, 224, 0.14);
-  --accent: #d4b06a;
-  --accent-fill: #c9a45c;
-  --accent-fill-hover: #d8b872;
-  --on-accent: #15110b;
-  --wa: #0f7a3f;
-  --wa-hover: #0c6636;
-  --on-wa: #ffffff;
-  --focus: #f0d28f;
-  --shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
-  --danger: #ff8f84;
-  --paper: #f1ebdf;
-  --on-paper: #1a1612;
+/* Section tones. Every section picks one. */
+.tone--ivory {
+  background-color: var(--ivory);
 }
-
-:root[data-theme='light'] {
-  color-scheme: light;
-  --bg: #faf6ee;
-  --bg-alt: #f2ebdd;
-  --surface: #ffffff;
-  --surface-2: #f6f0e4;
-  --text: #1a1612;
-  --muted: #5b5143;
-  --line: rgba(26, 22, 18, 0.16);
-  --accent: #7a5c1c;
-  --accent-fill: #c19a4b;
-  --accent-fill-hover: #cfa95a;
-  --on-accent: #1a1308;
-  --wa: #0f7a3f;
-  --wa-hover: #0c6636;
-  --focus: #7a5c1c;
-  --shadow: 0 18px 40px -22px rgba(60, 40, 10, 0.35);
-  --danger: #b3261e;
+.tone--stone {
+  --bg: var(--stone);
+  background-color: var(--stone);
+}
+.tone--ink {
+  --bg: var(--ink);
+  --fg: var(--ivory);
+  --soft: var(--taupe-dark);
+  --rule: rgb(166 138 91 / 0.45);
+  --accent: var(--brass);
+  background-color: var(--ink);
+  color: var(--ivory);
 }

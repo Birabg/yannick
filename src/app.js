@@ -1,4 +1,6 @@
+const fs = require('node:fs');
 const path = require('node:path');
+const crypto = require('node:crypto');
 const express = require('express');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -12,23 +14,45 @@ const { imageUrl } = require('./lib/seo');
 const publicRoutes = require('./routes/public');
 const seoRoutes = require('./routes/seo');
 const adminRoutes = require('./routes/admin');
+const styleguideRoutes = require('./routes/styleguide');
 
 const forever = { maxAge: '365d', immutable: true, index: false };
+const escapeHtml = (s) =>
+  String(s).replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
+  );
+
+/** Critical CSS is inlined in production (built by scripts/build.js). */
+function readCriticalCss() {
+  if (!isProd) return '';
+  try {
+    return fs.readFileSync(path.join(root, 'public/dist/css/critical.css'), 'utf8');
+  } catch {
+    return '';
+  }
+}
 
 function createApp() {
   const app = express();
+  const criticalCss = readCriticalCss();
   app.set('view engine', 'ejs');
   app.set('views', path.join(root, 'views'));
   app.disable('x-powered-by');
   if (isProd) app.set('trust proxy', 1);
 
+  // A fresh nonce per request lets us inline the critical CSS without 'unsafe-inline'.
+  app.use((req, res, next) => {
+    res.locals.cspNonce = crypto.randomBytes(16).toString('base64');
+    next();
+  });
   app.use(
     helmet({
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          scriptSrc: ["'self'"],
-          styleSrc: ["'self'"],
+          scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
+          styleSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
           imgSrc: ["'self'", 'data:', 'blob:'],
           fontSrc: ["'self'"],
           connectSrc: ["'self'"],
@@ -60,10 +84,13 @@ function createApp() {
       asset,
       fmt: format,
       imageUrl,
+      criticalCss,
       icon: (name, cls = '') =>
         `<svg class="icon ${cls}" aria-hidden="true" focusable="false"><use href="#i-${name}"/></svg>`,
       t: (key) => i18n.en[key] ?? key,
       i: (key) => `data-i18n="${key}"`,
+      /** Escapes text, then turns *word* into the italic serif accent. */
+      rich: (text) => escapeHtml(text).replace(/\*([^*]+)\*/g, '<em>$1</em>'),
       year: new Date().getFullYear(),
       seo: {},
       path: req.path,
@@ -72,6 +99,7 @@ function createApp() {
   });
 
   app.use(seoRoutes);
+  app.use('/styleguide', styleguideRoutes);
   app.use('/admin', adminRoutes);
   app.use(publicRoutes);
 

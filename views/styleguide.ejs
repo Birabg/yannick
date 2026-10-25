@@ -1,0 +1,185 @@
+<%
+  const swatches = [
+    ['Ivory', '--ivory', '#F7F3EC', 'Main background'],
+    ['Stone', '--stone', '#EAE3D7', 'Alternate sections, image backdrops'],
+    ['Soft white', '--white', '#FDFBF7', 'Inputs, panels'],
+    ['Ink', '--ink', '#1C1714', 'Text and dark sections'],
+    ['Taupe', '--taupe', '#6B5F54', 'Secondary text (5.6:1 on ivory)'],
+    ['Bordeaux', '--bordeaux', '#5B1A24', 'The one accent: buttons, links, focus'],
+    ['Brass', '--brass', '#A68A5B', 'Hairlines and tiny details only'],
+    ['Hairline', '--hair', '#D9D0C1', '1px borders on light'],
+    ['Danger', '--danger', '#8C1D18', 'Errors only'],
+  ];
+  const sample = function (extra) {
+    return Object.assign({
+      id: 900, slug: 'sample', name: 'Bleu de Chanel', brand: 'Chanel', size: '100ml', concentration: 'Eau de Parfum',
+      price: 15000, category: 'men', collections: ['men', 'woody'], family: 'Woody Aromatic', badges: [], image: '',
+      inStock: true, isSample: true, longevity: 4, projection: 3, description: '',
+      notes: { top: ['Grapefruit'], heart: ['Ginger'], base: ['Cedar'] },
+    }, extra || {});
+  };
+%>
+<%- include('partials/head') %>
+<main id="main" class="styleguide">
+  <section class="section tone--ivory">
+    <div class="container">
+      <p class="label"><span class="label__num">i</span>Internal</p>
+      <h1 class="sec-title">Style <em>guide</em></h1>
+      <p class="sec-lead">Every token and component the site uses, in every state. Not linked anywhere, and hidden from search engines.</p>
+      <nav class="sg-toc" aria-label="Sections">
+        <a class="link" href="#colour">Colour</a><a class="link" href="#type">Type</a><a class="link" href="#space">Spacing</a><a class="link" href="#buttons">Buttons</a>
+        <a class="link" href="#tabs">Tabs and tags</a><a class="link" href="#cards">Cards</a><a class="link" href="#detail">Panel</a><a class="link" href="#forms">Fields</a><a class="link" href="#feedback">Feedback</a><a class="link" href="#motion">Motion</a>
+      </nav>
+    </div>
+  </section>
+
+  <section class="section tone--stone" id="colour" aria-labelledby="sg-colour">
+    <div class="container">
+      <h2 class="sg-h" id="sg-colour">Colour</h2>
+      <ul class="sg-swatches">
+        <% swatches.forEach(function (s) { %>
+        <li class="sg-swatch"><span class="sg-swatch__chip sg-c<%= s[1] %>"></span><strong><%= s[0] %></strong><code><%= s[2] %></code><span><%= s[3] %></span></li>
+        <% }) %>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section tone--ink" id="type" aria-labelledby="sg-type">
+    <div class="container">
+      <h2 class="sg-h" id="sg-type">Type</h2>
+      <p class="label">Display: Bodoni Moda, regular, italic accents</p>
+      <p class="sg-xl">A Good Scent <em>Speaks</em> First</p>
+      <p class="label">Section title</p>
+      <p class="sec-title">The <em>Collection</em></p>
+      <p class="label">Heading M / S</p>
+      <p class="sg-m">One perfume, three acts</p>
+      <p class="sg-s">Top, Heart, Base</p>
+      <p class="label">Body and UI: Jost, 17px, 1.7 line height, 65ch measure</p>
+      <p class="sg-lead">Original bottles from six houses, delivered free in Addis.</p>
+      <p>Body text is 17px on every screen so a phone in daylight stays readable. Paragraphs never run wider than about 65 characters.</p>
+      <p class="sg-small">Small text is 15px. Eyebrow labels are uppercase with wide tracking.</p>
+      <p class="label">Amharic: Noto Serif / Sans Ethiopic</p>
+      <p lang="am" class="sg-lead">ጥሩ መዓዛ መጀመሪያ ይናገራል</p>
+    </div>
+  </section>
+
+  <section class="section tone--ivory" id="space" aria-labelledby="sg-space">
+    <div class="container">
+      <h2 class="sg-h" id="sg-space">Spacing and shape</h2>
+      <ul class="sg-space">
+        <% [['s-1', '8px'], ['s-2', '16px'], ['s-3', '24px'], ['s-4', '32px'], ['s-5', '48px'], ['s-6', '64px'], ['s-7', '96px'], ['s-8', '128px']].forEach(function (s) { %>
+        <li><code>--<%= s[0] %></code><span class="sg-space__bar sg-w-<%= s[0] %>"></span><%= s[1] %></li>
+        <% }) %>
+      </ul>
+      <p class="sg-note">Radius is 2px everywhere. The only curve is the arched founder portrait.</p>
+    </div>
+  </section>
+
+  <section class="section tone--stone" id="buttons" aria-labelledby="sg-buttons">
+    <div class="container">
+      <h2 class="sg-h" id="sg-buttons">Buttons</h2>
+      <% [['primary', 'Primary'], ['outline', 'Secondary'], ['ink', 'Dark']].forEach(function (v) { %>
+      <div class="sg-row">
+        <span class="sg-row__label"><%= v[1] %></span>
+        <%- include('components/button', { label: 'Default', variant: v[0] }) %>
+        <%- include('components/button', { label: 'Hover', variant: v[0], cls: 'is-hover' }) %>
+        <%- include('components/button', { label: 'Pressed', variant: v[0], cls: 'is-active' }) %>
+        <%- include('components/button', { label: 'Loading', variant: v[0], attrs: 'aria-busy="true"' }) %>
+        <%- include('components/button', { label: 'Disabled', variant: v[0], attrs: 'disabled' }) %>
+      </div>
+      <% }) %>
+      <div class="sg-row">
+        <span class="sg-row__label">Sizes and links</span>
+        <%- include('components/button', { label: 'Small', size: 'sm' }) %>
+        <%- include('components/button', { label: 'Large', size: 'lg', ico: 'whatsapp' }) %>
+        <a class="link" href="#buttons">Text link</a>
+        <button class="icon-btn" type="button" aria-label="Menu"><%- icon('menu') %></button>
+      </div>
+      <div class="sg-dark tone--ink">
+        <span class="sg-row__label">On ink</span>
+        <%- include('components/button', { label: 'Primary' }) %>
+        <%- include('components/button', { label: 'Secondary', variant: 'outline' }) %>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tone--ivory" id="tabs" aria-labelledby="sg-tabs">
+    <div class="container">
+      <h2 class="sg-h" id="sg-tabs">Tabs and tags</h2>
+      <div class="tabs">
+        <%- include('components/tab', { filter: 'all', label: 'All', pressed: true }) %>
+        <%- include('components/tab', { filter: 'men', label: 'Men', pressed: false }) %>
+        <%- include('components/tab', { filter: 'women', label: 'Women', pressed: false }) %>
+        <%- include('components/tab', { filter: 'fresh', label: 'Fresh & Citrus', pressed: false }) %>
+      </div>
+      <div class="sg-row">
+        <%- include('components/badge', { kind: 'new', label: 'New' }) %>
+        <%- include('components/badge', { kind: 'bestseller', label: 'Best Seller' }) %>
+        <%- include('components/badge', { kind: 'sample', label: 'Sample' }) %>
+        <%- include('components/badge', { kind: 'soldout', label: 'Sold out' }) %>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tone--stone" id="cards" aria-labelledby="sg-cards">
+    <div class="container">
+      <h2 class="sg-h" id="sg-cards">Product cards</h2>
+      <p class="sg-note">No box and no shadow. A hairline draws in under the card on hover; the image zooms to 1.03.</p>
+      <ul class="grid sg-grid">
+        <%- include('components/product-card', { p: sample({ badges: ['new'] }), order: 1 }) %>
+        <%- include('components/product-card', { p: sample({ name: 'Libre', brand: 'Yves Saint Laurent', badges: ['bestseller'] }), order: 2 }) %>
+        <%- include('components/product-card', { p: sample({ name: 'Sold Out Example', inStock: false }), order: 3 }) %>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section tone--ivory" id="detail" aria-labelledby="sg-detail">
+    <div class="container">
+      <h2 class="sg-h" id="sg-detail">Panel content</h2>
+      <div class="sg-panel">
+        <%- include('components/product-detail', { p: sample(), sheet: true }) %>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tone--stone" id="forms" aria-labelledby="sg-forms">
+    <div class="container sg-form">
+      <h2 class="sg-h" id="sg-forms">Fields</h2>
+      <label class="field"><span class="field__label">Default</span><input class="input" placeholder="Placeholder"></label>
+      <label class="field"><span class="field__label">Focused</span><input class="input is-focus" value="Typing here"></label>
+      <label class="field has-error"><span class="field__label">Error</span><input class="input is-error" value="abc" aria-invalid="true"><span class="field__error">Enter a number, for example 15000.</span></label>
+      <label class="field"><span class="field__label">Disabled</span><input class="input" value="Locked" disabled></label>
+    </div>
+  </section>
+
+  <section class="section tone--ink" id="feedback" aria-labelledby="sg-feedback">
+    <div class="container">
+      <h2 class="sg-h" id="sg-feedback">Feedback states</h2>
+      <p class="label">Toasts</p>
+      <div class="sg-stack">
+        <p class="toast sg-static">Saved.</p>
+        <p class="toast toast--error sg-static">That did not save. Check your connection.</p>
+      </div>
+      <p class="label">Loading skeleton</p>
+      <div class="sg-stack sg-skel"><div class="skeleton skeleton--tall"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+      <p class="label">Empty state</p>
+      <div class="empty sg-empty"><p class="empty__title">Nothing matches that.</p><p>Try fewer filters or a different word.</p></div>
+    </div>
+  </section>
+
+  <section class="section tone--ivory" id="motion" aria-labelledby="sg-motion">
+    <div class="container">
+      <h2 class="sg-h" id="sg-motion">Motion</h2>
+      <ul class="sg-motion">
+        <li><code>--d-fast</code> 300ms: colour changes</li>
+        <li><code>--d-base</code> 500ms: underlines, panels, accordions</li>
+        <li><code>--d-slow</code> 800ms: reveals (fade plus 16px rise)</li>
+        <li><code>--d-image</code> 900ms: image zoom to 1.03</li>
+        <li><code>--ease</code> cubic-bezier(0.22, 0.61, 0.36, 1)</li>
+      </ul>
+      <p>Only <code>transform</code> and <code>opacity</code> animate. With reduced motion switched on, nothing moves.</p>
+    </div>
+  </section>
+</main>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<%- include('partials/foot') %>

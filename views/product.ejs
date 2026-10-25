@@ -1,10 +1,12 @@
 <%- include('partials/head') %>
-<main id="main" class="section">
-  <div class="container">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="/#collection">&larr; Back to the collection</a>
+<main id="main" class="tone--ivory">
+  <div class="container section">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> / <a href="/#collection">Collection</a> / <span aria-current="page"><%= p.name %></span>
     </nav>
-    <%- include('partials/product-detail', { p, modal: false }) %>
+    <%- include('components/product-detail', { p: p, sheet: false }) %>
+    <p class="crumbs"><a class="ulink" href="/#collection">&larr; Back to the collection</a></p>
   </div>
 </main>
+<div class="toasts" id="toasts" aria-live="polite"></div>
 <%- include('partials/foot') %>
