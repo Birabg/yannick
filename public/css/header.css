@@ -35,7 +35,7 @@
   white-space: nowrap;
 }
 .logo em {
-  font-style: italic;
+  font-weight: 700;
 }
 
 /* Desktop: the nav's two lists sit either side of the wordmark. */
@@ -50,27 +50,22 @@
   display: inline-block;
   padding: 0.6rem 0;
   white-space: nowrap;
-  font-size: 0.78rem;
+  font-size: var(--t-small);
   font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  transition: color var(--d-fast) var(--ease);
 }
-.nav__link::after {
-  content: '';
-  position: absolute;
-  inset: auto 0 0.35rem;
-  height: 1px;
-  background: var(--c-accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--d-base) var(--ease);
-}
-.nav__link:hover::after,
-.nav__link:focus-visible::after {
-  transform: scaleX(1);
+.nav__link:hover {
+  color: var(--c-accent);
 }
 .nav__link--cta {
-  color: var(--c-accent);
+  padding: 0.5rem 1rem;
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+}
+.nav__link--cta:hover {
+  background: color-mix(in srgb, var(--c-accent) 84%, #000);
+  color: var(--c-on-accent);
 }
 .lang-toggle {
   min-width: 48px;
@@ -81,7 +76,6 @@
   font-family: system-ui, 'Nyala', 'Abyssinica SIL', sans-serif;
   font-size: 0.78rem;
   font-weight: 500;
-  letter-spacing: 0.16em;
 }
 .lang-toggle:hover {
   color: var(--c-accent);

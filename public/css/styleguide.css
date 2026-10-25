@@ -69,7 +69,6 @@
 .sg-s {
   font-family: var(--font-display);
   font-size: var(--t-s);
-  font-style: italic;
 }
 .sg-lead {
   font-size: var(--t-lead);
@@ -132,8 +131,6 @@
   flex: 0 0 100%;
   color: var(--c-muted);
   font-size: var(--t-label);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
 }
 .sg-dark {
   display: flex;
@@ -166,8 +163,6 @@
 .sg-form .field__label {
   color: var(--c-muted);
   font-size: var(--t-label);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
 }
 .sg-form .input.is-error {
   border-color: var(--c-danger);

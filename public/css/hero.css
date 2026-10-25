@@ -27,8 +27,6 @@
   margin: 0 0 var(--s-2);
   color: var(--c-muted);
   font-size: var(--t-label);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
 }
 .hero__title {
   margin-bottom: var(--s-3);
@@ -61,8 +59,6 @@
   border-top: 1px solid var(--c-border);
   color: var(--c-muted);
   font-size: var(--t-label);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
 }
 @media (min-width: 560px) {
   .hero__facts {

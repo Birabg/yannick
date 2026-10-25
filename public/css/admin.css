@@ -61,7 +61,6 @@
   height: 28px;
 }
 .admin-bar__brand em {
-  font-style: italic;
 }
 .admin-bar__brand small {
   margin-left: 6px;
@@ -71,8 +70,6 @@
   color: var(--c-accent-inv);
   font-family: var(--font-body);
   font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
 }
 .admin-nav {
   display: flex;
@@ -87,8 +84,6 @@
   align-items: center;
   min-height: 48px;
   font-size: 0.78rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
 }
 .admin-nav a::after {
   content: '';
@@ -131,7 +126,6 @@
   margin-left: 0.3em;
   color: var(--c-accent);
   font-size: 0.5em;
-  font-style: italic;
   vertical-align: super;
 }
 
@@ -247,8 +241,6 @@
   padding: 0 var(--s-1);
   color: var(--c-muted);
   font-size: var(--t-label);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
 }
 .grid-2,
 .grid-3 {
@@ -272,8 +264,6 @@
 .field__label {
   color: var(--c-muted);
   font-size: var(--t-label);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
 }
 .field input:not([type='checkbox']):not([type='range']):not([type='file']),
 .field select,
@@ -336,8 +326,6 @@
   margin-bottom: var(--s-1);
   color: var(--c-muted);
   font-size: var(--t-label);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
 }
 .checks .hint {
   width: 100%;
