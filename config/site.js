@@ -29,8 +29,8 @@ module.exports = {
     tiktok: 'https://www.tiktok.com/@yannickscents',
     tiktokHandle: '@yannickscents',
     credit: {
-      label: 'Andromeda Technologies',
-      url: 'https://www.instagram.com/andro_medatechnologies',
+      label: 'Bira Girma',
+      url: 'mailto:biragirma4@gmail.com',
     },
   },
 

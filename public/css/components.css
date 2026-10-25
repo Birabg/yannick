@@ -547,7 +547,8 @@ html.sheet-open {
   color: var(--c-on-accent);
 }
 @media (max-width: 899px) {
-  body {
+  /* the footer carries the space under the bar itself, so no paper strip shows below it */
+  body:not(:has(.foot)) {
     padding-bottom: calc(var(--bar-h) + env(safe-area-inset-bottom));
   }
 }

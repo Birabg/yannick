@@ -150,13 +150,20 @@ const productFromForm = (value, existing) =>
 /** Columns that describe a saved photo (empty when there is none). */
 const photoFields = (shot) =>
   shot
-    ? { image: shot.base, img_w: shot.width, img_h: shot.height, cutout: shot.cutout ? 1 : 0 }
+    ? {
+        image: shot.base,
+        img_w: shot.width,
+        img_h: shot.height,
+        cut_w: shot.cutW,
+        cut_h: shot.cutH,
+      }
     : { image: '' };
 const keepPhoto = (p) => ({
   image: p.image,
   img_w: p.imageW,
   img_h: p.imageH,
-  cutout: p.cutout ? 1 : 0,
+  cut_w: p.cutW,
+  cut_h: p.cutH,
 });
 
 function uniqueSlug(base, exceptId = 0) {

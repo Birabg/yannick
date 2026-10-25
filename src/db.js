@@ -63,6 +63,8 @@ const ADDED_COLUMNS = {
   tint: "TEXT NOT NULL DEFAULT ''",
   needs_details: 'INTEGER NOT NULL DEFAULT 0',
   cutout: 'INTEGER NOT NULL DEFAULT 0',
+  cut_w: 'INTEGER NOT NULL DEFAULT 0',
+  cut_h: 'INTEGER NOT NULL DEFAULT 0',
   description_en: "TEXT NOT NULL DEFAULT ''",
   description_am: "TEXT NOT NULL DEFAULT ''",
   tagline_en: "TEXT NOT NULL DEFAULT ''",
@@ -91,6 +93,8 @@ const PRODUCT_DEFAULTS = {
   tint: '',
   needs_details: 0,
   cutout: 0,
+  cut_w: 0,
+  cut_h: 0,
   description_en: '',
   description_am: '',
   tagline_en: '',
@@ -143,6 +147,8 @@ function toProduct(r) {
     focusY: r.focus_y,
     fit: r.fit,
     cutout: r.cutout === 1,
+    cutW: r.cut_w,
+    cutH: r.cut_h,
     tint: r.tint,
     // Flagged by hand, or while the owner still has to confirm a price, size or concentration.
     needsDetails: r.needs_details === 1 || r.price <= 0 || !r.size || !r.concentration,
@@ -172,13 +178,13 @@ const products = {
       .prepare(
         `INSERT INTO products (slug, name, brand, price, size, concentration, category, collections,
           family, longevity, projection, description, top_notes, heart_notes, base_notes, badges,
-          image, img_w, img_h, img_alt, focus_x, focus_y, fit, tint, needs_details, cutout,
+          image, img_w, img_h, img_alt, focus_x, focus_y, fit, tint, needs_details, cutout, cut_w, cut_h,
           description_en, description_am, tagline_en, tagline_am, meta_description,
           description_status, am_reviewed, in_stock, is_sample, sort_order)
          VALUES (@slug, @name, @brand, @price, @size, @concentration, @category, @collections,
           @family, @longevity, @projection, @description, @top_notes, @heart_notes, @base_notes,
           @badges, @image, @img_w, @img_h, @img_alt, @focus_x, @focus_y, @fit, @tint,
-          @needs_details, @cutout, @description_en, @description_am, @tagline_en, @tagline_am,
+          @needs_details, @cutout, @cut_w, @cut_h, @description_en, @description_am, @tagline_en, @tagline_am,
           @meta_description, @description_status, @am_reviewed, @in_stock, @is_sample, @sort_order)`
       )
       .run({ ...PRODUCT_DEFAULTS, ...p, sort_order: top });
@@ -193,7 +199,7 @@ const products = {
         top_notes=@top_notes, heart_notes=@heart_notes, base_notes=@base_notes, badges=@badges,
         image=@image, img_w=@img_w, img_h=@img_h, img_alt=@img_alt, focus_x=@focus_x,
         focus_y=@focus_y, fit=@fit, tint=@tint, needs_details=@needs_details,
-        cutout=@cutout, description_en=@description_en, description_am=@description_am,
+        cutout=@cutout, cut_w=@cut_w, cut_h=@cut_h, description_en=@description_en, description_am=@description_am,
         tagline_en=@tagline_en, tagline_am=@tagline_am, meta_description=@meta_description,
         description_status=@description_status, am_reviewed=@am_reviewed, in_stock=@in_stock, is_sample=@is_sample, updated_at=datetime('now')
        WHERE id=@id`
@@ -202,12 +208,12 @@ const products = {
 
   remove: (id) => db.prepare('DELETE FROM products WHERE id = ?').run(id),
 
-  setPhoto: (id, { image, img_w, img_h, cutout }) =>
+  setPhoto: (id, { image, img_w, img_h, cut_w = 0, cut_h = 0 }) =>
     db
       .prepare(
-        "UPDATE products SET image = ?, img_w = ?, img_h = ?, cutout = ?, updated_at = datetime('now') WHERE id = ?"
+        "UPDATE products SET image = ?, img_w = ?, img_h = ?, cut_w = ?, cut_h = ?, updated_at = datetime('now') WHERE id = ?"
       )
-      .run(image, img_w, img_h, cutout, id),
+      .run(image, img_w, img_h, cut_w, cut_h, id),
 
   setStock: (id, inStock) =>
     db

@@ -1,0 +1,250 @@
+/* ---------- Footer: always dark, photo fading up from the bottom, giant cropped wordmark ---------- */
+.foot {
+  --foot-ink: #14110f;
+  --foot-text: #f2eee8;
+  --foot-muted: rgba(242, 238, 232, 0.72);
+  --foot-faint: rgba(242, 238, 232, 0.66);
+  --foot-amber: #ffa100;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: clamp(72px, 9vw, 120px);
+  padding-bottom: calc(var(--bar-h) + env(safe-area-inset-bottom));
+  background: var(--foot-ink);
+  color: var(--foot-text);
+}
+@media (min-width: 900px) {
+  .foot {
+    min-height: 100svh;
+    padding-bottom: 0;
+  }
+}
+
+/* the photo: lower ~65% on desktop, edge to edge, fading up into the dark band */
+.foot__photo {
+  position: absolute;
+  z-index: -1;
+  inset: auto 0 0 0;
+  height: 65%;
+  overflow: hidden;
+  /* shown if the image is missing or fails: dark to deep amber */
+  background: linear-gradient(to bottom, var(--foot-ink) 0%, #3a2209 62%, #8a4e08 100%);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    rgba(0, 0, 0, 0.12) 12%,
+    rgba(0, 0, 0, 0.4) 28%,
+    rgba(0, 0, 0, 0.75) 50%,
+    #000 78%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    rgba(0, 0, 0, 0.12) 12%,
+    rgba(0, 0, 0, 0.4) 28%,
+    rgba(0, 0, 0, 0.75) 50%,
+    #000 78%
+  );
+}
+.foot__photo picture {
+  display: contents;
+}
+.foot__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 70% 58%;
+  transform: scale(var(--foot-scale, 1));
+  transform-origin: 70% 60%;
+  will-change: transform;
+}
+.foot__photo.is-failed .foot__img {
+  display: none;
+}
+/* soft dark overlay on the top of the photo keeps the links and copyright readable */
+.foot__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(20, 17, 15, 0.82) 0%,
+    rgba(20, 17, 15, 0.45) 38%,
+    rgba(20, 17, 15, 0) 72%
+  );
+}
+.foot__grain {
+  position: absolute;
+  inset: 0;
+  background-image: url('/img/grain.png');
+  opacity: 0.28;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* content */
+.foot__main {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+.foot__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1;
+}
+.foot__mark {
+  width: 28px;
+  height: 28px;
+}
+.foot__cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px 24px;
+}
+.foot__title {
+  margin: 0 0 12px;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+.foot__col ul {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.foot__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  color: var(--foot-muted);
+  font-size: 0.8125rem;
+  text-decoration: none;
+  transition: color 200ms var(--ease);
+}
+.foot__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 11px;
+  width: 100%;
+  height: 1px;
+  background: var(--foot-amber);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 200ms var(--ease);
+}
+.foot__link:hover,
+.foot__link:focus-visible {
+  color: #fff;
+}
+.foot__link:hover::after,
+.foot__link:focus-visible::after {
+  transform: scaleX(1);
+}
+.foot__link:focus-visible {
+  outline: 2px solid var(--foot-amber);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.foot__link--inline {
+  display: inline;
+  min-height: 0;
+  color: var(--foot-text);
+  text-decoration: underline;
+  text-decoration-color: rgba(242, 238, 232, 0.4);
+  text-underline-offset: 3px;
+}
+.foot__link--inline::after {
+  display: none;
+}
+.foot__link--inline:hover {
+  text-decoration-color: var(--foot-amber);
+}
+
+.foot__legal {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 56px;
+  color: var(--foot-faint);
+  font-size: 0.8125rem;
+}
+.foot__legal p {
+  margin: 0;
+}
+
+/* giant wordmark: SVG, so it scales with the page and never wraps; the viewBox cuts the letters off */
+.foot__word {
+  display: block;
+  width: 96vw;
+  height: auto;
+  margin: 56vw auto 0;
+  overflow: hidden;
+  fill: var(--foot-text);
+  fill-opacity: 0.95;
+  font-family: var(--font-display);
+  font-size: 300px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  transform: translateY(calc((1 - var(--foot-rise, 1)) * 24px));
+}
+
+@media (min-width: 700px) {
+  .foot__photo {
+    height: 65%;
+  }
+  .foot__cols {
+    grid-template-columns: repeat(3, auto);
+    justify-content: end;
+    gap: 40px clamp(48px, 8vw, 120px);
+  }
+  .foot__main {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .foot__link {
+    min-height: 34px;
+  }
+  .foot__link::after {
+    bottom: 4px;
+  }
+  .foot__legal {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: clamp(56px, 8vw, 96px);
+  }
+  .foot__word {
+    width: 84vw;
+    margin: auto auto 0;
+  }
+}
+@media (max-width: 699px) {
+  .foot__photo {
+    height: 118vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .foot__img,
+  .foot__word {
+    transform: none;
+  }
+  .foot__link,
+  .foot__link::after {
+    transition: none;
+  }
+}

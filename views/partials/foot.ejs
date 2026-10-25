@@ -1,39 +1,66 @@
 <%
   const base = path === '/' ? '' : '/';
 %>
-<footer class="site-footer tone--inv">
-  <div class="container footer__grid">
-    <div class="footer__brand">
-      <p class="footer__logo">Yannick <em>Scents</em></p>
-      <p class="footer__tag" <%- i('footer.tag') %>><%= t('footer.tag') %></p>
-    </div>
+<footer class="foot" data-footer>
+  <div class="foot__photo" aria-hidden="true">
+    <% if (footerPhoto) {
+      const L = footerPhoto.landscape, P = footerPhoto.portrait;
+      const set = function (prefix, widths, ext) { return widths.map(function (w) { return '/img/footer/' + prefix + '-' + w + '.' + ext + ' ' + w + 'w'; }).join(', '); };
+      const top = L.widths[L.widths.length - 1];
+    %>
+    <picture>
+      <source media="(max-width: 699px)" type="image/avif" srcset="<%= set('footer-portrait', P.widths, 'avif') %>" sizes="100vw">
+      <source media="(max-width: 699px)" type="image/webp" srcset="<%= set('footer-portrait', P.widths, 'webp') %>" sizes="100vw">
+      <source type="image/avif" srcset="<%= set('footer', L.widths, 'avif') %>" sizes="100vw">
+      <source type="image/webp" srcset="<%= set('footer', L.widths, 'webp') %>" sizes="100vw">
+      <img class="foot__img" src="/img/footer/footer-<%= top %>.webp" width="<%= L.ratio[0] %>" height="<%= L.ratio[1] %>" alt="" loading="lazy" decoding="async" data-footer-img>
+    </picture>
+    <% } %>
+    <span class="foot__shade"></span>
+    <span class="foot__grain"></span>
+  </div>
 
-    <nav aria-label="Footer">
-      <h2 class="footer__title" <%- i('footer.explore') %>><%= t('footer.explore') %></h2>
-      <ul class="footer__list">
-        <li><a class="ulink" href="<%= base %>#story" <%- i('nav.story') %>><%= t('nav.story') %></a></li>
-        <li><a class="ulink" href="<%= base %>#collection" <%- i('nav.collection') %>><%= t('nav.collection') %></a></li>
-        <li><a class="ulink" href="<%= base %>#find" <%- i('nav.find') %>><%= t('nav.find') %></a></li>
-        <li><a class="ulink" href="<%= base %>#faq" <%- i('nav.faq') %>><%= t('nav.faq') %></a></li>
-        <li><a class="ulink" href="<%= base %>#order" <%- i('nav.order') %>><%= t('nav.order') %></a></li>
-      </ul>
-    </nav>
+  <div class="container foot__main">
+    <p class="foot__brand"><img class="foot__mark" src="/favicon.svg" width="28" height="28" alt="" decoding="async"><span>Yannick Scents</span></p>
 
-    <div>
-      <h2 class="footer__title" <%- i('footer.contact') %>><%= t('footer.contact') %></h2>
-      <ul class="footer__list">
-        <li><a class="ulink" href="tel:<%= site.contact.phone %>"><%= site.contact.phoneDisplay %></a></li>
-        <li><a class="ulink" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener">WhatsApp</a></li>
-        <li><a class="ulink" href="<%= site.contact.tiktok %>" target="_blank" rel="noopener">TikTok <%= site.contact.tiktokHandle %></a></li>
-        <li><span><%= site.location.city %>, <%= site.location.country %></span></li>
-      </ul>
+    <div class="foot__cols">
+      <nav class="foot__col" aria-labelledby="foot-nav">
+        <h2 class="foot__title" id="foot-nav" <%- i('footer.nav') %>><%= t('footer.nav') %></h2>
+        <ul>
+          <li><a class="foot__link" href="<%= base %>#story" <%- i('nav.story') %>><%= t('nav.story') %></a></li>
+          <li><a class="foot__link" href="<%= base %>#collection" <%- i('nav.collection') %>><%= t('nav.collection') %></a></li>
+          <li><a class="foot__link" href="<%= base %>#find" <%- i('nav.find') %>><%= t('nav.find') %></a></li>
+          <li><a class="foot__link" href="<%= base %>#faq" <%- i('nav.faq') %>><%= t('nav.faq') %></a></li>
+        </ul>
+      </nav>
+      <nav class="foot__col" aria-labelledby="foot-order">
+        <h2 class="foot__title" id="foot-order" <%- i('footer.order') %>><%= t('footer.order') %></h2>
+        <ul>
+          <li><a class="foot__link" href="tel:<%= site.contact.phone %>" <%- i('cta.call') %>><%= t('cta.call') %></a></li>
+          <li><a class="foot__link" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener">WhatsApp</a></li>
+          <li><a class="foot__link" href="<%= site.contact.tiktok %>" target="_blank" rel="noopener">TikTok</a></li>
+          <li><a class="foot__link" href="<%= base %>#delivery" <%- i('footer.delivery') %>><%= t('footer.delivery') %></a></li>
+        </ul>
+      </nav>
+      <nav class="foot__col" aria-labelledby="foot-visit">
+        <h2 class="foot__title" id="foot-visit" <%- i('footer.visit') %>><%= t('footer.visit') %></h2>
+        <ul>
+          <li><a class="foot__link" href="<%= base %>#order"><%= site.location.city %></a></li>
+          <li><a class="foot__link" href="<%= base %>#hours" <%- i('footer.hours') %>><%= t('footer.hours') %></a></li>
+          <li><a class="foot__link" href="<%= base %>#delivery" <%- i('footer.freedelivery') %>><%= t('footer.freedelivery') %></a></li>
+        </ul>
+      </nav>
     </div>
   </div>
 
-  <div class="container footer__legal">
-    <p>&copy; <%= year %> <%= site.brand.name %></p>
-    <p>Built by <a class="ulink" href="<%= site.contact.credit.url %>" target="_blank" rel="noopener"><%= site.contact.credit.label %></a></p>
+  <div class="container foot__legal">
+    <p>&copy; <%= year %> <%= site.brand.name %>. <span <%- i('footer.rights') %>><%= t('footer.rights') %></span></p>
+    <p><span <%- i('footer.built') %>><%= t('footer.built') %></span> <a class="foot__link foot__link--inline" href="<%= site.contact.credit.url %>"><%= site.contact.credit.label %></a></p>
   </div>
+
+  <svg class="foot__word" viewBox="0 0 1000 175" role="img" aria-label="<%= site.brand.name %>" data-footer-word>
+    <text x="500" y="235" text-anchor="middle" textLength="1000" lengthAdjust="spacingAndGlyphs">Yannick</text>
+  </svg>
 </footer>
 
 <div class="mobile-bar" role="group" aria-label="Quick contact">

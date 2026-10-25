@@ -56,7 +56,7 @@ set `ADMIN_PASSWORD` in `.env` and start again.
 
 Each perfume has an English description, a card tagline, a search (meta) description and Amharic versions of the description and tagline. The first drafts were written
 by `npm run descriptions` and are listed in `DESCRIPTIONS-REVIEW.md`. They show on the site straight away, and the dashboard tags them **Draft text** until you open Edit, correct them and
-tick **Approved** (saving any change to the text also approves it). The Amharic is marked *Needs native review* until someone who speaks Amharic ticks **Amharic reviewed**.
+tick **Approved** (saving any change to the text also approves it). The Amharic is marked _Needs native review_ until someone who speaks Amharic ticks **Amharic reviewed**.
 The language toggle switches the product text too. Longevity and projection show on a product page only after you set them (0 means not set).
 
 ## Changing business details
@@ -81,18 +81,19 @@ Photo tip: photograph each bottle on a plain white or light background; the site
 
 ## Scripts
 
-| Command                           | Does                                                         |
-| --------------------------------- | ------------------------------------------------------------ |
-| `npm run dev`                     | Development server with auto-restart                         |
-| `npm start`                       | Builds minified CSS/JS (`prestart`), then starts the server  |
-| `npm run build`                   | Only builds `public/dist` (run this when deploying with PM2) |
-| `npm run import:images`           | Creates products from the photos in `public/img/originals` (`-- --replace-samples`, `-- --reset`) |
-| `node scripts/make-og.js`         | Rebuilds `public/img/og-default.png` from the hero bottles   |
+| Command                           | Does                                                                                                                                                               |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `npm run dev`                     | Development server with auto-restart                                                                                                                               |
+| `npm start`                       | Builds minified CSS/JS (`prestart`), then starts the server                                                                                                        |
+| `npm run build`                   | Only builds `public/dist` (run this when deploying with PM2)                                                                                                       |
+| `npm run import:images`           | Creates products from the photos in `public/img/originals` (`-- --replace-samples`, `-- --reset`)                                                                  |
+| `node scripts/make-og.js`         | Rebuilds `public/img/og-default.png` from the hero bottles                                                                                                         |
 | `npm run descriptions`            | Fills empty descriptions, taglines and meta descriptions (drafts) from `scripts/descriptions-data.js`; writes `DESCRIPTIONS-REVIEW.md`; never overwrites your text |
-| `npm run seed`                    | (Re)creates the SAMPLE perfumes; never touches your products |
-| `npm run build:assets`            | Regenerates favicons and the social card from `favicon.svg`  |
-| `node scripts/contrast.js`        | Prints the WCAG contrast ratios of the colour pairs in use   |
-| `npm run lint` / `npm run format` | ESLint / Prettier                                            |
+| `node scripts/make-footer.js`     | Rebuilds the footer photo (AVIF/WebP) in `public/img/footer/` from `public/img/originals/footer.*`                                                                 |
+| `npm run seed`                    | (Re)creates the SAMPLE perfumes; never touches your products                                                                                                       |
+| `npm run build:assets`            | Regenerates favicons and the social card from `favicon.svg`                                                                                                        |
+| `node scripts/contrast.js`        | Prints the WCAG contrast ratios of the colour pairs in use                                                                                                         |
+| `npm run lint` / `npm run format` | ESLint / Prettier                                                                                                                                                  |
 
 ## Security notes
 

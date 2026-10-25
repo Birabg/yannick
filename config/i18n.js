@@ -55,6 +55,14 @@ const en = {
   'footer.explore': 'Explore',
   'footer.contact': 'Contact',
   'footer.tag': 'A good scent speaks first.',
+  'footer.nav': 'Navigation',
+  'footer.order': 'Order',
+  'footer.visit': 'Visit',
+  'footer.delivery': 'Delivery info',
+  'footer.hours': 'Working hours',
+  'footer.freedelivery': 'Free delivery in Addis',
+  'footer.rights': 'Original fragrances only.',
+  'footer.built': 'Built by',
 };
 
 const am = {
@@ -108,6 +116,14 @@ const am = {
   'footer.explore': 'ይዳሰሱ',
   'footer.contact': 'አድራሻ',
   'footer.tag': 'ጥሩ መዓዛ መጀመሪያ ይናገራል።',
+  'footer.nav': 'ዳሰሳ',
+  'footer.order': 'ማዘዣ',
+  'footer.visit': 'ይጎብኙን',
+  'footer.delivery': 'የማድረስ መረጃ',
+  'footer.hours': 'የሥራ ሰዓት',
+  'footer.freedelivery': 'በአዲስ አበባ ነጻ ማድረስ',
+  'footer.rights': 'ኦሪጅናል ሽቶዎች ብቻ።',
+  'footer.built': 'የሠራው',
 };
 
 module.exports = { en, am };

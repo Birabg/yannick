@@ -1,5 +1,6 @@
 import { initNav } from './nav.js';
 import { initReveal } from './reveal.js';
+import { initFooter } from './footer.js';
 import { initFilters } from './filters.js';
 import { initSheet } from './sheet.js';
 import { initQuiz } from './quiz.js';
@@ -13,6 +14,7 @@ initTheme();
 initPhotos();
 initNav();
 initReveal();
+initFooter();
 initFilters();
 initSheet();
 initLanguage();

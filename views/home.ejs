@@ -303,7 +303,7 @@
         </div>
         <div class="order__glass notch" data-shader data-src="<%= distAsset('hero/island.js') %>" data-lazy aria-hidden="true">
           <span class="hero-shader__stage" data-stage></span>
-          <% if (heroProducts[0]) { %><%- include('components/photo', { p: heroProducts[0], cls: 'order__bottle', alt: '', variant: 'lg', sizes: '(min-width: 900px) 40vw, 90vw' }) %><% } %>
+          <% if (heroProducts[0]) { %><% const ob = heroProducts[0]; %><% if (ob.cutW > 0) { %><img class="order__bottle is-cutout" src="/uploads/products/<%= ob.image %>-cut.webp" width="<%= ob.cutW %>" height="<%= ob.cutH %>" alt="" loading="lazy" decoding="async" data-photo><% } else { %><%- include('components/photo', { p: ob, cls: 'order__bottle', alt: '', variant: 'lg', sizes: '(min-width: 900px) 40vw, 90vw' }) %><% } %><% } %>
         </div>
       </div>
 
@@ -339,14 +339,14 @@
       </ol>
 
       <div class="infos">
-        <div class="info">
+        <div class="info" id="hours">
           <h3 class="info__title">Hours</h3>
           <ul>
             <% site.hours.forEach(function (h) { %><li><span><%= h.days %></span><strong><%= h.time %></strong></li><% }) %>
           </ul>
           <p class="info__note"><%= site.hoursNote %></p>
         </div>
-        <div class="info">
+        <div class="info" id="delivery">
           <h3 class="info__title">Delivery</h3>
           <p><%= site.location.text %></p>
         </div>
