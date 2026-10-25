@@ -229,8 +229,8 @@ button {
   }
 }
 
-/* Details: fine grain on tinted bands, filled accent word, restyled scrollbars. */
-.tone--surface,
+/* Details: fine grain on dark bands, filled accent word, restyled scrollbars. */
+/* grain only on the inverse bands, where it reads as printed rather than dirty */
 .tone--inv {
   background-image: url('/img/grain.png');
 }

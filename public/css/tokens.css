@@ -52,7 +52,8 @@
   --accent: var(--c-accent);
 
   /* type: one family, tight at large sizes */
-  --font-display: 'Urbanist', 'Noto Sans Ethiopic', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display:
+    'Urbanist', 'Noto Sans Ethiopic', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-body: var(--font-display);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 

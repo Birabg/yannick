@@ -61,14 +61,14 @@
 }
 .tone--inv .btn--outline,
 .tone--inv .btn--paper {
-  --b-fg: var(--c-bg);
+  --b-fg: var(--c-inv-text);
   --b-border: var(--c-inv-muted);
 }
 .tone--inv .btn--outline:hover,
 .tone--inv .btn--paper:hover {
-  --b-bg: var(--c-bg);
-  --b-fg: var(--c-text);
-  --b-border: var(--c-bg);
+  --b-bg: var(--c-inv-text);
+  --b-fg: var(--c-inv-bg);
+  --b-border: var(--c-inv-text);
 }
 
 /* Dark solid */
@@ -84,13 +84,13 @@
 }
 /* On dark sections the solid button inverts. */
 .tone--inv .btn--primary {
-  --b-bg: var(--c-bg);
-  --b-fg: var(--c-text);
-  --b-border: var(--c-bg);
+  --b-bg: var(--c-inv-text);
+  --b-fg: var(--c-inv-bg);
+  --b-border: var(--c-inv-text);
 }
 .tone--inv .btn--primary:hover {
-  --b-bg: var(--c-accent-inv);
-  --b-border: var(--c-accent-inv);
+  --b-bg: var(--c-inv-accent);
+  --b-border: var(--c-inv-accent);
 }
 
 .btn--sm {

@@ -26,31 +26,28 @@
   border: 1px solid var(--c-border);
   background: var(--c);
 }
-.sg-c--ivory {
+.sg-c-bg {
   --c: var(--c-bg);
 }
-.sg-c--stone {
+.sg-c-surface {
   --c: var(--c-surface);
 }
-.sg-c--white {
-  --c: var(--c-card);
+.sg-c-chip {
+  --c: var(--c-chip);
 }
-.sg-c--ink {
+.sg-c-text {
   --c: var(--c-text);
 }
-.sg-c--taupe {
+.sg-c-muted {
   --c: var(--c-muted);
 }
-.sg-c--bordeaux {
+.sg-c-accent {
   --c: var(--c-accent);
 }
-.sg-c--brass {
-  --c: var(--c-accent-inv);
-}
-.sg-c--hair {
+.sg-c-border {
   --c: var(--c-border);
 }
-.sg-c--danger {
+.sg-c-danger {
   --c: var(--c-danger);
 }
 
@@ -60,7 +57,7 @@
   line-height: 1;
 }
 .sg-xl em {
-  color: var(--c-accent-inv);
+  color: var(--c-inv-accent);
 }
 .sg-m {
   font-family: var(--font-display);

@@ -175,9 +175,10 @@
 .prow__img {
   width: 60px;
   height: 75px;
-  background: var(--c-surface);
+  background: var(--c-photo);
+  border-radius: var(--r-sm);
+  border-radius: var(--r-sm);
   object-fit: cover;
-  mix-blend-mode: multiply;
 }
 .prow__name {
   margin: 0;
@@ -397,9 +398,9 @@
 .dropzone__img {
   width: 120px;
   height: 150px;
-  background: var(--c-surface);
+  background: var(--c-photo);
+  border-radius: var(--r-sm);
   object-fit: cover;
-  mix-blend-mode: multiply;
 }
 .dropzone__icon .icon {
   width: 24px;

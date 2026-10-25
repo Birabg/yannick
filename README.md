@@ -65,11 +65,11 @@ The hero picture is `public/img/hero.svg`; replace it with a real photograph (ab
 
 ## Design
 
-The look (ivory and stone paper, ink text, one bordeaux accent, Bodoni Moda + Jost) is documented in
+The look (near-white and neutral grey, one lime accent, Urbanist, pill controls) is documented in
 **`DESIGN.md`**, with tokens in `public/css/tokens.css`. The live component sheet is at `/styleguide`
-(hidden from search engines). Taupe text is `#6B5F54`, slightly darker than the original brief, so it passes AA contrast.
+(hidden from search engines). Dark mode follows the system setting.
 
-Photo tip: product cards multiply the picture onto a stone backdrop, so photograph bottles on a plain white background.
+Photo tip: product cards multiply the picture onto a light grey backdrop, so photograph bottles on a plain white background.
 
 ## Scripts
 
