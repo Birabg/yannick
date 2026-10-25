@@ -1,0 +1,245 @@
+<%- include('partials/head', { preloadHero: true }) %>
+<main id="main">
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero__inner">
+      <div class="hero__copy">
+        <p class="eyebrow" <%- i('hero.eyebrow') %>><%= t('hero.eyebrow') %></p>
+        <h1 id="hero-title" class="hero__title" <%- i('hero.title') %>><%= t('hero.title') %></h1>
+        <p class="hero__sub" <%- i('hero.sub') %>><%= t('hero.sub') %></p>
+        <div class="hero__cta">
+          <a class="btn btn-primary" href="#collection"><span <%- i('cta.explore') %>><%= t('cta.explore') %></span><%- icon('arrow') %></a>
+          <a class="btn btn-wa" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener"><%- icon('whatsapp') %><span <%- i('cta.whatsapp') %>><%= t('cta.whatsapp') %></span></a>
+        </div>
+        <ul class="trust" aria-label="Why customers trust us">
+          <li><%- icon('shield') %><span <%- i('badge.original') %>><%= t('badge.original') %></span></li>
+          <li><%- icon('truck') %><span <%- i('badge.delivery') %>><%= t('badge.delivery') %></span></li>
+          <li><%- icon('user') %><span <%- i('badge.guidance') %>><%= t('badge.guidance') %></span></li>
+        </ul>
+      </div>
+      <div class="hero__art">
+        <img src="/img/hero.svg" width="600" height="700" alt="" fetchpriority="high" decoding="async">
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="story" aria-labelledby="story-title">
+    <div class="container story">
+      <figure class="story__photo reveal">
+        <img src="<%= site.founderPhoto %>" width="480" height="600" loading="lazy" decoding="async" alt="Portrait of <%= site.brand.founder %>, founder of <%= site.brand.name %> (photo coming soon)">
+        <figcaption><%= site.brand.founder %>, founder</figcaption>
+      </figure>
+      <div class="story__copy reveal">
+        <p class="eyebrow">Meet Yannick</p>
+        <h2 class="section__title" id="story-title" <%- i('story.title') %>><%= t('story.title') %></h2>
+        <% site.story.forEach(function (paragraph) { %><p><%= paragraph %></p><% }) %>
+        <ul class="stats">
+          <li><strong><%= site.houses.length %></strong><span>Designer houses</span></li>
+          <li><strong>100%</strong><span>Original bottles</span></li>
+          <li><strong>Free</strong><span>Delivery in Addis Ababa</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="collection" aria-labelledby="collection-title">
+    <div class="container">
+      <header class="section__head reveal">
+        <h2 class="section__title" id="collection-title" <%- i('collection.title') %>><%= t('collection.title') %></h2>
+        <p class="section__sub" <%- i('collection.sub') %>><%= t('collection.sub') %></p>
+      </header>
+
+      <% if (products.length === 0) { %>
+      <div class="empty">
+        <p class="empty__title">New fragrances are on their way</p>
+        <p>Message us on WhatsApp and we will help you find the right bottle.</p>
+        <a class="btn btn-wa" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener"><%- icon('whatsapp') %>Order on WhatsApp</a>
+      </div>
+      <% } else { %>
+      <div class="toolbar reveal" data-toolbar>
+        <div class="chips" role="group" aria-label="Filter perfumes">
+          <button type="button" class="chip" data-filter="all" aria-pressed="true"><span <%- i('filter.all') %>><%= t('filter.all') %></span></button>
+          <% site.collections.forEach(function (c) { %>
+          <button type="button" class="chip" data-filter="<%= c.key %>" aria-pressed="false"><%= c.label %></button>
+          <% }) %>
+        </div>
+        <div class="toolbar__row">
+          <div class="search">
+            <label class="sr-only" for="search">Search perfumes</label>
+            <%- icon('search') %>
+            <input id="search" type="search" placeholder="<%= t('search.placeholder') %>" data-i18n-placeholder="search.placeholder" autocomplete="off" enterkeyhint="search">
+          </div>
+          <div class="sort">
+            <label for="sort" <%- i('sort.label') %>><%= t('sort.label') %></label>
+            <select id="sort">
+              <option value="featured" <%- i('sort.featured') %>><%= t('sort.featured') %></option>
+              <option value="low" <%- i('sort.low') %>><%= t('sort.low') %></option>
+              <option value="high" <%- i('sort.high') %>><%= t('sort.high') %></option>
+            </select>
+          </div>
+        </div>
+        <p class="toolbar__count" role="status" aria-live="polite" data-count><%= products.length %> <%= products.length === 1 ? 'perfume' : 'perfumes' %></p>
+      </div>
+
+      <ul class="grid" id="grid">
+        <% products.forEach(function (p, order) { %>
+        <%- include('partials/product-card', { p, order }) %>
+        <% }) %>
+      </ul>
+
+      <div class="empty" data-empty hidden>
+        <p class="empty__title">No perfumes match your search</p>
+        <p>Try another filter, or ask us and we will find it for you.</p>
+        <button type="button" class="btn btn-outline" data-reset>Clear filters</button>
+      </div>
+      <% } %>
+    </div>
+  </section>
+
+  <section class="section" id="notes" aria-labelledby="notes-title">
+    <div class="container">
+      <header class="section__head reveal">
+        <h2 class="section__title" id="notes-title" <%- i('notes.title') %>><%= t('notes.title') %></h2>
+        <p class="section__sub">Every fragrance unfolds in three acts. Knowing them helps you choose a scent you will love hours later, not just in the first minute.</p>
+      </header>
+      <ol class="journey">
+        <li class="journey__step reveal">
+          <span class="journey__num" aria-hidden="true">I</span>
+          <h3>Top notes</h3>
+          <p class="journey__time">The first minutes</p>
+          <p>The opening. Fresh citrus, fruit and herbs make the first impression, then fade as the scent settles.</p>
+        </li>
+        <li class="journey__step reveal">
+          <span class="journey__num" aria-hidden="true">II</span>
+          <h3>Heart notes</h3>
+          <p class="journey__time">The next hour or two</p>
+          <p>The character. Flowers, spices and aromatic woods emerge and define who the fragrance really is.</p>
+        </li>
+        <li class="journey__step reveal">
+          <span class="journey__num" aria-hidden="true">III</span>
+          <h3>Base notes</h3>
+          <p class="journey__time">Hours later</p>
+          <p>The memory. Woods, amber, musk and vanilla linger on skin and fabric, and are what people remember.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="houses" aria-labelledby="houses-title">
+    <div class="container">
+      <header class="section__head reveal">
+        <h2 class="section__title" id="houses-title" <%- i('houses.title') %>><%= t('houses.title') %></h2>
+        <p class="section__sub" <%- i('houses.sub') %>><%= t('houses.sub') %></p>
+      </header>
+      <ul class="houses reveal">
+        <% site.houses.forEach(function (house) { %>
+        <li class="wordmark wordmark--<%= house.toLowerCase().replace(/[^a-z]+/g, '-') %>"><%= house %></li>
+        <% }) %>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="why" aria-labelledby="why-title">
+    <div class="container">
+      <header class="section__head reveal">
+        <h2 class="section__title" id="why-title" <%- i('why.title') %>><%= t('why.title') %></h2>
+      </header>
+      <ul class="values">
+        <% site.values.forEach(function (v) { %>
+        <li class="value reveal">
+          <span class="value__icon"><%- icon(v.icon) %></span>
+          <h3><%= v.title %></h3>
+          <p><%= v.text %></p>
+        </li>
+        <% }) %>
+      </ul>
+    </div>
+  </section>
+
+  <% if (reviews.length) { %>
+  <section class="section section--alt" id="reviews" aria-labelledby="reviews-title">
+    <div class="container">
+      <header class="section__head reveal">
+        <h2 class="section__title" id="reviews-title" <%- i('reviews.title') %>><%= t('reviews.title') %></h2>
+      </header>
+      <ul class="reviews">
+        <% reviews.forEach(function (r) { %>
+        <li class="review reveal">
+          <p class="review__stars" role="img" aria-label="<%= r.rating %> out of 5 stars">
+            <% for (let n = 1; n <= 5; n++) { %><%- icon('star', n <= r.rating ? 'is-on' : '') %><% } %>
+          </p>
+          <blockquote class="review__text"><%= r.text %></blockquote>
+          <p class="review__name"><%= r.name %></p>
+          <% if (r.image) { %>
+          <img class="review__shot" src="/uploads/reviews/<%= r.image %>" width="<%= r.image_w %>" height="<%= r.image_h %>" loading="lazy" decoding="async" alt="Screenshot of a message from <%= r.name %>">
+          <% } %>
+        </li>
+        <% }) %>
+      </ul>
+    </div>
+  </section>
+  <% } %>
+
+  <section class="section" id="faq" aria-labelledby="faq-title">
+    <div class="container container--narrow">
+      <header class="section__head reveal">
+        <h2 class="section__title" id="faq-title" <%- i('faq.title') %>><%= t('faq.title') %></h2>
+      </header>
+      <div class="faq reveal">
+        <% site.faq.forEach(function (item) { %>
+        <details name="faq">
+          <summary><span><%= item.q %></span><%- icon('chevron') %></summary>
+          <p><%= item.a %></p>
+        </details>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--dark" id="order" aria-labelledby="order-title">
+    <div class="container">
+      <header class="section__head reveal">
+        <h2 class="section__title" id="order-title" <%- i('order.title') %>><%= t('order.title') %></h2>
+        <p class="section__sub" <%- i('order.sub') %>><%= t('order.sub') %></p>
+      </header>
+      <ol class="steps">
+        <% site.howToOrder.forEach(function (step, idx) { %>
+        <li class="step reveal">
+          <span class="step__num" aria-hidden="true"><%= idx + 1 %></span>
+          <h3><%= step.title %></h3>
+          <p><%= step.text %></p>
+        </li>
+        <% }) %>
+      </ol>
+
+      <div class="contact-buttons reveal">
+        <a class="btn btn-lg btn-wa" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener"><%- icon('whatsapp') %>WhatsApp</a>
+        <a class="btn btn-lg btn-outline" href="tel:<%= site.contact.phone %>"><%- icon('phone') %><%= site.contact.phoneDisplay %></a>
+        <a class="btn btn-lg btn-outline" href="<%= site.contact.tiktok %>" target="_blank" rel="noopener"><%- icon('tiktok') %>TikTok</a>
+      </div>
+
+      <div class="info-cards reveal">
+        <div class="info-card">
+          <h3><%- icon('pin') %>Location</h3>
+          <p><%= site.location.text %></p>
+        </div>
+        <div class="info-card">
+          <h3><%- icon('clock') %>Working hours</h3>
+          <ul>
+            <% site.hours.forEach(function (h) { %><li><span><%= h.days %></span> <strong><%= h.time %></strong></li><% }) %>
+          </ul>
+          <% if (site.hoursNote) { %><p class="info-card__note"><%= site.hoursNote %></p><% } %>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dialog class="modal" id="product-modal" aria-labelledby="modal-title">
+  <div class="modal__panel">
+    <button type="button" class="icon-btn modal__close" data-modal-close aria-label="Close details"><%- icon('close') %></button>
+    <div class="modal__body" id="modal-body"></div>
+  </div>
+</dialog>
+
+<%- include('partials/foot') %>

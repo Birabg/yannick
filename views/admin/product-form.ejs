@@ -1,0 +1,99 @@
+<%
+  const action = isNew ? '/admin/products' : '/admin/products/' + p.id;
+  const shelves = site.collections.filter(function (c) { return c.key !== 'men' && c.key !== 'women'; });
+%>
+<%- include('_head', { seo: { title: isNew ? 'Add perfume' : 'Edit perfume' } }) %>
+<div class="page-head">
+  <h1><%= isNew ? 'Add perfume' : 'Edit ' + p.name %></h1>
+  <a class="btn btn-outline" href="/admin">Cancel</a>
+</div>
+
+<% if (errors.length) { %>
+<div class="alert alert--error" role="alert">
+  <strong>Please fix the following:</strong>
+  <ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul>
+</div>
+<% } %>
+
+<form class="form form--wide" method="post" action="<%= action %>?_csrf=<%= csrfToken %>" enctype="multipart/form-data" novalidate>
+  <fieldset class="card-box">
+    <legend>Basics</legend>
+    <div class="grid-2">
+      <label class="field"><span>Name *</span><input name="name" value="<%= p.name %>" maxlength="80" required placeholder="Bleu de Chanel"></label>
+      <label class="field"><span>Brand *</span><input name="brand" value="<%= p.brand %>" maxlength="60" required list="brands" placeholder="Chanel"></label>
+      <datalist id="brands"><% site.houses.forEach(function (h) { %><option value="<%= h %>"><% }) %></datalist>
+      <label class="field"><span>Price (ETB) *</span><input name="price" value="<%= p.price || '' %>" inputmode="numeric" required placeholder="15000"></label>
+      <label class="field"><span>Size *</span><input name="size" value="<%= p.size %>" maxlength="20" required placeholder="100ml"></label>
+      <label class="field"><span>Concentration</span>
+        <select name="concentration">
+          <option value="">-</option>
+          <% site.concentrations.forEach(function (c) { %><option <%= p.concentration === c ? 'selected' : '' %>><%= c %></option><% }) %>
+        </select>
+      </label>
+      <label class="field"><span>Category *</span>
+        <select name="category" required>
+          <% site.categories.forEach(function (c) { %><option value="<%= c.key %>" <%= p.category === c.key ? 'selected' : '' %>><%= c.label %></option><% }) %>
+        </select>
+      </label>
+      <label class="field"><span>Scent family label</span><input name="family" value="<%= p.family %>" maxlength="60" placeholder="Woody Aromatic"></label>
+    </div>
+
+    <fieldset class="checks">
+      <legend>Collection sections</legend>
+      <p class="hint">Men and Women are set from the category above.</p>
+      <% shelves.forEach(function (c) { %>
+      <label class="check"><input type="checkbox" name="collections" value="<%= c.key %>" <%= p.collections.includes(c.key) ? 'checked' : '' %>><span><%= c.label %></span></label>
+      <% }) %>
+    </fieldset>
+
+    <fieldset class="checks">
+      <legend>Badges</legend>
+      <% site.badges.forEach(function (b) { %>
+      <label class="check"><input type="checkbox" name="badges" value="<%= b.key %>" <%= p.badges.includes(b.key) ? 'checked' : '' %>><span><%= b.label %></span></label>
+      <% }) %>
+    </fieldset>
+
+    <div class="grid-2">
+      <label class="field"><span>Availability</span>
+        <select name="in_stock">
+          <option value="1" <%= p.inStock ? 'selected' : '' %>>In stock</option>
+          <option value="0" <%= p.inStock ? '' : 'selected' %>>Sold out</option>
+        </select>
+      </label>
+      <label class="check check--box"><input type="checkbox" name="is_sample" <%= p.isSample ? 'checked' : '' %>><span><strong>Sample item.</strong> Shows a &ldquo;Sample&rdquo; tag. Untick once this is a real product.</span></label>
+    </div>
+  </fieldset>
+
+  <fieldset class="card-box">
+    <legend>Description and notes</legend>
+    <label class="field"><span>Description</span><textarea name="description" rows="4" maxlength="1200"><%= p.description %></textarea></label>
+    <p class="hint">Notes: separate with commas, for example <em>Bergamot, Pink Pepper, Grapefruit</em>.</p>
+    <div class="grid-3">
+      <% [['top_notes', 'Top notes', p.notes.top], ['heart_notes', 'Heart notes', p.notes.heart], ['base_notes', 'Base notes', p.notes.base]].forEach(function (n) { %>
+      <label class="field"><span><%= n[1] %></span><input name="<%= n[0] %>" value="<%= n[2].join(', ') %>" data-tags="tags-<%= n[0] %>"><ul class="tags tags--preview" id="tags-<%= n[0] %>" aria-hidden="true"></ul></label>
+      <% }) %>
+    </div>
+    <div class="grid-2">
+      <label class="field"><span>Longevity: <output data-out="longevity"><%= p.longevity %></output> / 5</span><input type="range" name="longevity" min="1" max="5" value="<%= p.longevity %>" data-range="longevity"></label>
+      <label class="field"><span>Projection: <output data-out="projection"><%= p.projection %></output> / 5</span><input type="range" name="projection" min="1" max="5" value="<%= p.projection %>" data-range="projection"></label>
+    </div>
+  </fieldset>
+
+  <fieldset class="card-box">
+    <legend>Photo</legend>
+    <div class="photo">
+      <img id="photo-preview" src="<%= p.image ? imageUrl(p, 'sm') : '/img/bottle-placeholder.svg' %>" width="160" height="200" alt="Photo preview">
+      <div>
+        <label class="field"><span>Upload photo (JPG, PNG or WebP, max 5 MB)</span><input type="file" name="photo" accept="image/jpeg,image/png,image/webp" data-photo-input></label>
+        <p class="hint">It is resized and converted to WebP automatically. A clear bottle shot on a plain background works best.</p>
+        <p class="alert alert--error" role="alert" data-photo-error hidden></p>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="form__actions">
+    <button class="btn btn-primary btn-lg" type="submit">Save perfume</button>
+    <a class="btn btn-outline btn-lg" href="/admin">Cancel</a>
+  </div>
+</form>
+<%- include('_foot') %>

@@ -1,0 +1,72 @@
+<%- include('_head', { seo: { title: 'Perfumes' } }) %>
+<div class="page-head">
+  <h1>Perfumes <span class="count"><%= products.length %></span></h1>
+  <a class="btn btn-primary" href="/admin/products/new"><%- icon('plus') %>Add perfume</a>
+</div>
+
+<% if (hasSamples) { %>
+<p class="alert alert--warn" role="note">
+  <strong>Sample items.</strong> Perfumes marked <span class="pill pill--sample">SAMPLE</span> are placeholders with made-up prices and drawn bottles.
+  Edit each one with your real details and photo (or delete it) before the site goes live.
+</p>
+<% } %>
+<% if (query.saved) { %><p class="alert alert--ok" role="status">Saved.</p><% } %>
+<% if (query.deleted) { %><p class="alert alert--ok" role="status">Perfume deleted.</p><% } %>
+
+<% if (products.length === 0) { %>
+<div class="empty-admin">
+  <p>No perfumes yet.</p>
+  <a class="btn btn-primary" href="/admin/products/new">Add your first perfume</a>
+</div>
+<% } else { %>
+<div class="searchbar">
+  <label class="sr-only" for="admin-search">Search perfumes</label>
+  <%- icon('search') %>
+  <input id="admin-search" type="search" placeholder="Search by name or brand" autocomplete="off" data-admin-search>
+</div>
+
+<ul class="plist" id="plist">
+  <% products.forEach(function (p, idx) { %>
+  <li class="prow<%= p.inStock ? '' : ' is-soldout' %>" id="p-<%= p.id %>" data-search="<%= (p.name + ' ' + p.brand).toLowerCase() %>">
+    <img class="prow__img" src="<%= p.image ? imageUrl(p, 'sm') : '/img/bottle-placeholder.svg' %>" width="60" height="75" alt="" loading="lazy">
+    <div class="prow__main">
+      <p class="prow__name"><%= p.name %></p>
+      <p class="prow__meta"><%= p.brand %> &middot; <%= p.size %> &middot; <strong><%= fmt.price(p.price) %></strong></p>
+      <p class="prow__pills">
+        <% if (p.isSample) { %><span class="pill pill--sample">SAMPLE</span><% } %>
+        <span class="pill <%= p.inStock ? 'pill--ok' : 'pill--off' %>"><%= p.inStock ? 'In stock' : 'Sold out' %></span>
+        <% if (p.badges.includes('featured')) { %><span class="pill pill--gold">Featured</span><% } %>
+      </p>
+    </div>
+    <div class="prow__actions">
+      <form method="post" action="/admin/products/<%= p.id %>/stock">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-outline btn-sm" type="submit"><%= p.inStock ? 'Mark sold out' : 'Mark in stock' %></button>
+      </form>
+      <form method="post" action="/admin/products/<%= p.id %>/feature">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-outline btn-sm" type="submit"><%- icon('star') %><%= p.badges.includes('featured') ? 'Unfeature' : 'Feature' %></button>
+      </form>
+      <a class="btn btn-outline btn-sm" href="/admin/products/<%= p.id %>/edit"><%- icon('edit') %>Edit</a>
+      <form method="post" action="/admin/products/<%= p.id %>/delete" data-confirm="Delete &ldquo;<%= p.name %>&rdquo;? This also removes its photo and cannot be undone.">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-outline btn-sm btn-danger-text" type="submit"><%- icon('trash') %>Delete</button>
+      </form>
+      <span class="prow__move">
+        <form method="post" action="/admin/products/<%= p.id %>/move">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="dir" value="up">
+          <button class="icon-btn" type="submit" aria-label="Move <%= p.name %> up" <%= idx === 0 ? 'disabled' : '' %>><%- icon('up') %></button>
+        </form>
+        <form method="post" action="/admin/products/<%= p.id %>/move">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="dir" value="down">
+          <button class="icon-btn" type="submit" aria-label="Move <%= p.name %> down" <%= idx === products.length - 1 ? 'disabled' : '' %>><%- icon('down') %></button>
+        </form>
+      </span>
+    </div>
+  </li>
+  <% }) %>
+</ul>
+<p class="muted" data-admin-empty hidden>No perfumes match your search.</p>
+<p class="muted hint">Order here is the order shown on the website under &ldquo;Featured&rdquo; sorting.</p>
+<% } %>
+<%- include('_foot') %>

@@ -1,0 +1,15 @@
+  </main>
+
+  <dialog class="confirm" id="confirm-dialog" aria-labelledby="confirm-title">
+    <form method="dialog">
+      <h2 id="confirm-title">Are you sure?</h2>
+      <p id="confirm-text"></p>
+      <div class="confirm__actions">
+        <button class="btn btn-outline" value="cancel">Cancel</button>
+        <button class="btn btn-danger" value="ok">Delete</button>
+      </div>
+    </form>
+  </dialog>
+  <script type="module" src="<%= asset('admin.js') %>"></script>
+</body>
+</html>

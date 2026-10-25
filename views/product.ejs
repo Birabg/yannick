@@ -1,0 +1,10 @@
+<%- include('partials/head') %>
+<main id="main" class="section">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/#collection">&larr; Back to the collection</a>
+    </nav>
+    <%- include('partials/product-detail', { p, modal: false }) %>
+  </div>
+</main>
+<%- include('partials/foot') %>

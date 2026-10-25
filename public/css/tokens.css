@@ -1,0 +1,90 @@
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter-latin-wght-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: url('/fonts/cormorant-garamond-latin-wght-normal.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: url('/fonts/cormorant-garamond-latin-wght-italic.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --font-body:
+    'Inter', 'Noto Sans Ethiopic', 'Nyala', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Cormorant Garamond', 'Noto Serif Ethiopic', 'Nyala', Georgia, serif;
+
+  /* spacing scale */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4.5rem;
+  --s-9: 6.5rem;
+
+  --radius: 14px;
+  --radius-sm: 8px;
+  --container: 1180px;
+  --header-h: 68px;
+  --bar-h: 72px;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Dark is the signature look; light is the ivory alternative. */
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0e0c0a;
+  --bg-alt: #151210;
+  --surface: #1b1814;
+  --surface-2: #231f1a;
+  --text: #f4ede0;
+  --muted: #b8ad9b;
+  --line: rgba(244, 237, 224, 0.14);
+  --accent: #d4b06a;
+  --accent-fill: #c9a45c;
+  --accent-fill-hover: #d8b872;
+  --on-accent: #15110b;
+  --wa: #0f7a3f;
+  --wa-hover: #0c6636;
+  --on-wa: #ffffff;
+  --focus: #f0d28f;
+  --shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
+  --danger: #ff8f84;
+  --paper: #f1ebdf;
+  --on-paper: #1a1612;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #faf6ee;
+  --bg-alt: #f2ebdd;
+  --surface: #ffffff;
+  --surface-2: #f6f0e4;
+  --text: #1a1612;
+  --muted: #5b5143;
+  --line: rgba(26, 22, 18, 0.16);
+  --accent: #7a5c1c;
+  --accent-fill: #c19a4b;
+  --accent-fill-hover: #cfa95a;
+  --on-accent: #1a1308;
+  --wa: #0f7a3f;
+  --wa-hover: #0c6636;
+  --focus: #7a5c1c;
+  --shadow: 0 18px 40px -22px rgba(60, 40, 10, 0.35);
+  --danger: #b3261e;
+}

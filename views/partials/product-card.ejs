@@ -1,0 +1,28 @@
+<%
+  const label = fmt.productLabel(p);
+  const src = p.image ? imageUrl(p, 'sm') : '/img/bottle-placeholder.svg';
+  const haystack = [p.name, p.brand, p.family, p.notes.top, p.notes.heart, p.notes.base].flat().join(' ').toLowerCase();
+%>
+<li class="grid__item" data-card data-collections="<%= p.collections.join(' ') %>" data-price="<%= p.price %>" data-order="<%= order %>" data-search="<%= haystack %>">
+  <article class="card<%= p.inStock ? '' : ' is-soldout' %>">
+    <a class="card__media" href="/perfume/<%= p.slug %>" data-open-product tabindex="-1" aria-hidden="true">
+      <img src="<%= src %>" width="480" height="600" loading="lazy" decoding="async" alt="">
+      <span class="card__flags">
+        <% if (!p.inStock) { %><span class="flag flag--soldout">Sold out</span><% } %>
+        <% if (p.isSample) { %><span class="flag flag--sample">Sample</span><% } %>
+        <% site.badges.filter(function (b) { return p.badges.includes(b.key); }).forEach(function (b) { %>
+        <span class="flag"><%= b.label %></span>
+        <% }) %>
+      </span>
+    </a>
+    <div class="card__body">
+      <p class="card__brand"><%= p.brand %></p>
+      <h3 class="card__name"><a href="/perfume/<%= p.slug %>" data-open-product><%= p.name %></a></h3>
+      <p class="card__meta"><%= [p.size, p.concentration].filter(Boolean).join(' · ') %></p>
+      <p class="card__price"><%= fmt.price(p.price) %></p>
+      <a class="btn btn-sm <%= p.inStock ? 'btn-wa' : 'btn-outline' %> card__cta" href="<%= fmt.orderLink(p) %>" target="_blank" rel="noopener" aria-label="<%= p.inStock ? 'Order ' : 'Ask when back in stock: ' %><%= label %> on WhatsApp">
+        <%- icon('whatsapp') %><span><%= p.inStock ? 'Order' : 'Ask when back in stock' %></span>
+      </a>
+    </div>
+  </article>
+</li>

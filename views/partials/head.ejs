@@ -1,0 +1,46 @@
+<%
+  const title = seo.title || site.brand.name;
+  const description = seo.description || site.brand.description;
+  const canonical = seo.canonical ? siteUrl + seo.canonical : '';
+  const ogImage = seo.image ? siteUrl + seo.image : siteUrl + '/img/og-default.png';
+%><!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %></title>
+  <meta name="description" content="<%= description %>">
+  <% if (seo.noindex) { %><meta name="robots" content="noindex, nofollow"><% } %>
+  <% if (canonical) { %><link rel="canonical" href="<%= canonical %>"><% } %>
+  <meta name="theme-color" content="#0e0c0a">
+
+  <meta property="og:site_name" content="<%= site.brand.name %>">
+  <meta property="og:type" content="<%= seo.type === 'product' ? 'product' : 'website' %>">
+  <meta property="og:title" content="<%= title %>">
+  <meta property="og:description" content="<%= description %>">
+  <% if (canonical) { %><meta property="og:url" content="<%= canonical %>"><% } %>
+  <meta property="og:image" content="<%= ogImage %>">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= title %>">
+  <meta name="twitter:description" content="<%= description %>">
+  <meta name="twitter:image" content="<%= ogImage %>">
+
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+
+  <link rel="preload" href="/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <% if (locals.preloadHero) { %><link rel="preload" href="/img/hero.svg" as="image" fetchpriority="high"><% } %>
+
+  <script src="<%= asset('theme.js') %>"></script>
+  <link rel="stylesheet" href="<%= asset('main.css') %>">
+  <% (seo.jsonLd || []).forEach(function (data) { %>
+  <script type="application/ld+json"><%- JSON.stringify(data).replace(/</g, '\\u003c') %></script>
+  <% }) %>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <%- include('icons') %>
+  <%- include('header') %>

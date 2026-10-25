@@ -1,0 +1,32 @@
+<%- include('_head', { seo: { title: 'Reviews' } }) %>
+<div class="page-head">
+  <h1>Reviews <span class="count"><%= reviews.length %></span></h1>
+  <a class="btn btn-primary" href="/admin/reviews/new"><%- icon('plus') %>Add review</a>
+</div>
+<p class="muted">Only add real feedback from real customers. The Reviews section stays hidden on the website until you add at least one.</p>
+<% if (query.saved) { %><p class="alert alert--ok" role="status">Saved.</p><% } %>
+<% if (query.deleted) { %><p class="alert alert--ok" role="status">Review deleted.</p><% } %>
+
+<% if (reviews.length === 0) { %>
+<div class="empty-admin"><p>No reviews yet.</p></div>
+<% } else { %>
+<ul class="plist">
+  <% reviews.forEach(function (r) { %>
+  <li class="prow">
+    <% if (r.image) { %><img class="prow__img" src="/uploads/reviews/<%= r.image %>" width="60" height="75" alt="" loading="lazy"><% } %>
+    <div class="prow__main">
+      <p class="prow__name"><%= r.name %> &middot; <%= r.rating %>/5</p>
+      <p class="prow__meta"><%= r.text.length > 140 ? r.text.slice(0, 140) + '…' : r.text %></p>
+    </div>
+    <div class="prow__actions">
+      <a class="btn btn-outline btn-sm" href="/admin/reviews/<%= r.id %>/edit"><%- icon('edit') %>Edit</a>
+      <form method="post" action="/admin/reviews/<%= r.id %>/delete" data-confirm="Delete the review from <%= r.name %>? This cannot be undone.">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-outline btn-sm btn-danger-text" type="submit"><%- icon('trash') %>Delete</button>
+      </form>
+    </div>
+  </li>
+  <% }) %>
+</ul>
+<% } %>
+<%- include('_foot') %>

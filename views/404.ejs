@@ -1,0 +1,13 @@
+<%- include('partials/head') %>
+<main id="main" class="section error-page">
+  <div class="container container--narrow">
+    <p class="error-page__code" aria-hidden="true">404</p>
+    <h1 class="section__title">This page could not be found</h1>
+    <p>The link may be old, or the perfume may no longer be listed. Let us help you find your scent instead.</p>
+    <div class="hero__cta">
+      <a class="btn btn-primary" href="/#collection">Browse the collection</a>
+      <a class="btn btn-wa" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener"><%- icon('whatsapp') %>Ask on WhatsApp</a>
+    </div>
+  </div>
+</main>
+<%- include('partials/foot') %>

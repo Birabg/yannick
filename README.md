@@ -1,0 +1,134 @@
+# Yannick Scents
+
+Website for **Yannick Scents**, an Addis Ababa seller of 100% original designer fragrances.
+Customers browse the collection and order by WhatsApp, phone call or TikTok DM (no cart or checkout).
+
+Stack: Node.js + Express, EJS (server-rendered), SQLite (`better-sqlite3`), `sharp` for images, vanilla CSS/JS.
+
+> **Sample data:** `npm run seed` creates 8 perfumes marked **SAMPLE** (drawn bottles, placeholder
+> prices and notes). Replace or delete them in the admin panel before going live.
+
+## Setup
+
+Requires Node.js 18 or newer.
+
+```bash
+npm install
+cp .env.example .env      # then edit .env (see below)
+npm run seed              # optional: 8 SAMPLE perfumes
+npm run dev               # http://localhost:3000
+```
+
+### `.env`
+
+| Variable                   | Meaning                                                                                                  |
+| -------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `PORT`                     | Port to listen on (default 3000)                                                                         |
+| `NODE_ENV`                 | `development` locally, `production` on the server                                                        |
+| `SITE_URL`                 | Public address, used for canonical links, sitemap and social cards                                       |
+| `SESSION_SECRET`           | Long random string. Generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
+| `ADMIN_PASSWORD`           | Initial admin password (8+ characters)                                                                   |
+| `PHONE`, `WHATSAPP_NUMBER` | Contact numbers (`+251...` and digits only)                                                              |
+| `DATA_DIR`, `UPLOADS_DIR`  | Optional: where the database and photos live (use a persistent disk)                                     |
+
+## Admin password
+
+On the **first run** the server hashes `ADMIN_PASSWORD` (bcrypt) and stores the hash in the database.
+After that the value in `.env` is ignored, so you can delete it. Log in at `/admin` and change the
+password any time under **Admin > Password**. Failed logins are rate limited (5 per 15 minutes).
+
+If you forget it: stop the server, delete the `admin_hash` row (`sqlite3 data/yannick.db "DELETE FROM settings WHERE key='admin_hash'"`),
+set `ADMIN_PASSWORD` in `.env` and start again.
+
+## Adding and managing products
+
+1. Open `/admin` and log in (works well on a phone).
+2. **Add perfume**: fill in name, brand, price (ETB), size, category, collection sections, notes
+   (comma separated), longevity/projection, description and a photo (JPG/PNG/WebP, max 5 MB).
+   Photos are resized and converted to WebP automatically.
+3. From the list you can search, edit, delete (with confirmation), mark **sold out / in stock**,
+   **feature**, and move items up or down. Sold-out items stay visible with a "Sold out" badge and the
+   button becomes "Ask when back in stock".
+4. **Reviews**: add real customer feedback (name, text, rating, optional screenshot). With zero reviews
+   the whole section is hidden on the website.
+
+## Changing business details
+
+Everything is in **`config/site.js`**: brand copy, tagline, TikTok link, location, **working hours**,
+houses, filter chips, FAQ answers, "How to order" steps, founder photo path and story text.
+Phone and WhatsApp numbers come from `.env` (`PHONE`, `WHATSAPP_NUMBER`).
+Interface strings for the English/Amharic toggle live in `config/i18n.js`
+(have a native speaker review the Amharic text; add a language by adding an object there and a button in `views/partials/header.ejs`).
+
+To add the founder's photo, put a 480x600 image in `public/img/` and set `founderPhoto` in `config/site.js`.
+
+## Scripts
+
+| Command                           | Does                                                         |
+| --------------------------------- | ------------------------------------------------------------ |
+| `npm run dev`                     | Development server with auto-restart                         |
+| `npm start`                       | Builds minified CSS/JS (`prestart`), then starts the server  |
+| `npm run build`                   | Only builds `public/dist` (run this when deploying with PM2) |
+| `npm run seed`                    | (Re)creates the SAMPLE perfumes; never touches your products |
+| `npm run build:icons`             | Regenerates favicons and the social card from `favicon.svg`  |
+| `npm run lint` / `npm run format` | ESLint / Prettier                                            |
+
+## Security notes
+
+Helmet with a strict CSP (no inline scripts or styles), bcrypt password hashing, `httpOnly` +
+`sameSite` session cookies (scoped to `/admin`, `secure` in production), session-bound CSRF tokens on
+every admin POST, login rate limiting, server-side validation, auto-escaped templates, and uploads
+verified by content (not just file extension).
+
+## Deploy
+
+### Option A: small VPS (Ubuntu) with PM2 + Nginx
+
+```bash
+# on the server
+sudo apt install -y nginx
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - && sudo apt install -y nodejs
+sudo npm i -g pm2
+
+git clone <your repo> /var/www/yannick && cd /var/www/yannick
+npm ci
+cp .env.example .env && nano .env      # NODE_ENV=production, SITE_URL=https://yourdomain, SESSION_SECRET, ADMIN_PASSWORD
+npm run build
+pm2 start src/server.js --name yannick
+pm2 save && pm2 startup
+```
+
+Nginx site (`/etc/nginx/sites-available/yannick`), then enable it and run `sudo certbot --nginx -d yourdomain`:
+
+```nginx
+server {
+  server_name yourdomain.com;
+  client_max_body_size 6m;
+  location / {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+}
+```
+
+Back up `data/` and `uploads/` regularly (they hold the database and photos).
+Update later with `git pull && npm ci && npm run build && pm2 restart yannick`.
+
+### Option B: Render / Railway
+
+Create a Web Service from the repo. Build command `npm ci && npm run build`, start command `node src/server.js`.
+**Attach a persistent disk** (for example mounted at `/data`) and set `DATA_DIR=/data/db`,
+`UPLOADS_DIR=/data/uploads`, plus `NODE_ENV=production`, `SITE_URL`, `SESSION_SECRET`, `ADMIN_PASSWORD`.
+Without a disk, products and photos are lost on every deploy.
+
+## Project layout
+
+```
+config/    site.js (business details, FAQ), i18n.js (UI strings)
+src/       app.js, server.js, db.js, seed.js, routes/, middleware/, lib/
+views/     EJS templates (partials/, admin/)
+public/    css/, js/ (source), fonts/, img/, dist/ (generated)
+scripts/   build.js (esbuild), build-icons.js
+```

@@ -1,0 +1,48 @@
+const site = require('../../config/site');
+const { siteUrl } = require('../env');
+const { productLabel } = require('./format');
+
+const imageUrl = (p, variant = 'lg') => `/uploads/products/${p.image}-${variant}.webp`;
+
+function storeSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Store',
+    name: site.brand.name,
+    description: site.brand.description,
+    url: siteUrl,
+    image: `${siteUrl}/img/og-default.png`,
+    telephone: site.contact.phone,
+    currenciesAccepted: site.currency,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: site.location.city,
+      addressCountry: site.location.countryCode,
+    },
+    areaServed: site.location.city,
+    sameAs: [site.contact.tiktok],
+  };
+}
+
+function productSchema(p) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: productLabel(p),
+    description: p.description || `${p.name} by ${p.brand}`,
+    brand: { '@type': 'Brand', name: p.brand },
+    sku: p.slug,
+    ...(p.image && { image: [`${siteUrl}${imageUrl(p)}`] }),
+    offers: {
+      '@type': 'Offer',
+      url: `${siteUrl}/perfume/${p.slug}`,
+      priceCurrency: site.currency,
+      price: String(p.price),
+      itemCondition: 'https://schema.org/NewCondition',
+      availability: p.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      seller: { '@type': 'Organization', name: site.brand.name },
+    },
+  };
+}
+
+module.exports = { imageUrl, storeSchema, productSchema };

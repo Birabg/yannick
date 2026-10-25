@@ -1,0 +1,41 @@
+<%
+  const base = path === '/' ? '' : '/';
+  const nav = [
+    ['story', 'nav.story'],
+    ['collection', 'nav.collection'],
+    ['notes', 'nav.notes'],
+    ['houses', 'nav.houses'],
+    ...(locals.hasReviews ? [['reviews', 'nav.reviews']] : []),
+    ['faq', 'nav.faq'],
+    ['order', 'nav.order'],
+  ];
+%>
+<header class="site-header" id="top">
+  <div class="container site-header__inner">
+    <a class="brand" href="/" aria-label="<%= site.brand.name %> - home">
+      <%- icon('logo', 'brand__mark') %>
+      <span class="brand__name">Yannick <span>Scents</span></span>
+    </a>
+
+    <nav class="nav" id="site-nav" aria-label="Main">
+      <ul class="nav__list">
+        <% nav.forEach(function (item) { %>
+        <li><a href="<%= base %>#<%= item[0] %>" <%- i(item[1]) %>><%= t(item[1]) %></a></li>
+        <% }) %>
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      <button class="icon-btn" type="button" data-lang-toggle aria-label="አማ - switch language to Amharic" lang="am">አማ</button>
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to light theme">
+        <%- icon('sun', 'theme-icon theme-icon--sun') %><%- icon('moon', 'theme-icon theme-icon--moon') %>
+      </button>
+      <a class="btn btn-wa btn-sm header-cta" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener">
+        <%- icon('whatsapp') %><span <%- i('cta.whatsapp') %>><%= t('cta.whatsapp') %></span>
+      </a>
+      <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+        <%- icon('menu', 'nav-toggle__open') %><%- icon('close', 'nav-toggle__close') %>
+      </button>
+    </div>
+  </div>
+</header>
