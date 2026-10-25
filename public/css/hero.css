@@ -33,7 +33,10 @@
   display: block;
 }
 .hero__title em {
-  color: var(--c-muted);
+  background: linear-gradient(90deg, var(--c-muted), var(--c-text));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 .hero__text {
   max-width: 34ch;

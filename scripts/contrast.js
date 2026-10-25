@@ -1,25 +1,25 @@
-/** Prints WCAG contrast ratios for the colour pairs the design relies on. */
+/* Prints WCAG contrast ratios for the colour pairs in public/css/tokens.css. Run: node scripts/contrast.js */
 const lum = (hex) => {
-  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
-  const f = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
-  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 };
 const ratio = (a, b) => {
-  const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
-  return (x + 0.05) / (y + 0.05);
+  const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
 };
-const pairs = [
-  ['ink on ivory', '#1C1714', '#F7F3EC'],
-  ['ink on stone', '#1C1714', '#EAE3D7'],
-  ['taupe on ivory', '#6B5F54', '#F7F3EC'],
-  ['taupe on stone', '#6B5F54', '#EAE3D7'],
-  ['brief taupe on ivory', '#7A6E63', '#F7F3EC'],
-  ['bordeaux on ivory', '#5B1A24', '#F7F3EC'],
-  ['bordeaux on stone', '#5B1A24', '#EAE3D7'],
-  ['ivory on bordeaux', '#F7F3EC', '#5B1A24'],
-  ['ivory on ink', '#F7F3EC', '#1C1714'],
-  ['taupe-dark on ink', '#B3A798', '#1C1714'],
-  ['brass on ink', '#A68A5B', '#1C1714'],
-  ['danger on ivory', '#8C1D18', '#F7F3EC'],
-];
-for (const [name, fg, bg] of pairs) console.log(ratio(fg, bg).toFixed(2).padStart(6), name);
+const themes = {
+  light: { bg: '#ffffff', surface: '#f4f4f2', chip: '#e9e9e9', photo: '#e9e9e9', text: '#1a1a1a', muted: '#5c5c5c', accent: '#557611', onAccent: '#ffffff', danger: '#a3231c', dangerBg: '#fbeceb', invBg: '#131312', invText: '#f0efec', invMuted: '#b0aeaa', invAccent: '#a5e12a' },
+  dark: { bg: '#131312', surface: '#1c1c1b', chip: '#232322', photo: '#e9e9e9', text: '#f0efec', muted: '#b0aeaa', accent: '#a5e12a', onAccent: '#131312', danger: '#ff8d85', dangerBg: '#3a1d1b', invBg: '#1c1c1b', invText: '#f0efec', invMuted: '#b0aeaa', invAccent: '#a5e12a' },
+};
+const pairs = [['text', 'bg', 4.5], ['text', 'surface', 4.5], ['text', 'chip', 4.5], ['muted', 'bg', 4.5], ['muted', 'surface', 4.5], ['muted', 'chip', 4.5], ['muted', 'photo', 4.5], ['accent', 'bg', 4.5], ['accent', 'surface', 4.5], ['onAccent', 'accent', 4.5], ['danger', 'bg', 4.5], ['danger', 'dangerBg', 4.5], ['invText', 'invBg', 4.5], ['invMuted', 'invBg', 4.5], ['invAccent', 'invBg', 4.5]];
+let bad = 0;
+for (const [name, t] of Object.entries(themes)) {
+  for (const [fg, bg, min] of pairs) {
+    if (bg === 'photo' && name === 'dark') continue; // tags carry their own background
+    const r = ratio(t[fg], t[bg]);
+    const ok = r >= min;
+    if (!ok) bad++;
+    console.log(`${ok ? 'ok  ' : 'FAIL'} ${r.toFixed(2).padStart(5)}  ${name}: ${fg} on ${bg}`);
+  }
+}
+process.exit(bad ? 1 : 0);
