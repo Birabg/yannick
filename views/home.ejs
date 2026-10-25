@@ -134,8 +134,11 @@
   <section class="section tone--surface" id="houses" aria-labelledby="houses-title">
     <div class="container">
       <%- include('components/section-head', { key: 'houses', titleId: 'houses-title', num: num() }) %>
-      <div class="houses reveal">
-        <% site.houses.forEach(function (h) { %><p class="house"><%= h %></p><% }) %>
+      <div class="houses-rail reveal">
+        <div class="houses">
+          <% site.houses.forEach(function (h) { %><p class="house"><%= h %></p><% }) %>
+          <% site.houses.forEach(function (h) { %><p class="house" aria-hidden="true"><%= h %></p><% }) %>
+        </div>
       </div>
       <p class="houses-note" <%- i('houses.note') %>><%= t('houses.note') %></p>
     </div>

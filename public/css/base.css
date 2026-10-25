@@ -173,24 +173,43 @@ button {
   vertical-align: middle;
 }
 
-/* Scroll reveal: hidden only while JS runs and motion is welcome. */
+/* Scroll reveal: a clip-path wipe, only while JS runs and motion is welcome. */
 @media (prefers-reduced-motion: no-preference) {
   .js .reveal {
-    opacity: 0;
-    transform: translateY(16px);
-    transition:
-      opacity var(--d-slow) var(--ease),
-      transform var(--d-slow) var(--ease);
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path var(--d-slow) var(--ease-out);
   }
   .js .reveal.is-visible {
-    opacity: 1;
-    transform: none;
+    clip-path: inset(-32px);
   }
   .js .reveal--2 {
     transition-delay: 120ms;
   }
   .js .reveal--3 {
     transition-delay: 240ms;
+  }
+
+  /* Entrance: fade in from a soft blur, one after the other. */
+  .hero__copy .hero__inner > * {
+    animation: stream-in 420ms var(--ease-out) both;
+  }
+  .hero__copy .hero__inner > :nth-child(2) {
+    animation-delay: 80ms;
+  }
+  .hero__copy .hero__inner > :nth-child(3) {
+    animation-delay: 160ms;
+  }
+  .hero__copy .hero__inner > :nth-child(4) {
+    animation-delay: 240ms;
+  }
+  .hero__copy .hero__inner > :nth-child(5) {
+    animation-delay: 320ms;
+  }
+}
+@keyframes stream-in {
+  from {
+    opacity: 0;
+    filter: blur(4px);
   }
 }
 

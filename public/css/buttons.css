@@ -122,7 +122,7 @@
   border: 1px solid currentcolor;
   border-top-color: transparent;
   border-radius: 50%;
-  animation: spin 900ms linear infinite;
+  animation: spin 1100ms linear infinite;
 }
 .btn[aria-busy='true'] .btn__spinner,
 .btn.is-loading .btn__spinner {

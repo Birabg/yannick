@@ -444,15 +444,15 @@ html.sheet-open {
 .skeleton {
   height: 16px;
   border-radius: var(--r-sm);
-  background: var(--c-chip);
-  animation: pulse 1.8s ease-in-out infinite;
+  background: linear-gradient(90deg, var(--c-chip) 25%, var(--c-surface) 50%, var(--c-chip) 75%) 200% 0 / 200% 100%;
+  animation: shimmer 1400ms linear infinite;
 }
 .skeleton--tall {
   height: 320px;
 }
-@keyframes pulse {
-  50% {
-    opacity: 0.45;
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
   }
 }
 .sheet__loading {
