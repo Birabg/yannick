@@ -16,7 +16,7 @@
   letter-spacing: -0.015em;
 }
 .sec-title em {
-  color: var(--accent);
+  color: var(--soft);
 }
 .sec-lead {
   max-width: 46ch;
@@ -64,7 +64,7 @@
   line-height: 1.1;
 }
 .story__statement em {
-  color: var(--c-accent);
+  color: var(--c-muted);
 }
 .story__copy p {
   max-width: 52ch;
@@ -192,33 +192,20 @@
 }
 .journey__tiers {
   display: grid;
-  gap: 0;
-  justify-items: center;
+  gap: var(--s-2);
 }
 .tier {
-  width: var(--w, 100%);
-  padding: var(--s-4) var(--s-3);
+  padding: var(--s-3);
   border: 1px solid var(--rule);
-  text-align: center;
-}
-.tier + .tier {
-  margin-top: -1px;
-}
-.tier:nth-child(1) {
-  --w: 66%;
-}
-.tier:nth-child(2) {
-  --w: 83%;
-}
-.tier:nth-child(3) {
-  --w: 100%;
+  border-radius: var(--r-card);
+  background: var(--c-card-inv, transparent);
 }
 .tier__num {
   display: block;
   margin-bottom: var(--s-1);
-  color: var(--accent);
-  font-family: var(--font-display);
-  font-size: 1.2rem;
+  color: var(--soft);
+  font-size: var(--t-label);
+  font-weight: 700;
 }
 .tier__title {
   font-size: var(--t-m);
@@ -226,36 +213,25 @@
 .tier__time {
   margin: var(--s-1) 0 var(--s-2);
   color: var(--soft);
-  font-size: var(--t-label);
+  font-size: var(--t-small);
 }
 .tier__text {
-  margin: 0 auto var(--s-2);
-  max-width: 38ch;
-  color: var(--c-bg);
-  font-size: var(--t-small);
-  opacity: 0.9;
+  margin: 0 0 var(--s-2);
+  max-width: 44ch;
+  color: var(--fg);
 }
 .tier__notes {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 0 var(--s-2);
+  gap: var(--s-1);
   margin: 0;
-  color: var(--accent);
-  font-family: var(--font-display);
-  font-size: 1.15rem;
+  padding: 0;
+  font-size: var(--t-small);
 }
-.tier__notes li + li::before {
-  content: '·';
-  margin-right: var(--s-2);
-}
-@media (max-width: 759px) {
-  .tier:nth-child(1) {
-    --w: 84%;
-  }
-  .tier:nth-child(2) {
-    --w: 92%;
-  }
+.tier__notes li {
+  padding: 0.2rem 0.75rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-pill);
 }
 @media (min-width: 960px) {
   .journey {
@@ -275,30 +251,27 @@
 .houses {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  border-top: 1px solid var(--c-border);
-  border-bottom: 1px solid var(--c-border);
+  gap: var(--s-1);
 }
 .house {
   display: grid;
   place-items: center;
-  min-height: 120px;
+  min-height: 96px;
   margin: 0;
   padding: var(--s-3) var(--s-2);
-  border-bottom: 1px solid var(--c-border);
-  font-family: var(--font-display);
-  font-size: clamp(1.05rem, 0.9rem + 0.6vw, 1.35rem);
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+  background: var(--c-card);
+  font-size: var(--t-s);
+  font-weight: 500;
   line-height: 1.3;
   text-align: center;
-  transition: color var(--d-base) var(--ease);
-}
-.house:nth-child(even) {
-  border-left: 1px solid var(--c-border);
-}
-.house:nth-last-child(-n + 2) {
-  border-bottom: 0;
+  transition:
+    border-color var(--d-fast) var(--ease),
+    color var(--d-fast) var(--ease);
 }
 .house:hover {
-  color: var(--c-accent);
+  border-color: var(--c-muted);
 }
 .houses-note {
   margin: var(--s-3) 0 0;
@@ -309,13 +282,6 @@
   .houses {
     grid-template-columns: repeat(6, 1fr);
   }
-  .house {
-    min-height: 160px;
-    border-bottom: 0;
-  }
-  .house + .house {
-    border-left: 1px solid var(--c-border);
-  }
 }
 
 /* ---------- V. Find your scent ---------- */
@@ -325,8 +291,10 @@
 }
 .quiz__panel {
   min-height: 440px;
-  padding-top: var(--s-3);
-  border-top: 1px solid var(--rule);
+  padding: var(--s-3);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-card);
+  background: var(--c-card);
 }
 .quiz__progress {
   display: flex;
@@ -600,18 +568,23 @@
 /* ---------- Order ---------- */
 .cblocks {
   display: grid;
+  gap: var(--s-2);
   margin-bottom: var(--s-6);
-  border-top: 1px solid var(--rule);
 }
 .cblock {
   display: grid;
   gap: var(--s-1);
-  padding: var(--s-4) 0;
-  border-bottom: 1px solid var(--c-border);
-  transition: padding var(--d-base) var(--ease);
+  padding: var(--s-3);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-card);
+  background: var(--c-card);
+  transition:
+    border-color var(--d-fast) var(--ease),
+    box-shadow var(--d-base) var(--ease);
 }
 .cblock:hover {
-  padding-left: var(--s-2);
+  border-color: var(--c-muted);
+  box-shadow: var(--float);
 }
 .cblock__kicker {
   display: flex;
@@ -622,7 +595,9 @@
 }
 .cblock__title {
   font-family: var(--font-display);
-  font-size: clamp(1.9rem, 1.4rem + 2.2vw, 3rem);
+  font-size: var(--t-m);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
   line-height: 1.1;
   transition: color var(--d-base) var(--ease);
 }
@@ -694,23 +669,10 @@
 @media (min-width: 800px) {
   .cblocks {
     grid-template-columns: repeat(3, 1fr);
-    border-bottom: 1px solid var(--c-border);
   }
   .cblock {
-    padding: var(--s-4) var(--s-3) var(--s-4) 0;
-    border-bottom: 0;
     align-content: space-between;
-    min-height: 220px;
-  }
-  .cblock:hover {
-    padding-left: 0;
-  }
-  .cblock + .cblock {
-    padding-left: var(--s-4);
-    border-left: 1px solid var(--c-border);
-  }
-  .cblock + .cblock:hover {
-    padding-left: var(--s-4);
+    min-height: 200px;
   }
   .steps {
     grid-template-columns: repeat(3, 1fr);
