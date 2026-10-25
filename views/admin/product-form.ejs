@@ -45,8 +45,8 @@
 
     <fieldset class="checks">
       <legend>Collection sections</legend>
-      <p class="hint">Men and Women are set from the category above. Tick the scent family so shoppers can filter by it.</p>
-      <% shelves.forEach(function (c) { %>
+      <p class="hint">Each tick puts the perfume under that filter tab on the site. Men and Women also follow the Category above, so they stay ticked for the matching category.</p>
+      <% site.collections.forEach(function (c) { %>
       <label class="check"><input type="checkbox" name="collections" value="<%= c.key %>" <%= p.collections.includes(c.key) ? 'checked' : '' %>><span><%= c.label %></span></label>
       <% }) %>
     </fieldset>
@@ -56,6 +56,9 @@
       <% site.badges.forEach(function (b) { %>
       <label class="check"><input type="checkbox" name="badges" value="<%= b.key %>" <%= p.badges.includes(b.key) ? 'checked' : '' %>><span><%= b.label %></span></label>
       <% }) %>
+      <label class="field field--inline"><span class="field__label">Best Seller position</span>
+        <input type="number" name="best_order" min="0" max="999" value="<%= p.bestOrder || '' %>" placeholder="1" inputmode="numeric">
+        <span class="hint">Only for perfumes ticked Best Seller. They show in &ldquo;Most Loved Right Now&rdquo; from the lowest number to the highest (1 first). Empty goes last.</span></label>
     </fieldset>
 
     <div class="grid-2">

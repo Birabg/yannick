@@ -29,9 +29,10 @@
     }).join(' ');
     const tall = heroProducts.slice(0, 5);
     const small = heroProducts.slice(5, 7);
-    const founderLine = site.story.statement.replace(/\*/g, '');
+    const founderLine = site.heroLine.replace(/\*/g, '');
   %>
   <section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="hero__bg" data-shader data-variant="hero" data-src="<%= distAsset('hero/island.js') %>" aria-hidden="true"><span class="hero-shader__stage" data-stage></span></div>
     <div class="container hero__head">
       <a class="spin" href="<%= site.contact.tiktok %>" target="_blank" rel="noopener">
         <span class="sr-only">Watch our story on TikTok</span>
@@ -82,6 +83,21 @@
     </div>
   </section>
 
+  <!-- Most Loved Right Now: only what the owner marked Best Seller -->
+  <% if (loved.length) { %>
+  <section class="section tone--bg loved" id="loved" aria-labelledby="loved-title">
+    <div class="container">
+      <header class="loved__head reveal">
+        <p class="loved__label" <%- i('loved.label') %>><%= t('loved.label') %></p>
+        <h2 class="sec-title" id="loved-title" <%- i('loved.title') %>><%= t('loved.title') %></h2>
+      </header>
+    </div>
+    <ul class="loved__row" aria-labelledby="loved-title">
+      <% loved.forEach(function (p, n) { %><%- include('components/product-card', { p: p, order: n }) %><% }) %>
+    </ul>
+  </section>
+  <% } %>
+
   <!-- II. Collection -->
   <section class="section tone--bg" id="collection" aria-labelledby="collection-title">
     <div class="container">
@@ -104,10 +120,10 @@
         </div>
       </div>
 
-      <div class="filterbar" role="group" aria-label="Filter perfumes">
-        <div class="tabs">
-          <%- include('components/tab', { filter: 'all', label: t('filter.all'), pressed: true, i18n: 'filter.all' }) %>
-          <% shelves.forEach(function (c) { %><%- include('components/tab', { filter: c.key, label: c.label, pressed: false }) %><% }) %>
+      <div class="filterbar" role="group" aria-label="Filter perfumes" data-filter-keys="<%= filterKeys.join(' ') %>">
+        <div class="tabs" data-tabs>
+          <%- include('components/tab', { filter: 'all', label: t('filter.all'), count: products.length, pressed: true, i18n: 'filter.all' }) %>
+          <% tabs.forEach(function (c) { %><%- include('components/tab', { filter: c.key, label: c.label, count: c.count, pressed: false }) %><% }) %>
         </div>
       </div>
 
@@ -116,10 +132,10 @@
           <% products.forEach(function (p, n) { %><%- include('components/product-card', { p: p, order: n }) %><% }) %>
         </ul>
         <div class="empty" data-empty hidden>
-          <p class="empty__title">Nothing matches that.</p>
-          <p>Try fewer filters or a different word. Or ask us, we may have it.</p>
+          <p class="empty__title" data-empty-title data-text-filter="Nothing here yet. Ask Yannick on WhatsApp" data-text-search="Nothing matches that.">Nothing matches that.</p>
+          <p data-empty-text>Try fewer filters or a different word. Or ask us, we may have it.</p>
           <div class="error-page__actions">
-            <button type="button" class="btn btn--ink" data-reset><span>Clear filters</span></button>
+            <button type="button" class="btn btn--ink" data-reset><span>Show all</span></button>
             <%- include('components/button', { href: fmt.genericLink(), external: true, ico: 'whatsapp', label: 'Ask on WhatsApp', variant: 'outline' }) %>
           </div>
         </div>
@@ -193,30 +209,41 @@
   </section>
   <% } %>
 
-  <!-- I. Story -->
+  <!-- Our Story -->
   <section class="section tone--bg" id="story" aria-labelledby="story-title">
     <div class="container story">
-      <div class="story__photo reveal">
-        <% if (siteImageIsCustom('founder')) { %>
-        <div class="story__frame">
-          <img src="<%= siteImage('founder') %>" width="1000" height="1250" loading="lazy" decoding="async" alt="Yannick, founder of <%= site.brand.name %>">
+      <figure class="story__photo zoom">
+        <div class="story__frame-wrap">
+          <div class="story__frame" data-story-frame>
+            <% if (story.photo) {
+              const ph = story.photo;
+              const set = function (ext) { return ph.widths.map(function (w) { return ph.url + '/' + ph.base + '-' + w + '.' + ext + ' ' + w + 'w'; }).join(', '); };
+              const top = ph.widths[ph.widths.length - 1];
+            %>
+            <picture>
+              <source type="image/avif" srcset="<%= set('avif') %>" sizes="(min-width: 1024px) 46vw, (min-width: 700px) 38vw, 100vw">
+              <source type="image/webp" srcset="<%= set('webp') %>" sizes="(min-width: 1024px) 46vw, (min-width: 700px) 38vw, 100vw">
+              <img class="story__img fx-<%= Math.round(story.focus.x / 10) * 10 %> fy-<%= Math.round(story.focus.y / 10) * 10 %>" src="<%= ph.url %>/<%= ph.base %>-<%= top %>.webp" width="<%= ph.width %>" height="<%= ph.height %>" alt="<%= story.alt %>" loading="lazy" decoding="async" data-story-img>
+            </picture>
+            <% } %>
+            <span class="story__placeholder" aria-hidden="true">Y</span>
+          </div>
         </div>
-        <p class="story__caption">Yannick &middot; <%= site.location.city %></p>
-        <% } else { %>
-        <%# No portrait uploaded yet: show real bottles from the shelf instead of a made-up person. %>
-        <div class="story__frame story__frame--shelf" aria-hidden="true">
-          <% heroProducts.slice(0, 3).forEach(function (p) { %><%- include('components/photo', { p: p, cls: 'shelf__img', alt: '', sizes: '(min-width: 900px) 150px, 30vw' }) %><% }) %>
-        </div>
-        <p class="story__caption">On the shelf now &middot; <%= site.location.city %></p>
-        <% } %>
-      </div>
-      <div class="story__copy reveal reveal--2">
-        <p class="label"><span class="label__num"><%= num() %></span><span <%- i('story.label') %>><%= t('story.label') %></span></p>
-        <h2 class="story__statement" id="story-title"><%- rich(site.story.statement) %></h2>
-        <% site.story.paragraphs.forEach(function (para) { %><p><%= para %></p><% }) %>
-        <ul class="facts">
-          <% facts.forEach(function (f) { %>
-          <li class="fact"><span class="fact__num"><%= f.num %></span><span class="fact__text"><strong><%= f.title %></strong><%= f.text %></span></li>
+        <figcaption class="story__caption"<% if (story.am.caption) { %> data-am="<%= story.am.caption %>"<% } %>><%= story.caption %></figcaption>
+      </figure>
+
+      <div class="story__copy">
+        <p class="story__eyebrow rise d1" data-am="<%= story.am.eyebrow %>"><%= story.eyebrow %></p>
+        <h2 class="story__heading rise d2" id="story-title" data-am="<%= story.am.heading %>"><%= story.heading %></h2>
+        <% story.paragraphs.forEach(function (para, n) { %>
+        <p class="story__text rise d<%= Math.min(n + 3, 5) %>" data-am="<%= story.am.paragraphs[n] %>"><%= para %></p>
+        <% }) %>
+        <ul class="story__stats">
+          <% story.stats.forEach(function (s, n) { %>
+          <li class="story__stat rise d<%= Math.min(n + 3, 5) %>">
+            <span class="story__value" data-am="<%= s.valueAm %>"><%= s.value %></span>
+            <span class="story__label" data-am="<%= s.labelAm %>"><%= s.label %></span>
+          </li>
           <% }) %>
         </ul>
       </div>

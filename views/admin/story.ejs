@@ -1,0 +1,60 @@
+<%- include('_head', { seo: { title: 'Our Story' } }) %>
+<%
+  const ph = story.photo;
+  const am = story.am;
+%>
+<div class="page-head">
+  <h1>Our Story</h1>
+  <%- include('../components/button', { href: '/#story', label: 'View on site', variant: 'paper' }) %>
+</div>
+<p class="muted">The photo and words in the Our Story section. The Amharic fields are a first draft and need a native speaker to review them.</p>
+<% if (query.error) { %><p class="alert alert--error" role="alert"><%= query.error %></p><% } %>
+
+<form class="form form--narrow" method="post" action="/admin/story?_csrf=<%= csrfToken %>" enctype="multipart/form-data" novalidate>
+  <fieldset class="box">
+    <legend>Founder photo</legend>
+    <div class="field">
+      <span class="field__label">Photo (JPG, PNG or WebP, up to 5 MB)</span>
+      <%- include('_dropzone', { name: 'photo', src: ph ? ph.url + '/' + ph.base + '-' + ph.widths[0] + '.webp' : '', alt: 'Founder photo preview' }) %>
+      <span class="hint">Sized to 480, 800, 1200 and 1600 px wide, never enlarged. A photo at least 1200 px wide looks sharpest. Current photo: <%= ph ? ph.width + ' x ' + ph.height + ' px' : 'none (a coloured placeholder shows)' %>.</span>
+    </div>
+    <% if (story.customPhoto) { %><label class="check"><input type="checkbox" name="remove_photo"><span>Go back to the built-in photo</span></label><% } %>
+    <label class="field field--inline"><span class="field__label">Face, from the left (0 to 100)</span><input type="number" name="focus_x" min="0" max="100" step="5" value="<%= story.focus.x %>"></label>
+    <label class="field field--inline"><span class="field__label">Face, from the top (0 to 100)</span><input type="number" name="focus_y" min="0" max="100" step="5" value="<%= story.focus.y %>"></label>
+    <span class="hint">Where the face sits in the picture. It keeps the head in view when the photo is cropped on different screens.</span>
+    <label class="field"><span class="field__label">Photo description (for screen readers)</span><input name="alt" maxlength="160" value="<%= story.alt %>"></label>
+    <label class="field"><span class="field__label">Caption</span><input name="caption" maxlength="60" value="<%= story.caption %>"></label>
+  </fieldset>
+
+  <fieldset class="box">
+    <legend>English text</legend>
+    <label class="field"><span class="field__label">Small label</span><input name="eyebrow" maxlength="40" value="<%= story.eyebrow %>"></label>
+    <label class="field"><span class="field__label">Heading</span><input name="heading" maxlength="120" value="<%= story.heading %>"></label>
+    <% story.paragraphs.forEach(function (para, n) { %>
+    <label class="field"><span class="field__label">Paragraph <%= n + 1 %></span><textarea name="paragraph<%= n %>" rows="4" maxlength="700"><%= para %></textarea></label>
+    <% }) %>
+    <% story.stats.forEach(function (s, n) { %>
+    <label class="field"><span class="field__label">Fact <%= n + 1 %>: big word</span><input name="stat_value<%= n %>" maxlength="24" value="<%= s.value %>"></label>
+    <label class="field"><span class="field__label">Fact <%= n + 1 %>: small label</span><input name="stat_label<%= n %>" maxlength="40" value="<%= s.label %>"></label>
+    <% }) %>
+  </fieldset>
+
+  <fieldset class="box">
+    <legend>Amharic text <span class="sticker sticker--needs">Needs native review</span></legend>
+    <label class="field"><span class="field__label">Small label</span><input name="eyebrow_am" maxlength="40" value="<%= am.eyebrow %>"></label>
+    <label class="field"><span class="field__label">Heading</span><input name="heading_am" maxlength="120" value="<%= am.heading %>"></label>
+    <% am.paragraphs.forEach(function (para, n) { %>
+    <label class="field"><span class="field__label">Paragraph <%= n + 1 %></span><textarea name="paragraph_am<%= n %>" rows="4" maxlength="900"><%= para %></textarea></label>
+    <% }) %>
+    <label class="field"><span class="field__label">Caption</span><input name="caption_am" maxlength="60" value="<%= am.caption %>"></label>
+    <% story.stats.forEach(function (s, n) { %>
+    <label class="field"><span class="field__label">Fact <%= n + 1 %>: big word</span><input name="stat_value_am<%= n %>" maxlength="24" value="<%= s.valueAm %>"></label>
+    <label class="field"><span class="field__label">Fact <%= n + 1 %>: small label</span><input name="stat_label_am<%= n %>" maxlength="40" value="<%= s.labelAm %>"></label>
+    <% }) %>
+  </fieldset>
+
+  <div class="form__actions">
+    <button class="btn btn--primary btn--lg" type="submit"><span>Save</span><span class="btn__spinner" aria-hidden="true"></span></button>
+  </div>
+</form>
+<%- include('_foot') %>

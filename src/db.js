@@ -63,6 +63,7 @@ const ADDED_COLUMNS = {
   tint: "TEXT NOT NULL DEFAULT ''",
   needs_details: 'INTEGER NOT NULL DEFAULT 0',
   cutout: 'INTEGER NOT NULL DEFAULT 0',
+  best_order: 'INTEGER NOT NULL DEFAULT 0', // position in "Most Loved" (1 = first, 0 = not set)
   cut_w: 'INTEGER NOT NULL DEFAULT 0',
   cut_h: 'INTEGER NOT NULL DEFAULT 0',
   description_en: "TEXT NOT NULL DEFAULT ''",
@@ -83,6 +84,27 @@ for (const [col, def] of Object.entries(ADDED_COLUMNS)) {
   if (!have.has(col)) db.exec(`ALTER TABLE products ADD COLUMN ${col} ${def}`);
 }
 
+// One-off text fix: "Yanick's" (one n) is a misspelling of the owner's name wherever it was typed.
+if (!db.prepare("SELECT 1 FROM settings WHERE key = 'fix_yanick_v1'").get()) {
+  const textColumns = [
+    'name',
+    'brand',
+    'description',
+    'description_en',
+    'description_am',
+    'tagline_en',
+    'tagline_am',
+    'meta_description',
+    'img_alt',
+  ];
+  for (const col of textColumns) {
+    db.prepare(
+      `UPDATE products SET ${col} = REPLACE(${col}, 'Yanick', 'Yannick') WHERE ${col} LIKE '%Yanick%'`
+    ).run();
+  }
+  db.prepare("INSERT INTO settings (key, value) VALUES ('fix_yanick_v1', '1')").run();
+}
+
 const PRODUCT_DEFAULTS = {
   img_w: 0,
   img_h: 0,
@@ -95,6 +117,7 @@ const PRODUCT_DEFAULTS = {
   cutout: 0,
   cut_w: 0,
   cut_h: 0,
+  best_order: 0,
   description_en: '',
   description_am: '',
   tagline_en: '',
@@ -147,6 +170,7 @@ function toProduct(r) {
     focusY: r.focus_y,
     fit: r.fit,
     cutout: r.cutout === 1,
+    bestOrder: r.best_order,
     cutW: r.cut_w,
     cutH: r.cut_h,
     tint: r.tint,
@@ -178,13 +202,13 @@ const products = {
       .prepare(
         `INSERT INTO products (slug, name, brand, price, size, concentration, category, collections,
           family, longevity, projection, description, top_notes, heart_notes, base_notes, badges,
-          image, img_w, img_h, img_alt, focus_x, focus_y, fit, tint, needs_details, cutout, cut_w, cut_h,
+          image, img_w, img_h, img_alt, focus_x, focus_y, fit, tint, needs_details, cutout, cut_w, cut_h, best_order,
           description_en, description_am, tagline_en, tagline_am, meta_description,
           description_status, am_reviewed, in_stock, is_sample, sort_order)
          VALUES (@slug, @name, @brand, @price, @size, @concentration, @category, @collections,
           @family, @longevity, @projection, @description, @top_notes, @heart_notes, @base_notes,
           @badges, @image, @img_w, @img_h, @img_alt, @focus_x, @focus_y, @fit, @tint,
-          @needs_details, @cutout, @cut_w, @cut_h, @description_en, @description_am, @tagline_en, @tagline_am,
+          @needs_details, @cutout, @cut_w, @cut_h, @best_order, @description_en, @description_am, @tagline_en, @tagline_am,
           @meta_description, @description_status, @am_reviewed, @in_stock, @is_sample, @sort_order)`
       )
       .run({ ...PRODUCT_DEFAULTS, ...p, sort_order: top });
@@ -199,7 +223,7 @@ const products = {
         top_notes=@top_notes, heart_notes=@heart_notes, base_notes=@base_notes, badges=@badges,
         image=@image, img_w=@img_w, img_h=@img_h, img_alt=@img_alt, focus_x=@focus_x,
         focus_y=@focus_y, fit=@fit, tint=@tint, needs_details=@needs_details,
-        cutout=@cutout, cut_w=@cut_w, cut_h=@cut_h, description_en=@description_en, description_am=@description_am,
+        cutout=@cutout, cut_w=@cut_w, cut_h=@cut_h, best_order=@best_order, description_en=@description_en, description_am=@description_am,
         tagline_en=@tagline_en, tagline_am=@tagline_am, meta_description=@meta_description,
         description_status=@description_status, am_reviewed=@am_reviewed, in_stock=@in_stock, is_sample=@is_sample, updated_at=datetime('now')
        WHERE id=@id`

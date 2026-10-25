@@ -12,10 +12,14 @@ export function initFilters() {
   if (!grid) return;
   const cards = [...grid.querySelectorAll('[data-card]')];
   const chips = [...document.querySelectorAll('[data-filter]')];
+  const tabs = document.querySelector('[data-tabs]');
+  const known = (document.querySelector('[data-filter-keys]')?.dataset.filterKeys ?? '').split(' ');
   const search = document.getElementById('search');
   const sort = document.getElementById('sort');
   const count = document.querySelector('[data-count-label]');
   const empty = document.querySelector('[data-empty]');
+  const emptyTitle = document.querySelector('[data-empty-title]');
+  const emptyText = document.querySelector('[data-empty-text]');
   const state = { filter: 'all', query: '', sort: 'featured' };
 
   const isVisible = (card) => !card.hidden;
@@ -68,18 +72,77 @@ export function initFilters() {
     count.textContent = `${n} ${n === 1 ? 'perfume' : 'perfumes'}`;
     empty.hidden = n > 0;
     grid.hidden = n === 0;
+    if (n === 0) {
+      // A section with nothing in it asks you to message the shop; a search that found nothing says so.
+      const searching = state.query.trim() !== '';
+      emptyTitle.textContent = searching
+        ? emptyTitle.dataset.textSearch
+        : emptyTitle.dataset.textFilter;
+      emptyText.hidden = !searching;
+    }
   }
 
-  const press = (active) =>
-    chips.forEach((chip) => chip.setAttribute('aria-pressed', String(chip === active)));
+  /** Marks the active tab, keeps it the only tab stop and scrolls it into view in the mobile row. */
+  function press(active, { reveal = true } = {}) {
+    chips.forEach((chip) => {
+      const on = chip === active;
+      chip.setAttribute('aria-pressed', String(on));
+      chip.tabIndex = on ? 0 : -1;
+    });
+    if (reveal && tabs && tabs.scrollWidth > tabs.clientWidth) {
+      const left = active.offsetLeft - (tabs.clientWidth - active.offsetWidth) / 2;
+      tabs.scrollTo({ left, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+    }
+  }
 
-  chips.forEach((chip) =>
-    chip.addEventListener('click', () => {
-      state.filter = chip.dataset.filter;
-      press(chip);
-      render();
-    })
-  );
+  const chipFor = (filter) => chips.find((chip) => chip.dataset.filter === filter);
+
+  /** The filter named in the address (?filter=men); anything unknown means All. */
+  const fromUrl = () => {
+    const wanted = new URLSearchParams(location.search).get('filter');
+    return wanted && known.includes(wanted) ? wanted : 'all';
+  };
+
+  function choose(filter, { push = true } = {}) {
+    state.filter = filter;
+    const chip = chipFor(filter);
+    if (chip) press(chip);
+    else chips.forEach((c) => c.setAttribute('aria-pressed', 'false'));
+    if (push) {
+      const url = new URL(location.href);
+      if (filter === 'all') url.searchParams.delete('filter');
+      else url.searchParams.set('filter', filter);
+      if (url.href !== location.href) history.pushState({ filter }, '', url);
+    }
+    render();
+  }
+
+  chips.forEach((chip) => chip.addEventListener('click', () => choose(chip.dataset.filter)));
+
+  // Arrow keys move between the tabs; Home and End jump to the ends. Enter or Space picks one.
+  tabs?.addEventListener('keydown', (event) => {
+    const keys = { ArrowRight: 1, ArrowLeft: -1, Home: 'first', End: 'last' };
+    if (!(event.key in keys)) return;
+    const at = chips.indexOf(document.activeElement);
+    if (at < 0) return;
+    event.preventDefault();
+    const step = keys[event.key];
+    const next =
+      step === 'first'
+        ? 0
+        : step === 'last'
+          ? chips.length - 1
+          : (at + step + chips.length) % chips.length;
+    chips.forEach((chip, n) => (chip.tabIndex = n === next ? 0 : -1));
+    chips[next].focus();
+    tabs.scrollTo({
+      left: chips[next].offsetLeft - (tabs.clientWidth - chips[next].offsetWidth) / 2,
+      behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+    });
+  });
+
+  window.addEventListener('popstate', () => choose(fromUrl(), { push: false }));
+
   search.addEventListener('input', () => {
     state.query = search.value;
     render();
@@ -90,11 +153,21 @@ export function initFilters() {
   });
   document.querySelectorAll('[data-reset]').forEach((button) =>
     button.addEventListener('click', () => {
-      state.filter = 'all';
       state.query = '';
       search.value = '';
-      press(chips.find((chip) => chip.dataset.filter === 'all'));
-      render();
+      choose('all');
     })
   );
+
+  // Arrive on a shared filtered link: apply it without adding a history entry.
+  const initial = fromUrl();
+  if (initial !== 'all') {
+    state.filter = initial;
+    const chip = chipFor(initial);
+    if (chip) press(chip, { reveal: false });
+    else chips.forEach((c) => c.setAttribute('aria-pressed', 'false'));
+    apply();
+    render();
+    if (chip) requestAnimationFrame(() => press(chip));
+  }
 }

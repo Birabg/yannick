@@ -9,9 +9,11 @@ import { initHeroShader } from './hero-shader.js';
 import { initCards, initMood } from './cards.js';
 import { initTheme } from './theme.js';
 import { initPhotos } from './photo.js';
+import { initStory } from './story.js';
 
 initTheme();
 initPhotos();
+initStory();
 initNav();
 initReveal();
 initFooter();

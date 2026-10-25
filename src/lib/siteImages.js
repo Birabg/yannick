@@ -1,27 +1,17 @@
 /**
- * Site-wide pictures that are not products: the founder portrait (Our Story) and the share image
+ * Site-wide pictures that are not products: the share image
  * (WhatsApp, TikTok, Google). Each can be replaced in /admin/images; until then a built-in default shows.
  */
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const sharp = require('sharp');
-const site = require('../../config/site');
 const { uploadsDir } = require('../env');
 const { settings } = require('../db');
 
 const DIR = path.join(uploadsDir, 'site');
 
 const SLOTS = {
-  founder: {
-    label: 'Founder portrait',
-    use: 'Our Story section',
-    fallback: site.founderPhoto,
-    width: 1000,
-    height: 1250,
-    ext: 'webp',
-    hint: 'A portrait, 4:5. It is cropped to fit the frame, so keep the face near the centre.',
-  },
   share: {
     label: 'Share image',
     use: 'Link previews on WhatsApp, TikTok, Facebook and Google',

@@ -105,6 +105,12 @@ and the panel next to the order text. It is never behind text. One esbuild bundl
 - **FAQ**: stone blocks, notched, with the plus in the notch. **Order**: an ink notched panel with the text, a shader panel with a bottle photo beside it, then three stone blocks.
 - **Fields**: pill search and sort, 1px `--c-line` outline, visible focus ring.
 
+## Filter tabs and Most Loved
+
+**Tabs** (`.tab`, `public/css/system.css`, colours `--tab-*` in `tokens.css`): pills (fully rounded), 44px tall, 20px padding, 12px gap, 13px uppercase at 0.14em tracking. Default is muted text on a hairline; hover brightens both; active has an amber border (`#B86E00` on paper so it keeps 3:1, `#FFA100` on dark), full-strength text and a faint amber tint. Order: All, Fresh & Citrus, Woody Aromatic, Men, Women, Affordable, Yannick's Hand Pick (`filterTabs` in `config/site.js`). A tab shows its count, "Men (11)", and is hidden while its section is empty. Centered on desktop; on phones one scroll-snap row with an edge fade, the active tab scrolled into view. The filter is in the address (`?filter=men`), the back button steps through filters, arrow keys / Home / End move between tabs. Sections come from each product's Collection sections in the admin, never from price. A section with no products shows "Nothing here yet. Ask Yannick on WhatsApp" with the WhatsApp button.
+
+**Most Loved Right Now** (`#loved`, directly after the hero stack and above the collection, so the favourites are the first thing on the shelf and the filter bar stays attached to the grid): an outlined amber-border label above the heading on phones, beside it on desktop, then the same product card as the grid. Only perfumes ticked Best Seller appear, ordered by their "Best Seller position" number; four on desktop, a scroll-snap row with the next card peeking on phones. With none ticked the section is not rendered. The heading uses the site's display grotesk, not a serif, to stay with the rest of the page.
+
 ## Footer
 
 Always dark (`#14110F`) in both themes, full-bleed, about 100svh on desktop. Built in `views/partials/foot.ejs`, styled in `public/css/footer.css`, motion in `public/js/footer.js`.
@@ -140,5 +146,5 @@ orient, flatten, strip metadata, lift a plain studio backdrop off (`src/lib/cuto
 Width and height are stored on the product so every `<img>` has dimensions (no layout shift); `views/components/photo.ejs` writes `srcset`/`sizes`. Only the first hero image is eager with `fetchpriority="high"` and a preload; the rest are lazy.
 Per product: focus point (`fx-N/fy-N` classes), fit (cover or contain), card colour override (`tint`), alt text. A broken or missing image falls back to `/img/bottle-placeholder.svg`.
 Unknown facts are never invented: no price shows "Ask for price", and the admin flags the product "Needs details" until price, size and concentration exist.
-Our Story shows a shelf of three real bottles until a founder portrait is uploaded in `/admin/images`; no stand-in person.
+Our Story is two columns on desktop: the founder photo on the left (4:5, card radius, a 1px amber outline offset 12px behind it, a small-caps caption "Yannick — Founder"), the text on the right (eyebrow, display-font heading, three paragraphs capped at 60ch, then three facts between hairlines). On tablet the photo column is narrower; on phones the photo comes first and the facts stay in one row. The photo is `<picture>` AVIF/WebP at 480/800/1200/1600 (never upscaled), cover-fit with a configurable focus point, and falls back to an amber placeholder if it fails to load. The photo fades in while settling from 1.03; the text rises 16px and the facts follow one by one (transform and opacity only, off for reduced motion). The English copy is final; the Amharic is a draft that needs native review. Everything is editable in `/admin/story`.
 See `IMAGE-INVENTORY.md` for every file and the owner checklist.

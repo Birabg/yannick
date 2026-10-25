@@ -7,7 +7,7 @@ import { prefersReducedMotion } from './motion.js';
  * rather than relying on IntersectionObserver callbacks, which can be skipped on a long jump.
  */
 export function initReveal() {
-  let pending = [...document.querySelectorAll('.reveal')];
+  let pending = [...document.querySelectorAll('.reveal, .rise, .zoom')];
   if (prefersReducedMotion()) {
     pending.forEach((el) => el.classList.add('is-visible'));
     return;

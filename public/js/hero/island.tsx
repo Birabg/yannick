@@ -57,19 +57,29 @@ export function mount(host: HTMLElement) {
     stopDrift();
     queueMicrotask(() => root.unmount());
   };
-  root.render(
-    <Boundary onError={giveUp}>
-      <GlassBackground
-        onReady={() => {
-          host.classList.add('is-ready');
-          stopDrift();
-          stopDrift = startDrift(host);
-        }}
-        onUnavailable={giveUp}
-      />
-    </Boundary>
-  );
+  const isHero = host.dataset.variant === 'hero';
+  const theme = () => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+  const render = () =>
+    root.render(
+      <Boundary onError={giveUp}>
+        <GlassBackground
+          key={isHero ? theme() : 'amber'}
+          variant={isHero ? (theme() === 'dark' ? 'hero-dark' : 'hero-light') : 'amber'}
+          onReady={() => {
+            host.classList.add('is-ready');
+            stopDrift();
+            stopDrift = startDrift(host);
+          }}
+          onUnavailable={giveUp}
+        />
+      </Boundary>
+    );
+  render();
+  // The hero glass follows the site's light / dark theme.
+  const watch = isHero ? new MutationObserver(render) : null;
+  watch?.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   return () => {
+    watch?.disconnect();
     stopDrift();
     root.unmount();
   };
