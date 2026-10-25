@@ -14,6 +14,18 @@ const { imageUrl } = require('./lib/seo');
 const photo = require('./lib/photo');
 const { siteImage, isCustom: siteImageIsCustom } = require('./lib/siteImages');
 const publicRoutes = require('./routes/public');
+
+/** Sizes of the footer photo written by scripts/make-footer.js; null (gradient fallback) if it was not run. */
+function readFooterPhoto() {
+  try {
+    return JSON.parse(
+      fs.readFileSync(path.join(__dirname, '..', 'public/img/footer/footer.json'), 'utf8')
+    );
+  } catch {
+    return null;
+  }
+}
+const footerPhoto = readFooterPhoto();
 const seoRoutes = require('./routes/seo');
 const adminRoutes = require('./routes/admin');
 const styleguideRoutes = require('./routes/styleguide');
@@ -91,6 +103,7 @@ function createApp() {
       imageUrl,
       photo,
       siteImage,
+      footerPhoto,
       siteImageIsCustom,
       criticalCss,
       icon: (name, cls = '') =>

@@ -29,8 +29,8 @@ module.exports = {
     tiktok: 'https://www.tiktok.com/@yannickscents',
     tiktokHandle: '@yannickscents',
     credit: {
-      label: 'Andromeda Technologies',
-      url: 'https://www.instagram.com/andro_medatechnologies',
+      label: 'Bira Girma',
+      url: 'mailto:biragirma4@gmail.com',
     },
   },
 
@@ -67,8 +67,11 @@ module.exports = {
     { key: 'woody', label: 'Woody Aromatic' },
     { key: 'oriental', label: 'Oriental & Gourmand' },
     { key: 'affordable', label: 'Affordable' },
-    { key: 'handpick', label: "Yannick's Selection" },
+    { key: 'handpick', label: "Yannick's Hand Pick" },
   ],
+
+  /** The filter tabs above the grid, in order. A tab is hidden while its section has no products. */
+  filterTabs: ['fresh', 'woody', 'men', 'women', 'affordable', 'handpick'],
 
   categories: [
     { key: 'men', label: 'Men' },
@@ -84,14 +87,41 @@ module.exports = {
     { key: 'bestseller', label: 'Best Seller' },
   ],
 
+  /** Shown under the hero when there is no customer review to quote yet. */
+  heroLine: 'A small shop in Addis Ababa, with a *real person* on the other end.',
+
+  /**
+   * Our Story. The English copy is final: edit it here or in /admin/story, do not reword it in the template.
+   * The Amharic fields (`...Am`) are a first draft and NEED NATIVE REVIEW before they are relied on.
+   * `focus` is where the face sits in the photo, in percent from the top-left; it steers the crop
+   * (object-position) so the head is never cut off. Adjust it here or in /admin/story.
+   */
   story: {
-    statement: 'A small shop in Addis Ababa, with a *real person* on the other end.',
+    eyebrow: 'Our Story',
+    heading: 'Finding a scent that feels like you',
     paragraphs: [
-      'Yannick Scents brings in original bottles from famous houses, and helps you choose one you will actually wear.',
-      'Tell us what you like and what you can spend. Yannick replies personally, usually with two or three suggestions rather than a long list.',
+      'Yannick Scents began with a simple belief: fragrance should feel personal, honest, and unforgettable. What started as a love for original scents grew into a brand shaped by quality, authenticity, and taste.',
+      'At Yannick Scents, we curate signature fragrances that feel refined, confident, and true to the moment \u2014 whether you want something fresh, bold, or quietly luxurious.',
+      'Every bottle is selected with care, so you can shop with confidence and discover a scent that feels unmistakably yours.',
     ],
+    stats: [
+      { value: '100%', label: 'Original Fragrances', valueAm: '100%', labelAm: 'ኦሪጅናል ሽቶዎች' },
+      { value: 'Free', label: 'Delivery', valueAm: 'ነጻ', labelAm: 'ማድረስ' },
+      { value: 'Carefully', label: 'Curated', valueAm: 'በጥንቃቄ', labelAm: 'የተመረጡ' },
+    ],
+    caption: 'Yannick \u2014 Founder',
+    alt: 'Yannick, founder of Yannick Scents',
+    focus: { x: 55, y: 22 },
+    // needs native review:
+    eyebrowAm: 'ታሪካችን',
+    headingAm: 'ከእርስዎ ጋር የሚመጥን መዓዛ መፈለግ',
+    paragraphsAm: [
+      'ያኒክ ሴንትስ የተጀመረው በቀላል እምነት ነው፦ መዓዛ ግላዊ፣ ሐቀኛና የማይረሳ መሆን አለበት። ለኦሪጅናል ሽቶዎች ከነበረ ፍቅር የተነሳ፣ በጥራት፣ በእውነተኛነትና በጥሩ ምርጫ የተቀረጸ ብራንድ ሆነ።',
+      'በያኒክ ሴንትስ፣ ትኩስ፣ ደፋር ወይም በዝምታ የሚያምር ነገር ቢፈልጉ፣ ለወቅቱ የሚስማሙ፣ በራስ መተማመን የሚሰጡ ልዩ መዓዛዎችን እንመርጣለን።',
+      'እያንዳንዱ ጠርሙስ በጥንቃቄ ይመረጣል፤ ስለዚህ በእርግጠኝነት ገዝተው የእርስዎ የሆነ መዓዛ ያገኛሉ።',
+    ],
+    captionAm: 'ያኒክ \u2014 መስራች',
   },
-  founderPhoto: '/img/founder-placeholder.svg',
 
   /** "Find your scent" guide. Budgets are in ETB; edit to match your range. */
   quiz: {
@@ -184,13 +214,6 @@ module.exports = {
         'pepper',
       ],
     },
-  ],
-
-  /** Three understated facts under the story. */
-  facts: [
-    { num: '6', title: 'Houses', text: 'Chanel, YSL, Valentino, Hugo Boss, Bentley, Azzaro.' },
-    { num: '100%', title: 'Original', text: 'No copies, and nothing "inspired by".' },
-    { num: '0', title: 'Delivery fee', text: 'Free to your door anywhere in Addis Ababa.' },
   ],
 
   faq: [

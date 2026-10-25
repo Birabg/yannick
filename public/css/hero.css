@@ -36,8 +36,23 @@
   position: relative;
   padding-top: calc(var(--header-h) + var(--s-3));
   padding-bottom: var(--s-4);
+  isolation: isolate;
   background: var(--c-bg);
   color: var(--c-text);
+}
+
+/* the dark glass behind the whole hero; the gradient is what shows until (or unless) the shader runs */
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--hero-bg-a) 0%, var(--hero-bg-b) 100%);
+  pointer-events: none;
+}
+.hero__bg .hero-shader__stage {
+  position: absolute;
+  inset: 0;
 }
 
 /* ---------- headline, badge, stack ---------- */

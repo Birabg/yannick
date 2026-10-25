@@ -37,46 +37,6 @@
   color: var(--c-text);
 }
 
-/* ---------- Tabs (collection filters): pill chips ---------- */
-.tabs {
-  display: flex;
-  gap: var(--s-1);
-  padding-bottom: 2px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.tabs::-webkit-scrollbar {
-  display: none;
-}
-.tab {
-  flex: none;
-  min-height: 48px;
-  padding: 0 1.1rem;
-  border: 1px solid var(--c-border);
-  border-radius: var(--r-pill);
-  background: transparent;
-  color: var(--c-text);
-  font-size: var(--t-small);
-  font-weight: 500;
-  white-space: nowrap;
-  transition:
-    background-color var(--d-fast) var(--ease),
-    color var(--d-fast) var(--ease),
-    border-color var(--d-fast) var(--ease);
-}
-.tab:hover {
-  border-color: var(--c-text);
-}
-.tab[aria-pressed='true'] {
-  border-color: var(--c-text);
-  background: var(--c-text);
-  color: var(--c-bg);
-}
-.tab:active {
-  background: var(--c-surface);
-  color: var(--c-text);
-}
-
 /* ---------- Photo ---------- */
 .photo {
   position: relative;
@@ -411,6 +371,11 @@ html.sheet-open {
   color: var(--c-muted);
   font-size: var(--t-label);
 }
+.crumbs a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
 .crumbs a:hover {
   color: var(--c-accent-text);
 }
@@ -547,7 +512,8 @@ html.sheet-open {
   color: var(--c-on-accent);
 }
 @media (max-width: 899px) {
-  body {
+  /* the footer carries the space under the bar itself, so no paper strip shows below it */
+  body:not(:has(.foot)) {
     padding-bottom: calc(var(--bar-h) + env(safe-area-inset-bottom));
   }
 }

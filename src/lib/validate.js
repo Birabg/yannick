@@ -83,6 +83,7 @@ function parseProduct(body) {
       tagline_en: str(body.tagline_en, 60),
       tagline_am: str(body.tagline_am, 80),
       meta_description: str(body.meta_description, 155),
+      best_order: Math.min(999, Math.max(0, Number.parseInt(body.best_order, 10) || 0)),
       am_reviewed: body.am_reviewed === 'on' ? 1 : 0,
       top_notes: tags(body.top_notes),
       heart_notes: tags(body.heart_notes),

@@ -192,10 +192,19 @@
 }
 .detail .photo__img {
   /* feather the edges so the photo's own backdrop melts into the card colour */
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
     linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
   -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
+  mask-image:
+    linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
     linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
   mask-composite: intersect;
+}
+
+/* Phones: two columns side by side, so every card photo gets the same 4:5 box and the rows line up. */
+@media (max-width: 639px) {
+  .card .photo[class*='ar-'] {
+    aspect-ratio: 4 / 5;
+  }
 }

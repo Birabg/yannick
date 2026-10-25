@@ -5,6 +5,7 @@ const { storeSchema, productSchema, imageUrl } = require('../lib/seo');
 const { price } = require('../lib/format');
 const { moodPicks } = require('../lib/mood');
 const { heroProducts: pickHero } = require('../lib/hero');
+const { getStory } = require('../lib/story');
 
 const router = express.Router();
 
@@ -21,20 +22,21 @@ router.get('/', (req, res) => {
   // The houses on the site are the brands actually on the shelf (the configured list is only a fallback).
   const brands = [...new Set(list.map((p) => p.brand))];
   const houses = brands.length ? brands : site.houses;
-  const facts = site.facts.map((f, n) =>
-    n === 0 && brands.length
-      ? {
-          ...f,
-          num: String(brands.length),
-          text:
-            brands.length > 6
-              ? `${brands.slice(0, 5).join(', ')} and ${brands.length - 5} more.`
-              : `${brands.join(', ')}.`,
-        }
-      : f
-  );
   // Filter pills appear only for shelves that have at least one bottle.
   const shelves = site.collections.filter((c) => list.some((p) => p.collections.includes(c.key)));
+  // Filter tabs: the configured order, with how many products each holds; empty sections are hidden.
+  const tabs = site.filterTabs
+    .map((key) => {
+      const c = site.collections.find((x) => x.key === key);
+      return { key, label: c.label, count: list.filter((p) => p.collections.includes(key)).length };
+    })
+    .filter((t) => t.count > 0);
+  // "Most Loved Right Now": only what the owner ticked Best Seller, in the owner's order. Nothing else fills it.
+  const loved = list
+    .filter((p) => p.badges.includes('bestseller'))
+    .sort((a, b) => (a.bestOrder || 999) - (b.bestOrder || 999))
+    .slice(0, 8);
+  const story = getStory();
   const reviewList = reviews.list();
   const quote = reviewList.find((r) => r.text) || null;
   res.render('home', {
@@ -43,7 +45,10 @@ router.get('/', (req, res) => {
     heroProducts,
     houses,
     shelves,
-    facts,
+    story,
+    tabs,
+    loved,
+    filterKeys: site.collections.map((c) => c.key),
     quote,
     reviews: reviews.list(),
     seo: {

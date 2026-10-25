@@ -20,6 +20,14 @@ const {
 const { heroProducts } = require('../lib/hero');
 const { SLOTS, siteImage, isCustom, saveSiteImage, removeSiteImage } = require('../lib/siteImages');
 
+const {
+  getStory,
+  saveStoryCopy,
+  saveStoryPhoto,
+  removeStoryPhoto,
+  saveFocus,
+} = require('../lib/story');
+
 const router = express.Router();
 const intId = (req) => Number.parseInt(req.params.id, 10);
 const wantsJson = (req) => req.get('accept')?.includes('application/json');
@@ -150,13 +158,20 @@ const productFromForm = (value, existing) =>
 /** Columns that describe a saved photo (empty when there is none). */
 const photoFields = (shot) =>
   shot
-    ? { image: shot.base, img_w: shot.width, img_h: shot.height, cutout: shot.cutout ? 1 : 0 }
+    ? {
+        image: shot.base,
+        img_w: shot.width,
+        img_h: shot.height,
+        cut_w: shot.cutW,
+        cut_h: shot.cutH,
+      }
     : { image: '' };
 const keepPhoto = (p) => ({
   image: p.image,
   img_w: p.imageW,
   img_h: p.imageH,
-  cutout: p.cutout ? 1 : 0,
+  cut_w: p.cutW,
+  cut_h: p.cutH,
 });
 
 function uniqueSlug(base, exceptId = 0) {
@@ -346,6 +361,52 @@ router.post('/images/site/:slot/reset', async (req, res, next) => {
   if (!SLOTS[req.params.slot]) return next();
   await removeSiteImage(req.params.slot);
   return res.redirect('/admin/images?deleted=1');
+});
+
+/* ---------- Our Story ---------- */
+
+const clip = (v, max) =>
+  String(v ?? '')
+    .trim()
+    .slice(0, max);
+const pct = (v, fallback) => {
+  const n = Number.parseInt(v, 10);
+  return Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : fallback;
+};
+
+router.get('/story', (req, res) => {
+  res.render('admin/story', { story: getStory(), active: 'story' });
+});
+
+router.post('/story', singleImage('photo'), async (req, res) => {
+  if (req.uploadError) {
+    return res.redirect(`/admin/story?error=${encodeURIComponent(req.uploadError)}`);
+  }
+  const b = req.body;
+  const list = (key, count, max) =>
+    Array.from({ length: count }, (_, n) => clip(b[`${key}${n}`], max));
+  saveStoryCopy({
+    eyebrow: clip(b.eyebrow, 40),
+    heading: clip(b.heading, 120),
+    paragraphs: list('paragraph', 3, 700),
+    stats: [0, 1, 2].map((n) => ({
+      value: clip(b[`stat_value${n}`], 24),
+      label: clip(b[`stat_label${n}`], 40),
+      valueAm: clip(b[`stat_value_am${n}`], 24),
+      labelAm: clip(b[`stat_label_am${n}`], 40),
+    })),
+    caption: clip(b.caption, 60),
+    alt: clip(b.alt, 160),
+    eyebrowAm: clip(b.eyebrow_am, 40),
+    headingAm: clip(b.heading_am, 120),
+    paragraphsAm: list('paragraph_am', 3, 900),
+    captionAm: clip(b.caption_am, 60),
+  });
+  const now = getStory().focus;
+  saveFocus(pct(b.focus_x, now.x), pct(b.focus_y, now.y));
+  if (req.file) await saveStoryPhoto(req.file.buffer);
+  else if (b.remove_photo) await removeStoryPhoto();
+  return res.redirect('/admin/story?saved=1');
 });
 
 /* ---------- Reviews ---------- */

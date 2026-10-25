@@ -18,13 +18,13 @@ Never: amber or yellow text on white, a second brand accent, fake people, invent
 
 ## Colour
 
-| Token                                                                                  | Value                                                        | Use                                                  |
-| -------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
-| `--paper`                                                                              | `#FBFAF7`                                                    | Page, text on ink                                    |
-| `--stone`                                                                              | `#F2EFE8`                                                    | Bands, FAQ and order blocks                          |
-| `--ink`                                                                                | `#14110F`                                                    | Text, primary buttons, order panel                   |
-| `--amber` `--gold` `--sun`                                                             | `#FFA100` `#FFC800` `#FFDA00`                                | Hover, the shader, the heading marker, buttons on ink |
-| `--fam-fresh` / `--fam-woody` / `--fam-oriental` / `--fam-men` / `--fam-women` / `--fam-none` | `#E9F056` `#1F5A43` `#D9651C` `#8FC6EE` `#F3C3D0` `#CFE0C6` | Card, pill and panel backdrops by scent family |
+| Token                                                                                         | Value                                                       | Use                                                   |
+| --------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------- |
+| `--paper`                                                                                     | `#FBFAF7`                                                   | Page, text on ink                                     |
+| `--stone`                                                                                     | `#F2EFE8`                                                   | Bands, FAQ and order blocks                           |
+| `--ink`                                                                                       | `#14110F`                                                   | Text, primary buttons, order panel                    |
+| `--amber` `--gold` `--sun`                                                                    | `#FFA100` `#FFC800` `#FFDA00`                               | Hover, the shader, the heading marker, buttons on ink |
+| `--fam-fresh` / `--fam-woody` / `--fam-oriental` / `--fam-men` / `--fam-women` / `--fam-none` | `#E9F056` `#1F5A43` `#D9651C` `#8FC6EE` `#F3C3D0` `#CFE0C6` | Card, pill and panel backdrops by scent family        |
 
 A product's colour is its scent family (Fresh & Citrus, Woody Aromatic, Oriental & Gourmand), else its category (men, women), else the neutral sage
 (`cardColor()` in `src/lib/format.js`). Text on a family colour is ink, except on woody green where it is paper (`--card-fg`).
@@ -36,15 +36,15 @@ Light, Dark or System (default). The header button cycles Light, Dark, System (4
 The choice is kept in `localStorage` (inside try/catch) and an inline, nonce-protected script in `<head>` (`views/partials/theme-init.ejs`) sets `data-theme`, `color-scheme` and `<meta name="theme-color">` before paint, so there is no flash. On System the page follows the OS live.
 Admin uses the same tokens and toggle.
 
-| Semantic token             | Light     | Dark                      |
-| -------------------------- | --------- | ------------------------- |
-| `--bg`                     | `#FBFAF7` | `#100E0C`                 |
-| `--surface` / `--surface-2` | paper / `#F2EFE8` | `#1A1714` / `#231F1B` |
-| `--text`                   | `#14110F` | `#F4EFE6`                 |
-| `--text-muted`             | ink, softened | `#B3A89A`             |
-| `--border`                 | ink 10%   | `rgba(255,255,255,.12)`   |
-| `--accent` / `--accent-contrast` | ink / paper | amber `#FFA100` / ink |
-| `--focus`                  | ink       | amber                     |
+| Semantic token                   | Light             | Dark                    |
+| -------------------------------- | ----------------- | ----------------------- |
+| `--bg`                           | `#FBFAF7`         | `#100E0C`               |
+| `--surface` / `--surface-2`      | paper / `#F2EFE8` | `#1A1714` / `#231F1B`   |
+| `--text`                         | `#14110F`         | `#F4EFE6`               |
+| `--text-muted`                   | ink, softened     | `#B3A89A`               |
+| `--border`                       | ink 10%           | `rgba(255,255,255,.12)` |
+| `--accent` / `--accent-contrast` | ink / paper       | amber `#FFA100` / ink   |
+| `--focus`                        | ink               | amber                   |
 
 Family colours are deepened a step in dark so cards sit comfortably on the near-black page. Photos get `--photo-filter` (brightness .92 in dark); the shader stays amber with a darker vignette (`--vignette`).
 Colour-only 200ms transition (`html.theme-anim`), off under reduced motion. The legacy `--c-*` names are aliases of the semantic tokens. `node scripts/contrast.js` checks every pair in both themes (all at least 4.5:1, focus ring 3:1).
@@ -105,6 +105,22 @@ and the panel next to the order text. It is never behind text. One esbuild bundl
 - **FAQ**: stone blocks, notched, with the plus in the notch. **Order**: an ink notched panel with the text, a shader panel with a bottle photo beside it, then three stone blocks.
 - **Fields**: pill search and sort, 1px `--c-line` outline, visible focus ring.
 
+## Filter tabs and Most Loved
+
+**Tabs** (`.tab`, `public/css/system.css`, colours `--tab-*` in `tokens.css`): pills (fully rounded), 44px tall, 20px padding, 12px gap, 13px uppercase at 0.14em tracking. Default is muted text on a hairline; hover brightens both; active has an amber border (`#B86E00` on paper so it keeps 3:1, `#FFA100` on dark), full-strength text and a faint amber tint. Order: All, Fresh & Citrus, Woody Aromatic, Men, Women, Affordable, Yannick's Hand Pick (`filterTabs` in `config/site.js`). A tab shows its count, "Men (11)", and is hidden while its section is empty. Centered on desktop; on phones one scroll-snap row with an edge fade, the active tab scrolled into view. The filter is in the address (`?filter=men`), the back button steps through filters, arrow keys / Home / End move between tabs. Sections come from each product's Collection sections in the admin, never from price. A section with no products shows "Nothing here yet. Ask Yannick on WhatsApp" with the WhatsApp button.
+
+**Most Loved Right Now** (`#loved`, directly after the hero stack and above the collection, so the favourites are the first thing on the shelf and the filter bar stays attached to the grid): an outlined amber-border label above the heading on phones, beside it on desktop, then the same product card as the grid. Only perfumes ticked Best Seller appear, ordered by their "Best Seller position" number; four on desktop, a scroll-snap row with the next card peeking on phones. With none ticked the section is not rendered. The heading uses the site's display grotesk, not a serif, to stay with the rest of the page.
+
+## Footer
+
+Always dark (`#14110F`) in both themes, full-bleed, about 100svh on desktop. Built in `views/partials/foot.ejs`, styled in `public/css/footer.css`, motion in `public/js/footer.js`.
+
+1. Dark band with about 120px of top padding. Row inside the container: small mark (the favicon) and "Yannick Scents" at 20px on the left; three labelled `<nav>` columns on the right (Navigation, Order, Visit) with a white 15px heading and 13px links at 72% off-white, 34px rows (48px on phones). Only real targets are linked: page anchors, `tel:`, the wa.me link and the TikTok URL from `config/site.js`.
+2. One thin copyright line under the columns ("(c) year Yannick Scents. Original fragrances only." and "Built by Bira Girma, linked with mailto:biragirma4@gmail.com"), 66% off-white, AA on the dark band.
+3. The photo (`public/img/originals/footer.jpg`, never modified) fills the lower 65% edge to edge and fades up into the band with a long mask gradient, a soft dark overlay on its top and a fine grain. `scripts/make-footer.js` writes AVIF and WebP to `public/img/footer/`: landscape at 1280, 1920, 2560 and 3840 (original width, never upscaled), and a 4:5 portrait crop at 640, 960 and 1280 for phones (a `footer-mobile.*` original is used instead if one exists). `<picture>` swaps them at 700px. If the image fails, a dark to deep amber gradient shows.
+4. A giant "Yannick" wordmark in off-white `#F2EEE8` at 95%, Bricolage Grotesque 800, SVG with a viewBox and fixed `textLength` so it spans 84% of the width (96% on phones), never wraps and is cut off by the bottom edge so only the top 70% of the letters show. "Yannick Scents" was tried and rejected: the text is twice as long, the letters half as tall and the crop loses its punch.
+5. Links go full white and draw an amber underline from the left in 200ms; focus rings are amber. The photo drifts from scale 1 to 1.04 while scrolling and the wordmark rises 24px as it enters (transform only, off for reduced motion).
+
 ## Motion
 
 Transform and opacity only, except the one-off blur-free word reveal (a mask slide). Words slide up 800ms staggered 80ms; cards rise and fade 800ms staggered 60ms;
@@ -130,5 +146,5 @@ orient, flatten, strip metadata, lift a plain studio backdrop off (`src/lib/cuto
 Width and height are stored on the product so every `<img>` has dimensions (no layout shift); `views/components/photo.ejs` writes `srcset`/`sizes`. Only the first hero image is eager with `fetchpriority="high"` and a preload; the rest are lazy.
 Per product: focus point (`fx-N/fy-N` classes), fit (cover or contain), card colour override (`tint`), alt text. A broken or missing image falls back to `/img/bottle-placeholder.svg`.
 Unknown facts are never invented: no price shows "Ask for price", and the admin flags the product "Needs details" until price, size and concentration exist.
-Our Story shows a shelf of three real bottles until a founder portrait is uploaded in `/admin/images`; no stand-in person.
+Our Story is two columns on desktop: the founder photo on the left (4:5, card radius, a 1px amber outline offset 12px behind it, a small-caps caption "Yannick — Founder"), the text on the right (eyebrow, display-font heading, three paragraphs capped at 60ch, then three facts between hairlines). On tablet the photo column is narrower; on phones the photo comes first and the facts stay in one row. The photo is `<picture>` AVIF/WebP at 480/800/1200/1600 (never upscaled), cover-fit with a configurable focus point, and falls back to an amber placeholder if it fails to load. The photo fades in while settling from 1.03; the text rises 16px and the facts follow one by one (transform and opacity only, off for reduced motion). The English copy is final; the Amharic is a draft that needs native review. Everything is editable in `/admin/story`.
 See `IMAGE-INVENTORY.md` for every file and the owner checklist.

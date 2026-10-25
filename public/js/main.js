@@ -1,5 +1,6 @@
 import { initNav } from './nav.js';
 import { initReveal } from './reveal.js';
+import { initFooter } from './footer.js';
 import { initFilters } from './filters.js';
 import { initSheet } from './sheet.js';
 import { initQuiz } from './quiz.js';
@@ -8,11 +9,14 @@ import { initHeroShader } from './hero-shader.js';
 import { initCards, initMood } from './cards.js';
 import { initTheme } from './theme.js';
 import { initPhotos } from './photo.js';
+import { initStory } from './story.js';
 
 initTheme();
 initPhotos();
+initStory();
 initNav();
 initReveal();
+initFooter();
 initFilters();
 initSheet();
 initLanguage();

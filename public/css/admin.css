@@ -613,3 +613,8 @@
     justify-content: flex-end;
   }
 }
+
+.field--inline {
+  max-width: 22rem;
+  margin-top: var(--s-2);
+}

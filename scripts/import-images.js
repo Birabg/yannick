@@ -61,14 +61,15 @@ async function main() {
       image: base,
       img_w: shot.width,
       img_h: shot.height,
-      cutout: shot.cutout ? 1 : 0,
+      cut_w: shot.cutW,
+      cut_h: shot.cutH,
     };
     const slug = slugify(slugSource({ brand: item.brand, name: item.name, size: '' }));
     const existing = products.getBySlug(slug);
     if (existing) {
       if (existing.image !== base) await removeProductImage(existing.image);
       db.prepare(
-        'UPDATE products SET image=@image, img_w=@img_w, img_h=@img_h, cutout=@cutout WHERE id=@id'
+        'UPDATE products SET image=@image, img_w=@img_w, img_h=@img_h, cut_w=@cut_w, cut_h=@cut_h WHERE id=@id'
       ).run({
         ...photo,
         id: existing.id,

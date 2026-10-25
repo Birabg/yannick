@@ -224,7 +224,8 @@ async function main() {
       image: shot.base,
       img_w: shot.width,
       img_h: shot.height,
-      cutout: shot.cutout ? 1 : 0,
+      cut_w: shot.cutW,
+      cut_h: shot.cutH,
       in_stock: 1,
       is_sample: 1,
     });
