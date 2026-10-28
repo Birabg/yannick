@@ -99,17 +99,28 @@ and the panel next to the order text. It is never behind text. One esbuild bundl
 
 - **Button**: pill, 48px min, sentence case. Primary = ink fill (amber on ink areas); hover = amber. Outline = 1px ink; hover fills ink.
 - **Pill** (filters, moods): outline pill; the active one wears its family colour (fresh lime, woody green, oriental orange, men sky, women pink; others ink).
-- **Product card**: a notched colour photo (4:5) with the words on the page below it. Hover lifts the bottle slightly; the arrow turns amber.
-- **Panel**: right drawer from 760px, bottom sheet below; the photo at the top keeps the family colour. 28px corners.
+- **Product card**: a notched card in the photo's own backdrop colour (see Photo backgrounds), with the words on the page below it. Hover lifts the bottle slightly; the arrow turns amber.
+- **Panel**: right drawer from 760px, bottom sheet below; the header behind the close button and the photo area are the photo's backdrop colour, edge to edge, and the body is the theme surface with 24px rounded top corners. 28px outer corners.
 - **Note cards**: three notched colour cards (Top, Heart, Base) with a typographic list of real notes.
 - **FAQ**: stone blocks, notched, with the plus in the notch. **Order**: an ink notched panel with the text, a shader panel with a bottle photo beside it, then three stone blocks.
 - **Fields**: pill search and sort, 1px `--c-line` outline, visible focus ring.
 
 ## Filter tabs and Most Loved
 
-**Tabs** (`.tab`, `public/css/system.css`, colours `--tab-*` in `tokens.css`): pills (fully rounded), 44px tall, 20px padding, 12px gap, 13px uppercase at 0.14em tracking. Default is muted text on a hairline; hover brightens both; active has an amber border (`#B86E00` on paper so it keeps 3:1, `#FFA100` on dark), full-strength text and a faint amber tint. Order: All, Fresh & Citrus, Woody Aromatic, Men, Women, Affordable, Yannick's Hand Pick (`filterTabs` in `config/site.js`). A tab shows its count, "Men (11)", and is hidden while its section is empty. Centered on desktop; on phones one scroll-snap row with an edge fade, the active tab scrolled into view. The filter is in the address (`?filter=men`), the back button steps through filters, arrow keys / Home / End move between tabs. Sections come from each product's Collection sections in the admin, never from price. A section with no products shows "Nothing here yet. Ask Yannick on WhatsApp" with the WhatsApp button.
+**Tabs** (`.tab`, `public/css/system.css`, colours `--tab-*` in `tokens.css`): pills (fully rounded), 44px tall, 20px padding, 12px gap, 13px uppercase at 0.14em tracking. Default is muted text on a hairline; hover brightens both; active has an amber border (`#B86E00` on paper so it keeps 3:1, `#FFA100` on dark), full-strength text and a faint amber tint. Order: All, Fresh & Citrus, Woody Aromatic, Men, Women, Affordable, Yannick's Hand Pick (`filterTabs` in `config/site.js`). A tab shows its count, "Men (11)", and is hidden while its section is empty. Centered on desktop; on phones one scroll-snap row with an edge fade, the active tab scrolled into view. The filter is in the address (`?filter=men`), the back button steps through filters, arrow keys / Home / End move between tabs. Sections come from each product's Collection sections in the admin, except **Affordable**, which follows the real price (see Prices). A section with no products shows "Nothing here yet. Ask Yannick on WhatsApp" with the WhatsApp button.
 
 **Most Loved Right Now** (`#loved`, directly after the hero stack and above the collection, so the favourites are the first thing on the shelf and the filter bar stays attached to the grid): an outlined amber-border label above the heading on phones, beside it on desktop, then the same product card as the grid. Only perfumes ticked Best Seller appear, ordered by their "Best Seller position" number; four on desktop, a scroll-snap row with the next card peeking on phones. With none ticked the section is not rendered. The heading uses the site's display grotesk, not a serif, to stay with the rest of the page.
+
+## Splash
+
+A short branded intro on the home page, once per session. Files: `views/partials/splash-init.ejs` (flag script and inline CSS, in `<head>`), `views/partials/splash-art.ejs` (the inline SVG in a `<template>`, made from the identity kit `yannick-scents-logo.zip`, stacked dark logo, path numbers rounded to one decimal), and the small run script at the top of `views/home.ejs`. No library.
+
+- **Look**: full-screen ink `#14110F` (same in both themes), centred. About 1.6s: the arch and baseline draw in (`stroke-dashoffset`), the serif Y rises, the amber droplet pops with a soft glow and eight mist dots that drift out and fade, "YANNICK" fades up while its width settles from 110% to 100% (tracking), "SCENTS" follows and its two amber lines draw out. At 1.15s the overlay slides up (450ms) off the hero. Easing `cubic-bezier(.22,.8,.2,1)`, no bounce. Only transform, opacity and stroke-dashoffset animate.
+- **Hero hand-off**: the hero animations run once under the overlay (so LCP is unchanged), then restart when the overlay lifts (`html.sp-go` swaps the animation names; never remove that class or they replay).
+- **When**: only the first page of a session, and only on the home page. Every public page writes `sessionStorage['ys-sp']` (in try/catch; if storage is blocked the splash is skipped), so a refresh, internal navigation, a direct `/perfume/:slug` or the 404 page never show it, and `/admin` does not load it. Skipped under `prefers-reduced-motion`. No JS, no splash: the overlay only exists once the inline script adds `html.sp` and clones the template.
+- **Skip**: click or tap anywhere, any key, or the "Skip" button (a quick 160ms fade; the button stays out of the tab order so focus stays on the page). The overlay is `aria-hidden`.
+- **Safety**: a hard timeout in the head script removes the overlay, the `sp` classes and restores the theme colour at 2.2s whatever happens. Scroll is locked only while `html.sp` is set (`scrollbar-gutter: stable` so nothing shifts). `<meta name="theme-color">` is ink while it shows (`theme.js` leaves it alone then) and returns to the theme value after.
+- **Size**: inline CSS and JS are under 5KB together. The artwork markup is about 6.5KB more (about 2.5KB gzipped), because the kit's Y and lettering are outlined paths; shipped on the home page only.
 
 ## Footer
 
@@ -139,12 +150,36 @@ Concise, calm, conversational; sentence-case copy, three-word buttons ("Order on
 AA contrast in both themes, 48px targets (44px for the header icon and language control), visible focus, native dialog and details, a keyboard-operable carousel
 (focus it and use the arrow keys, or tab through the cards), reduced motion respected.
 
+## Photo backgrounds
+
+Scent-family colours no longer sit behind product photos. A card, hero card, thumbnail, panel or product page takes **the colour of the photo's own backdrop**, so the picture runs into it with no box, no blending, no overlay and no filter (the dark-mode brightness drop is gone for product photos). Images are shown whole (`object-fit: contain`), never cropped; on phones every card photo has the same 4:5 box so rows line up.
+
+- **Detection** (`src/lib/bgcolor.js`, once, when a photo is saved or replaced): a ~4% strip along all four edges is sampled at 240px; outliers are dropped and the median colour is `bg_color`. The top and bottom strips give `bg_color_top` / `bg_color_bottom` (a gradient is used only when they differ by more than 14 in RGB distance, otherwise solid). Busy edges are judged band by band down the picture, so a smooth vertical gradient is not mistaken for noise. If the edge looks busy but one light colour still covers 25% or more of it, that is the backdrop (a bottle or box touching one edge). Otherwise `busy`: a darker, half-saturated version of the median. A photo with a transparent backdrop is `alpha`: it keeps its transparency, the card uses the theme surface, and the bottle gets a soft `drop-shadow`. `bg_is_dark` records whether paper text reads better than ink.
+- **Storage**: `bg_color`, `bg_color_top`, `bg_color_bottom`, `bg_is_dark`, `bg_mode` on `products`, plus `bg_override`, which belongs to the owner. `npm run image-colors` re-measures every photo and never touches `bg_override`. Admin: a swatch of the detected colour, a colour picker and a "use my colour" box on the product form.
+- **Delivery**: the page cannot carry style attributes (strict CSP), so each product gets a class `bgc-<id>` and one `<style nonce>` block in the head sets `--card-bg`, `--card-bg-top`, `--card-bg-bottom` and `--card-fg*` (ink or paper, whichever passes AA on that colour). The panel is fetched as a fragment and reuses the classes already on the page. The same colour in light and dark: it is the photo's real background; only the page around it changes.
+- **Text on the colour**: badges are solid chips (readable on any colour), the close button is a solid chip, the panel title uses `--sheet-fg`.
+- **Panel motion**: tapping a card paints the panel header and loading block in that card's colour before the details arrive, so it feels like the card growing; the phone browser bar (`theme-color`) takes the same colour while the panel is open and is restored on close. Reduced motion: no transitions. Letterboxed photos get a 5% side feather so a one-shade difference cannot show as a line.
+- **Missing image**: the placeholder bottle on the theme surface.
+
+## Prices
+
+Prices are whole numbers of ETB, never invented or estimated. `price` 0 means unset. Written "ETB 15,000"; with the Amharic toggle "15,000 ብር" (every price has a `data-am` string).
+
+- **Card**: price directly under the name, medium weight, larger than the meta line (`.card__price`, `components/price.ejs`). **Sale**: the sale price is prominent, the old price struck through beside it, plus a solid "Sale" badge. **Several sizes**: "From ETB X" (lowest price someone pays). **No price or hidden**: "Ask for price". **Sold out**: the price stays, muted, with the Sold out badge.
+- **Panel / product page**: for 2+ priced sizes, size chips (radio group, 44px) switch the price and the WhatsApp message (it names the size and the price). Sold-out sizes are marked. No price: the order button asks "what is the price of <brand> <name>?". Sold out: "Ask when back in stock".
+- **Text colour**: price text sits on the page surface, not on the photo colour, so it uses the theme text tokens (AA in both themes). Badges over a photo are solid chips.
+- **Sorting**: Price low to high / high to low use the price someone pays; perfumes without a price always come last.
+- **Affordable** is derived: priced below `site.affordableBelow` (12,000 ETB in `config/site.js`). No price, never in it.
+- **Data**: `price`, `sale_price`, `price_visible`, `price_updated_at`, `price_source` (`manual` is never overwritten by an import) on `products`; `product_variants` (size_ml, price, sale_price, in_stock).
+- **SEO**: JSON-LD Offer (ETB, InStock / OutOfStock) or AggregateOffer for sizes, only when a price is shown.
+- **Admin**: product form Price fieldset (price, sale, hide toggle, up to 6 sizes); **Prices** page with every perfume inline, a "Missing price" filter and the last-updated date.
+
 ## Imagery
 
 Real product photos live in `public/img/originals/` (never served, never altered). `src/lib/images.js` is the single pipeline for the importer and admin uploads:
 orient, flatten, strip metadata, lift a plain studio backdrop off (`src/lib/cutout.js`, so the bottle keeps its true colours), trim, 4% margin, WebP at 480/960/1600 (never enlarged).
 Width and height are stored on the product so every `<img>` has dimensions (no layout shift); `views/components/photo.ejs` writes `srcset`/`sizes`. Only the first hero image is eager with `fetchpriority="high"` and a preload; the rest are lazy.
-Per product: focus point (`fx-N/fy-N` classes), fit (cover or contain), card colour override (`tint`), alt text. A broken or missing image falls back to `/img/bottle-placeholder.svg`.
+Per product: backdrop colour (detected, with an owner override), alt text. The older focus point, fit and card tint fields are still stored but no longer change how photos are shown. A broken or missing image falls back to `/img/bottle-placeholder.svg`.
 Unknown facts are never invented: no price shows "Ask for price", and the admin flags the product "Needs details" until price, size and concentration exist.
 Our Story is two columns on desktop: the founder photo on the left (4:5, card radius, a 1px amber outline offset 12px behind it, a small-caps caption "Yannick — Founder"), the text on the right (eyebrow, display-font heading, three paragraphs capped at 60ch, then three facts between hairlines). On tablet the photo column is narrower; on phones the photo comes first and the facts stay in one row. The photo is `<picture>` AVIF/WebP at 480/800/1200/1600 (never upscaled), cover-fit with a configurable focus point, and falls back to an amber placeholder if it fails to load. The photo fades in while settling from 1.03; the text rises 16px and the facts follow one by one (transform and opacity only, off for reduced motion). The English copy is final; the Amharic is a draft that needs native review. Everything is editable in `/admin/story`.
 See `IMAGE-INVENTORY.md` for every file and the owner checklist.

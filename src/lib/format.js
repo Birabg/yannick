@@ -1,4 +1,5 @@
 const site = require('../../config/site');
+const pricing = require('./pricing');
 
 const ABBREVIATIONS = {
   'Eau de Parfum': 'EDP',
@@ -37,12 +38,27 @@ const TINTS = ['fresh', 'woody', 'oriental', 'men', 'women', 'none'];
 
 const waLink = (text) => `https://wa.me/${site.contact.whatsapp}?text=${encodeURIComponent(text)}`;
 
-const orderLink = (p) =>
-  waLink(
-    p.inStock
-      ? `Hello Yannick Scents, I'd like to order ${productLabel(p)}${p.price > 0 ? ` (${price(p.price)})` : ''}.`
-      : `Hello Yannick Scents, could you tell me when ${productLabel(p)} will be back in stock?`
+/**
+ * The WhatsApp link of a product. With a chosen size (`variant`) the message names the size and its price;
+ * with no price to show it asks for the price instead of quoting one.
+ */
+const orderLink = (p, variant = null) => {
+  const sized = variant ? { ...p, size: `${variant.sizeMl}ml` } : p;
+  const shown = variant ? variant.now : pricing.priceState(p).now;
+  if (!(p.inStock && (!variant || variant.inStock))) {
+    return waLink(
+      `Hello Yannick Scents, could you tell me when ${productLabel(sized)} will be back in stock?`
+    );
+  }
+  if (!(shown > 0)) {
+    return waLink(
+      `Hello, what is the price of ${[brandPrefix(p), p.name].filter(Boolean).join(' ')}?`
+    );
+  }
+  return waLink(
+    `Hello Yannick Scents, I'd like to order ${productLabel(sized)} (${price(shown)}).`
   );
+};
 
 const genericLink = () =>
   waLink("Hello Yannick Scents, I'd like to order a perfume. Can you help me choose?");
@@ -58,6 +74,8 @@ const slugify = (s) =>
 
 module.exports = {
   price,
+  priceText: pricing.priceText,
+  priceTextAm: pricing.priceTextAm,
   abbreviate,
   productLabel,
   slugSource,

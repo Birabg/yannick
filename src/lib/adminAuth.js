@@ -6,20 +6,25 @@ const KEY = 'admin_hash';
 const COST = 12;
 const PLACEHOLDER = 'change-this-password';
 
-/** On first run, hash ADMIN_PASSWORD from .env and store it. Later runs ignore the env value. */
-function ensureAdminPassword() {
-  if (settings.get(KEY)) return;
+/** On first run, hash ADMIN_PASSWORD from the environment and store it. Later runs ignore the env value. */
+async function ensureAdminPassword() {
+  if (await settings.fetch(KEY)) return;
   if (!adminPassword) {
-    throw new Error('Set ADMIN_PASSWORD in .env before the first run (see .env.example).');
+    throw new Error('Set ADMIN_PASSWORD before the first run (see .env.example).');
   }
   if (isProd && (adminPassword === PLACEHOLDER || adminPassword.length < 8)) {
     throw new Error('Choose a real ADMIN_PASSWORD (8+ characters) before running in production.');
   }
-  settings.set(KEY, bcrypt.hashSync(adminPassword, COST));
-  console.log('Admin password hashed and stored. You can now remove ADMIN_PASSWORD from .env.');
+  await settings.set(KEY, await bcrypt.hash(adminPassword, COST));
+  console.log(
+    'Admin password hashed and stored. You can now remove ADMIN_PASSWORD from the environment.'
+  );
 }
 
-const verifyPassword = (plain) => bcrypt.compare(String(plain).slice(0, 200), settings.get(KEY));
+async function verifyPassword(plain) {
+  const hash = await settings.fetch(KEY);
+  return !!hash && bcrypt.compare(String(plain).slice(0, 200), hash);
+}
 
 const changePassword = async (plain) => settings.set(KEY, await bcrypt.hash(plain, COST));
 

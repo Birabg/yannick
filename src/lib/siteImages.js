@@ -45,14 +45,14 @@ async function saveSiteImage(slot, buffer) {
     def.ext === 'jpg' ? image.jpeg({ quality: 84, mozjpeg: true }) : image.webp({ quality: 82 })
   ).toFile(path.join(DIR, name));
   await removeSiteImage(slot);
-  settings.set(key(slot), name);
+  await settings.set(key(slot), name);
   return name;
 }
 
 async function removeSiteImage(slot) {
   const old = settings.get(key(slot));
   if (old) await fs.unlink(path.join(DIR, path.basename(old))).catch(() => {});
-  settings.set(key(slot), '');
+  await settings.set(key(slot), '');
 }
 
 module.exports = { SLOTS, siteImage, isCustom, saveSiteImage, removeSiteImage };

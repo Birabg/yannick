@@ -1,15 +1,14 @@
 <%
   /* params: p (product), slot (1-5 tall cards, 6-7 small ones), eager, shader (liquid-glass backdrop) */
-  const color = fmt.cardColor(p);
   const label = fmt.productLabel(p);
 %>
-<li class="hc hc--<%= slot %> fam--<%= color %> <%= photo.heightClass(p) %>">
+<li class="hc hc--<%= slot %> <%= photo.bgClass(p) %> <%= photo.heightClass(p) %>" data-bg-top="<%= photo.bgTop(p) %>" data-fg-top="<%= photo.bgFgTop(p) %>">
   <a class="hc__link" href="/perfume/<%= p.slug %>" data-open-product data-tilt>
-    <span class="sr-only"><%= label %>, <%= fmt.price(p.price) %></span>
-    <span class="hc__shape">
+    <span class="sr-only"><%= label %>, <%= fmt.priceText(p) %></span>
+    <span class="hc__shape<%= photo.isAlpha(p) ? ' is-alpha' : '' %>">
       <% if (locals.shader) { %><span class="hc__glass" data-shader data-src="<%= distAsset('hero/island.js') %>" aria-hidden="true"><span class="hero-shader__stage" data-stage></span></span><% } %>
       <%- include('photo', { p: p, cls: 'hc__img', alt: '', eager: locals.eager, sizes: '(min-width: 1024px) 260px, (min-width: 640px) 32vw, 70vw' }) %>
-      <span class="hc__label" aria-hidden="true"><strong><%= p.name %></strong><span><%= fmt.price(p.price) %></span></span>
+      <span class="hc__label" aria-hidden="true"><strong><%= p.name %></strong><span><%= fmt.priceText(p) %></span></span>
     </span>
     <span class="hc__go" aria-hidden="true"><%- icon('arrow-ur') %></span>
   </a>

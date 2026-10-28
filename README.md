@@ -3,7 +3,7 @@
 Website for **Yannick Scents**, an Addis Ababa seller of 100% original designer fragrances.
 Customers browse the collection and order by WhatsApp, phone call or TikTok DM (no cart or checkout).
 
-Stack: Node.js + Express, EJS (server-rendered), SQLite (`better-sqlite3`), `sharp` for images, vanilla CSS/JS.
+Stack: Node.js + Express, EJS (server-rendered), SQLite on [Turso](https://turso.tech) (`@libsql/client`), `sharp` for images, vanilla CSS/JS.
 
 > **Sample data:** `npm run seed` creates 8 perfumes marked **SAMPLE** (drawn bottles, placeholder
 > prices and notes). Replace or delete them in the admin panel before going live.
@@ -21,15 +21,17 @@ npm run dev               # http://localhost:3000
 
 ### `.env`
 
-| Variable                   | Meaning                                                                                                  |
-| -------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `PORT`                     | Port to listen on (default 3000)                                                                         |
-| `NODE_ENV`                 | `development` locally, `production` on the server                                                        |
-| `SITE_URL`                 | Public address, used for canonical links, sitemap and social cards                                       |
-| `SESSION_SECRET`           | Long random string. Generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
-| `ADMIN_PASSWORD`           | Initial admin password (8+ characters)                                                                   |
-| `PHONE`, `WHATSAPP_NUMBER` | Contact numbers (`+251...` and digits only)                                                              |
-| `DATA_DIR`, `UPLOADS_DIR`  | Optional: where the database and photos live (use a persistent disk)                                     |
+| Variable                   | Meaning                                                                                                          |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `PORT`                     | Port to listen on (default 3000)                                                                                 |
+| `NODE_ENV`                 | `development` locally, `production` on the server                                                                |
+| `SITE_URL`                 | Public address, used for canonical links, sitemap and social cards                                               |
+| `SESSION_SECRET`           | Long random string. Generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`         |
+| `ADMIN_PASSWORD`           | Initial admin password (8+ characters)                                                                           |
+| `PHONE`, `WHATSAPP_NUMBER` | Contact numbers (`+251...` and digits only)                                                                      |
+| `TURSO_DATABASE_URL`       | `libsql://...` address of the Turso database. Required in production; locally it falls back to `data/yannick.db` |
+| `TURSO_AUTH_TOKEN`         | Turso database token (required with a `libsql://` URL)                                                           |
+| `DATA_DIR`, `UPLOADS_DIR`  | Optional: local dev database folder, and where photos live (photos are files, so they need a persistent disk)    |
 
 ## Admin password
 
@@ -77,23 +79,27 @@ The look (paper and ink, notched 28px colour cards by scent family, Bricolage Gr
 **`DESIGN.md`**, with tokens in `public/css/tokens.css`. The live component sheet is at `/styleguide`
 (hidden from search engines). Light, Dark and System themes are switched from the header; see the Theme section of `DESIGN.md`.
 
+Card and panel colours come from each photo's own backdrop. They are measured when a photo is saved; run `npm run image-colors` to re-measure all photos (a colour you picked in the admin is never overwritten).
+
 Photo tip: photograph each bottle on a plain white or light background; the site lifts the backdrop off and places the bottle on the scent-colour card. Upload from the product form or from **Images** in the admin (usage, replace, orphan clean-up, share image).
 
 ## Scripts
 
-| Command                           | Does                                                                                                                                                               |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `npm run dev`                     | Development server with auto-restart                                                                                                                               |
-| `npm start`                       | Builds minified CSS/JS (`prestart`), then starts the server                                                                                                        |
-| `npm run build`                   | Only builds `public/dist` (run this when deploying with PM2)                                                                                                       |
-| `npm run import:images`           | Creates products from the photos in `public/img/originals` (`-- --replace-samples`, `-- --reset`)                                                                  |
-| `node scripts/make-og.js`         | Rebuilds `public/img/og-default.png` from the hero bottles                                                                                                         |
-| `npm run descriptions`            | Fills empty descriptions, taglines and meta descriptions (drafts) from `scripts/descriptions-data.js`; writes `DESCRIPTIONS-REVIEW.md`; never overwrites your text |
-| `node scripts/make-footer.js`     | Rebuilds the footer photo (AVIF/WebP) in `public/img/footer/` from `public/img/originals/footer.*`                                                                 |
-| `npm run seed`                    | (Re)creates the SAMPLE perfumes; never touches your products                                                                                                       |
-| `npm run build:assets`            | Regenerates favicons and the social card from `favicon.svg`                                                                                                        |
-| `node scripts/contrast.js`        | Prints the WCAG contrast ratios of the colour pairs in use                                                                                                         |
-| `npm run lint` / `npm run format` | ESLint / Prettier                                                                                                                                                  |
+| Command                           | Does                                                                                                                                                                              |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`                     | Development server with auto-restart                                                                                                                                              |
+| `npm start`                       | Builds minified CSS/JS (`prestart`), then starts the server                                                                                                                       |
+| `npm run build`                   | Only builds `public/dist` (run this when deploying with PM2)                                                                                                                      |
+| `npm run import:images`           | Creates products from the photos in `public/img/originals` (`-- --replace-samples`, `-- --reset`)                                                                                 |
+| `npm run live-prices`             | Reads prices from the old website (`-- --dry` to preview): saves `data/import/live-site-prices.json`, applies exact matches only, writes `data/prices.csv` and `PRICES-REVIEW.md` |
+| `npm run import-prices`           | Applies `data/prices.csv` (empty cells skipped, numbers validated; admin-typed prices kept unless `-- --force`; `-- --dry`)                                                       |
+| `node scripts/make-og.js`         | Rebuilds `public/img/og-default.png` from the hero bottles                                                                                                                        |
+| `npm run descriptions`            | Fills empty descriptions, taglines and meta descriptions (drafts) from `scripts/descriptions-data.js`; writes `DESCRIPTIONS-REVIEW.md`; never overwrites your text                |
+| `node scripts/make-footer.js`     | Rebuilds the footer photo (AVIF/WebP) in `public/img/footer/` from `public/img/originals/footer.*`                                                                                |
+| `npm run seed`                    | (Re)creates the SAMPLE perfumes; never touches your products                                                                                                                      |
+| `npm run build:assets`            | Regenerates favicons and the social card from `favicon.svg`                                                                                                                       |
+| `node scripts/contrast.js`        | Prints the WCAG contrast ratios of the colour pairs in use                                                                                                                        |
+| `npm run lint` / `npm run format` | ESLint / Prettier                                                                                                                                                                 |
 
 ## Security notes
 
@@ -135,15 +141,15 @@ server {
 }
 ```
 
-Back up `data/` and `uploads/` regularly (they hold the database and photos).
+Back up `uploads/` regularly (photos), and the Turso database (`turso db shell <name> .dump`).
 Update later with `git pull && npm ci && npm run build && pm2 restart yannick`.
 
 ### Option B: Render / Railway
 
 Create a Web Service from the repo. Build command `npm ci && npm run build`, start command `node src/server.js`.
-**Attach a persistent disk** (for example mounted at `/data`) and set `DATA_DIR=/data/db`,
-`UPLOADS_DIR=/data/uploads`, plus `NODE_ENV=production`, `SITE_URL`, `SESSION_SECRET`, `ADMIN_PASSWORD`.
-Without a disk, products and photos are lost on every deploy.
+Set `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`, plus `NODE_ENV=production`, `SITE_URL`, `SESSION_SECRET`, `ADMIN_PASSWORD`.
+**Attach a persistent disk** (for example mounted at `/data`) and set `UPLOADS_DIR=/data/uploads`.
+Without a disk, uploaded photos are lost on every deploy.
 
 ## Project layout
 

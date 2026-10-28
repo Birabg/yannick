@@ -11,10 +11,10 @@ router.get('/robots.txt', (req, res) => {
     .send(`User-agent: *\nAllow: /\nDisallow: /admin\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
 });
 
-router.get('/sitemap.xml', (req, res) => {
+router.get('/sitemap.xml', async (req, res) => {
   const urls = [
     { loc: `${siteUrl}/` },
-    ...products.list().map((p) => ({
+    ...(await products.list()).map((p) => ({
       loc: `${siteUrl}/perfume/${p.slug}`,
       lastmod: p.updatedAt.slice(0, 10),
     })),

@@ -1,5 +1,6 @@
 import { prefersReducedMotion } from './motion.js';
 import { refreshLanguage } from './i18n.js';
+import { initSizes } from './sizes.js';
 
 const LOADING = `
   <div class="sheet__loading" role="status" aria-label="Loading perfume details">
@@ -14,6 +15,44 @@ const DISMISS_VELOCITY = 0.6; // px/ms
 const isProductPath = (path) => path.startsWith('/perfume/');
 const isPhone = () => window.matchMedia('(max-width: 759px)').matches;
 
+const metaTheme = () => document.querySelector('meta[name="theme-color"]');
+let savedTheme = null;
+
+/** Gives the open panel the photo's colours (header, loading state, phone browser bar); '' puts the theme back. */
+function tint(sheet, top, bottom, fg) {
+  const props = {
+    '--sheet-bg': top,
+    '--sheet-fg': fg,
+    '--card-bg-top': top,
+    '--card-bg-bottom': bottom,
+  };
+  for (const [name, value] of Object.entries(props)) {
+    if (top && value) sheet.style.setProperty(name, value);
+    else sheet.style.removeProperty(name);
+  }
+  const meta = metaTheme();
+  if (!meta) return;
+  if (top) {
+    savedTheme ??= meta.getAttribute('content');
+    meta.setAttribute('content', top);
+  } else if (savedTheme !== null) {
+    meta.setAttribute('content', savedTheme);
+    savedTheme = null;
+  }
+}
+
+/** The colours of the card that was tapped (the stylesheet sets them as custom properties on its bgc-N element). */
+function cardTint(link) {
+  const item = link.closest('[data-bg-top]');
+  const top = item?.dataset.bgTop;
+  if (!top) return null;
+  const holder = item.matches('[class*="bgc-"]')
+    ? item
+    : item.querySelector('[class*="bgc-"]') || item;
+  const bottom = getComputedStyle(holder).getPropertyValue('--card-bg-bottom').trim() || top;
+  return { top, bottom, fg: item.dataset.fgTop };
+}
+
 /** Product details: bottom sheet on phones (swipe down to close), side drawer on larger screens. */
 export function initSheet() {
   const sheet = document.getElementById('sheet');
@@ -24,7 +63,8 @@ export function initSheet() {
   // True when we pushed a history entry for the open sheet, so closing pops it.
   let pushed = false;
 
-  async function load(path) {
+  async function load(path, from = null) {
+    if (from) tint(sheet, from.top, from.bottom, from.fg);
     body.innerHTML = LOADING;
     document.documentElement.classList.add('sheet-open');
     if (!sheet.open) sheet.showModal();
@@ -34,6 +74,16 @@ export function initSheet() {
       if (!response.ok) throw new Error(String(response.status));
       body.innerHTML = await response.text();
       refreshLanguage(body);
+      initSizes(body);
+      // The product's own colours (also right when the panel is opened from the address bar or back button).
+      const detail = body.querySelector('.detail[data-bg-top]');
+      const holder = body.querySelector('[class*="bgc-"]');
+      if (detail?.dataset.bgTop) {
+        const bottom = holder
+          ? getComputedStyle(holder).getPropertyValue('--card-bg-bottom').trim()
+          : '';
+        tint(sheet, detail.dataset.bgTop, bottom || detail.dataset.bgTop, detail.dataset.fgTop);
+      } else tint(sheet, '', '', '');
     } catch {
       body.innerHTML = FAILED;
     }
@@ -63,11 +113,12 @@ export function initSheet() {
     const path = new URL(link.href).pathname;
     history.pushState({ sheet: true }, '', path);
     pushed = true;
-    load(path);
+    load(path, cardTint(link));
   });
 
   sheet.addEventListener('close', () => {
     document.documentElement.classList.remove('sheet-open');
+    tint(sheet, '', '', '');
     sheet.style.removeProperty('--drag');
     if (pushed) {
       pushed = false;

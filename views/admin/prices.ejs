@@ -1,0 +1,42 @@
+<%- include('_head', { seo: { title: 'Prices' } }) %>
+<div class="page-head">
+  <h1>Prices <span class="count"><%= total %></span></h1>
+  <div class="page-head__actions">
+    <a class="btn btn--sm <%= showing === 'missing' ? 'btn--primary' : 'btn--paper' %>" href="/admin/prices?show=<%= showing === 'missing' ? 'all' : 'missing' %>"><span><%= showing === 'missing' ? 'Show all' : 'Missing price' + (missingCount ? ' (' + missingCount + ')' : '') %></span></a>
+  </div>
+</div>
+<p class="muted">Change any price here and press Save. Whole numbers in ETB. A sale price must be lower than the regular price. Leave a price empty and the site shows &ldquo;Ask for price&rdquo;. Sizes with their own prices are edited on the perfume itself.</p>
+
+<% if (errors.length) { %><div class="alert alert--error" role="alert"><strong>Please fix the following:</strong><ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul></div><% } %>
+<% if (query.saved) { %><p class="alert alert--ok" role="status">Saved<%= query.n ? ' (' + query.n + ' changed)' : ' (nothing to change)' %>.</p><% } %>
+
+<% if (!list.length) { %>
+<p class="muted">Every perfume has a price.</p>
+<% } else { %>
+<form method="post" action="/admin/prices?_csrf=<%= csrfToken %>" class="ptable-wrap" novalidate>
+  <table class="ptable">
+    <thead>
+      <tr><th scope="col">Perfume</th><th scope="col">Price (ETB)</th><th scope="col">Sale price</th><th scope="col">Hide</th><th scope="col">Last updated</th></tr>
+    </thead>
+    <tbody>
+      <% list.forEach(function (p) { const missing = !(p.price > 0) && !p.variants.some(function (v) { return v.price > 0; }); %>
+      <tr class="<%= missing ? 'is-missing' : '' %>">
+        <th scope="row">
+          <a href="/admin/products/<%= p.id %>/edit"><%= p.brand %> &middot; <%= p.name %></a>
+          <span class="ptable__meta"><%= [p.size, p.concentration].filter(Boolean).join(' · ') %><% if (p.variants.length) { %> &middot; <%= p.variants.length %> sizes (edit on the perfume)<% } %></span>
+          <% if (missing) { %><span class="sticker sticker--needs">Missing price</span><% } %>
+        </th>
+        <td data-label="Price (ETB)"><input class="ptable__input" name="price_<%= p.id %>" value="<%= p.price || '' %>" inputmode="numeric" data-numeric aria-label="Price in ETB for <%= p.name %>" placeholder="Ask for price"></td>
+        <td data-label="Sale price"><input class="ptable__input" name="sale_<%= p.id %>" value="<%= p.salePrice || '' %>" inputmode="numeric" data-numeric aria-label="Sale price in ETB for <%= p.name %>" placeholder="none"></td>
+        <td data-label="Hide"><label class="check"><input type="checkbox" name="hide_<%= p.id %>" <%= p.priceVisible ? '' : 'checked' %> aria-label="Hide the price of <%= p.name %>"><span class="sr-only">Hide price</span></label></td>
+        <td data-label="Last updated" class="ptable__date"><%= p.priceUpdatedAt ? p.priceUpdatedAt.slice(0, 10) : 'never' %><% if (p.priceSource) { %> <span class="ptable__meta"><%= p.priceSource === 'live-site' ? 'imported from the old site' : p.priceSource === 'csv' ? 'imported from the price sheet' : 'by you' %></span><% } %></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <div class="form__actions">
+    <button class="btn btn--primary btn--lg" type="submit"><span>Save prices</span><span class="btn__spinner" aria-hidden="true"></span></button>
+  </div>
+</form>
+<% } %>
+<%- include('_foot') %>

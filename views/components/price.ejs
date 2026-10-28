@@ -1,0 +1,13 @@
+<%
+  /* params: p (product), cls (extra class), size (a chosen size option from pricing.sizeOptions, optional) */
+  const s = locals.size
+    ? { kind: size.was ? 'sale' : 'single', now: size.now, was: size.was }
+    : pricing.priceState(p);
+  const E = pricing.format;
+  const A = pricing.formatAm;
+%><span class="price price--<%= s.kind %><%= p.inStock ? '' : ' is-muted' %><%= locals.cls ? ' ' + cls : '' %>" data-price-box><%
+  if (s.kind === 'ask') { %>Ask for price<%
+  } else if (s.kind === 'sale') { %><span class="price__now" data-am="<%= A(s.now) %>"><%= E(s.now) %></span> <s class="price__was" data-am="<%= A(s.was) %>"><%= E(s.was) %></s><%
+  } else if (s.kind === 'from') { %><span class="price__now" data-am="ከ <%= A(s.now) %> ጀምሮ">From <%= E(s.now) %></span><%
+  } else { %><span class="price__now" data-am="<%= A(s.now) %>"><%= E(s.now) %></span><%
+  } %></span>

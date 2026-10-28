@@ -2,7 +2,9 @@ const express = require('express');
 const site = require('../../config/site');
 const { products, reviews } = require('../db');
 const { storeSchema, productSchema, imageUrl } = require('../lib/seo');
-const { price } = require('../lib/format');
+const pricing = require('../lib/pricing');
+
+const { withAffordable, priceText } = pricing;
 const { moodPicks } = require('../lib/mood');
 const { heroProducts: pickHero } = require('../lib/hero');
 const { getStory } = require('../lib/story');
@@ -10,13 +12,14 @@ const { getStory } = require('../lib/story');
 const router = express.Router();
 
 // The header only links to Reviews when the section will actually render.
-router.use((req, res, next) => {
-  res.locals.hasReviews = reviews.list().length > 0;
+router.use(async (req, res, next) => {
+  res.locals.hasReviews = (await reviews.count()) > 0;
   next();
 });
 
-router.get('/', (req, res) => {
-  const list = products.list();
+router.get('/', async (req, res) => {
+  const [all, reviewList] = await Promise.all([products.list(), reviews.list()]);
+  const list = withAffordable(all);
   // Hero cards: featured bottles first, then the rest of the shelf. Photos are the product photos, so the admin controls them.
   const heroProducts = pickHero(list);
   // The houses on the site are the brands actually on the shelf (the configured list is only a fallback).
@@ -37,7 +40,6 @@ router.get('/', (req, res) => {
     .sort((a, b) => (a.bestOrder || 999) - (b.bestOrder || 999))
     .slice(0, 8);
   const story = getStory();
-  const reviewList = reviews.list();
   const quote = reviewList.find((r) => r.text) || null;
   res.render('home', {
     products: list,
@@ -50,7 +52,7 @@ router.get('/', (req, res) => {
     loved,
     filterKeys: site.collections.map((c) => c.key),
     quote,
-    reviews: reviews.list(),
+    reviews: reviewList,
     seo: {
       title: `${site.brand.name} | ${site.brand.tagline} - Original Perfumes in Addis Ababa`,
       description: site.brand.description,
@@ -60,8 +62,8 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/perfume/:slug', (req, res, next) => {
-  const product = products.getBySlug(req.params.slug);
+router.get('/perfume/:slug', async (req, res, next) => {
+  const product = await products.getBySlug(req.params.slug);
   if (!product) return next();
 
   // The collection modal fetches this fragment so it shares one template with the full page.
@@ -73,11 +75,11 @@ router.get('/perfume/:slug', (req, res, next) => {
   return res.render('product', {
     p: product,
     seo: {
-      title: `${label.trim()}${product.price > 0 ? ` - ${price(product.price)}` : ''} | ${site.brand.name}`,
+      title: `${label.trim()}${pricing.sortPrice(product) > 0 ? ` - ${priceText(product)}` : ''} |${site.brand.name}`,
       description:
         product.metaDescription ||
         product.description.slice(0, 155) ||
-        `${label.trim()} original fragrance${product.price > 0 ? `, ${price(product.price)}` : ''}. Free delivery in Addis Ababa.`,
+        `${label.trim()} original fragrance${pricing.sortPrice(product) > 0 ? `, ${priceText(product)}` : ''}. Free delivery in Addis Ababa.`,
       canonical: `/perfume/${product.slug}`,
       image: product.image ? imageUrl(product) : undefined,
       type: 'product',

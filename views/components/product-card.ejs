@@ -4,18 +4,19 @@
   const fam = fmt.cardColor(p);
   const haystack = [p.name, p.brand, p.family, p.notes.top, p.notes.heart, p.notes.base].flat().join(' ').toLowerCase();
 %>
-<li class="grid__item" data-card
+<li class="grid__item" data-card data-bg-top="<%= photo.bgTop(p) %>" data-fg-top="<%= photo.bgFgTop(p) %>"
     data-slug="<%= p.slug %>" data-label="<%= label %>" data-name="<%= p.name %>" data-brand="<%= p.brand %>"
-    data-price="<%= p.price %>" data-price-text="<%= fmt.price(p.price) %>" data-category="<%= p.category %>"
+    data-price="<%= pricing.sortPrice(p) %>" data-price-text="<%= fmt.priceText(p) %>" data-category="<%= p.category %>"
     data-collections="<%= p.collections.join(' ') %>" data-fam="<%= fam %>" data-instock="<%= p.inStock ? 1 : 0 %>"
     data-order="<%= order %>" data-search="<%= haystack %>">
-  <article class="card fam--<%= fam %><%= p.inStock ? '' : ' is-soldout' %>">
+  <article class="card <%= photo.bgClass(p) %><%= p.inStock ? '' : ' is-soldout' %>">
     <div class="card__media">
-      <div class="photo <%= photo.ratioClass(p) %>">
+      <div class="photo <%= photo.ratioClass(p) %><%= photo.isAlpha(p) ? ' is-alpha' : '' %>">
         <%- include('photo', { p: p, sizes: '(min-width: 1280px) 380px, (min-width: 760px) 30vw, 92vw' }) %>
         <div class="photo__flags">
           <% if (!p.inStock) { %><%- include('badge', { kind: 'soldout', label: 'Sold out' }) %><% } %>
           <% if (p.isSample) { %><%- include('badge', { kind: 'sample', label: 'Sample' }) %><% } %>
+          <% if (pricing.hasSale(p)) { %><%- include('badge', { kind: 'sale', label: 'Sale' }) %><% } %>
           <% site.badges.filter(function (b) { return p.badges.includes(b.key) && b.key !== 'featured'; }).forEach(function (b) { %><%- include('badge', { kind: b.key, label: b.label }) %><% }) %>
         </div>
       </div>
@@ -24,11 +25,9 @@
     <div class="card__body">
       <p class="card__brand"><%= p.brand %></p>
       <h3 class="card__name"><a class="card__link" href="/perfume/<%= p.slug %>" data-open-product><%= p.name %></a></h3>
+      <p class="card__price"><%- include('price', { p: p }) %></p>
       <% if (p.tagline) { %><p class="card__tagline"<% if (p.taglineAm) { %> data-am="<%= p.taglineAm %>"<% } %>><%= p.tagline %></p><% } %>
-      <p class="card__line">
-        <% if (p.size || p.concentration) { %><span><%= [p.size, p.concentration].filter(Boolean).join(' · ') %></span><% } %>
-        <span class="card__price<%= p.price > 0 ? '' : ' is-ask' %>"><%= fmt.price(p.price) %></span>
-      </p>
+      <% if (p.size || p.concentration) { %><p class="card__line"><span><%= [p.size, p.concentration].filter(Boolean).join(' · ') %></span></p><% } %>
     </div>
   </article>
 </li>

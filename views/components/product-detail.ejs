@@ -1,14 +1,13 @@
 <%
   /* params: p (product), sheet (true inside the panel, false on the full page) */
   const label = fmt.productLabel(p);
-  const fam = fmt.cardColor(p);
   const H = sheet ? 'h2' : 'h1';
   const acts = [['Top', p.notes.top], ['Heart', p.notes.heart], ['Base', p.notes.base]].filter(function (a) { return a[1].length; });
   const meters = [['Longevity', p.longevity], ['Projection', p.projection]].filter(function (m) { return m[1] > 0; });
 %>
-<article class="detail fam--<%= fam %><%= sheet ? '' : ' detail--page' %>">
+<article class="detail <%= photo.bgClass(p) %><%= sheet ? '' : ' detail--page' %>" data-bg-top="<%= photo.bgTop(p) %>" data-fg-top="<%= photo.bgFgTop(p) %>">
   <div class="detail__photo">
-    <div class="photo">
+    <div class="photo<%= photo.isAlpha(p) ? ' is-alpha' : '' %>">
       <%- include('photo', { p: p, variant: 'lg', eager: !sheet, sizes: '(min-width: 900px) 600px, 100vw' }) %>
       <div class="photo__flags">
         <% if (!p.inStock) { %><%- include('badge', { kind: 'soldout', label: 'Sold out' }) %><% } %>
@@ -21,7 +20,21 @@
     <p class="detail__brand"><%= p.brand %></p>
     <<%= H %> class="detail__name"<%- sheet ? ' id="sheet-title"' : '' %>><%= p.name %></<%= H %>>
     <p class="detail__meta"><%= [p.size, p.concentration, p.family].filter(Boolean).join(' · ') %></p>
-    <p class="detail__price<%= p.price > 0 ? '' : ' is-ask' %>"><% if (p.price > 0) { %><small><%= site.currency %></small><%= p.price.toLocaleString('en-US') %><% } else { %>Ask for price<% } %></p>
+    <% const sizes = pricing.sizeOptions(p); const first = sizes.find(function (s) { return s.inStock; }) || sizes[0]; %>
+    <div class="detail__price" data-size-root>
+      <% if (sizes.length) { %>
+      <% sizes.forEach(function (s) { %><span data-size-price-for="<%= s.id %>"<%- s === first ? '' : ' hidden' %>><%- include('price', { p: p, size: s, cls: 'price--lg' }) %></span><% }) %>
+      <% } else { %>
+      <%- include('price', { p: p, cls: 'price--lg' }) %>
+      <% } %>
+    </div>
+    <% if (sizes.length) { %>
+    <div class="sizes" role="radiogroup" aria-label="Size">
+      <% sizes.forEach(function (s) { %>
+      <button type="button" class="size-chip<%= s.inStock ? '' : ' is-out' %>" role="radio" aria-checked="<%= s === first %>" data-size-chip="<%= s.id %>" data-href="<%= fmt.orderLink(p, s) %>" data-stock="<%= s.inStock && p.inStock ? 1 : 0 %>"><%= s.label %><%= s.inStock ? '' : ' (sold out)' %></button>
+      <% }) %>
+    </div>
+    <% } %>
 
     <% if (p.tagline) { %><p class="detail__tagline"<% if (p.taglineAm) { %> data-am="<%= p.taglineAm %>"<% } %>><%= p.tagline %></p><% } %>
     <% if (p.description) { %><p class="detail__text"<% if (p.descriptionAm) { %> data-am="<%= p.descriptionAm %>"<% } %>><%= p.description %></p><% } %>
@@ -52,8 +65,8 @@
 
     <div class="detail__actions">
       <%- include('button', {
-        href: fmt.orderLink(p), external: true, ico: 'whatsapp', variant: p.inStock ? 'primary' : 'outline',
-        label: p.inStock ? 'Order on WhatsApp' : 'Ask when back in stock'
+        href: fmt.orderLink(p, sizes.length ? first : null), external: true, ico: 'whatsapp', variant: p.inStock ? 'primary' : 'outline',
+        label: p.inStock ? 'Order on WhatsApp' : 'Ask when back in stock', attrs: 'data-order-link'
       }) %>
       <%- include('button', { href: 'tel:' + site.contact.phone, ico: 'phone', variant: 'outline', label: 'Call ' + site.contact.phoneDisplay }) %>
     </div>

@@ -38,7 +38,10 @@ function apply(pref, { animate = false } = {}) {
   }
   root.setAttribute('data-theme', theme);
   root.setAttribute('data-theme-pref', pref);
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', COLORS[theme]);
+  // The splash holds the bar at ink while it shows and restores the theme colour itself.
+  if (!root.classList.contains('sp')) {
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', COLORS[theme]);
+  }
 
   document.querySelectorAll('[data-theme-cycle]').forEach((btn) => {
     btn.setAttribute('aria-pressed', String(theme === 'dark'));

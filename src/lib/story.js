@@ -105,15 +105,13 @@ function getStory() {
 }
 
 /** Saves the owner's edits (already trimmed and length-limited by the route). */
-function saveStoryCopy(copy) {
-  settings.set('story_copy', JSON.stringify(copy));
-}
+const saveStoryCopy = (copy) => settings.set('story_copy', JSON.stringify(copy));
 
 async function saveStoryPhoto(buffer) {
   const base = `founder-${crypto.randomBytes(5).toString('hex')}`;
   const manifest = await saveStoryVariants(buffer, UPLOAD_DIR, base);
   await removeStoryPhoto();
-  settings.set('story_photo', JSON.stringify(manifest));
+  await settings.set('story_photo', JSON.stringify(manifest));
   return manifest;
 }
 
@@ -126,7 +124,7 @@ async function removeStoryPhoto() {
       .filter((f) => f.startsWith(`${path.basename(saved.base)}-`))
       .map((f) => fs.unlink(path.join(UPLOAD_DIR, f)).catch(() => {}))
   );
-  settings.set('story_photo', '');
+  await settings.set('story_photo', '');
 }
 
 const saveFocus = (x, y) => settings.set('story_focus', JSON.stringify({ x, y }));

@@ -47,7 +47,7 @@
     <%- include('../components/photo', { p: p, cls: 'prow__img', alt: '', sizes: '60px' }) %>
     <div class="prow__main">
       <p class="prow__name"><%= p.name %></p>
-      <p class="prow__meta"><%= [p.brand, p.size].filter(Boolean).join(' · ') %> &middot; <strong><%= fmt.price(p.price) %></strong></p>
+      <p class="prow__meta"><%= [p.brand, p.size].filter(Boolean).join(' · ') %> &middot; <strong><%= fmt.priceText(p) %></strong></p>
       <p class="prow__pills">
         <% if (p.isSample) { %><span class="sticker sticker--sample">Sample</span><% } %>
         <% if (p.descriptionDraft) { %><span class="sticker sticker--draft" title="The text is live on the site; open Edit and tick Approved when you are happy with it">Draft text</span><% } %>

@@ -43,13 +43,12 @@
   isolation: isolate;
   overflow: hidden;
   aspect-ratio: 4 / 5;
-  background: var(--c-photo);
+  background: linear-gradient(var(--card-bg-top), var(--card-bg-bottom));
 }
 .photo__img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  mix-blend-mode: multiply;
+  object-fit: contain;
   transition: transform var(--d-image) var(--ease);
 }
 .photo__flags {
@@ -128,11 +127,6 @@
   margin: var(--s-1) 0 0;
   color: var(--c-muted);
   font-size: var(--t-small);
-}
-.card__price {
-  color: var(--c-text);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
 }
 .card.is-soldout .photo__img {
   filter: grayscale(1);

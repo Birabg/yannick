@@ -70,6 +70,9 @@ module.exports = {
     { key: 'handpick', label: "Yannick's Hand Pick" },
   ],
 
+  /** A perfume is under "Affordable" when its real price is below this (ETB), the same rule the old website used. */
+  affordableBelow: 12000,
+
   /** The filter tabs above the grid, in order. A tab is hidden while its section has no products. */
   filterTabs: ['fresh', 'woody', 'men', 'women', 'affordable', 'handpick'],
 

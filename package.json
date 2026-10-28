@@ -11,8 +11,12 @@
     "prestart": "node scripts/build.js",
     "start": "node src/server.js",
     "seed": "node src/seed.js",
+    "migrate:turso": "node scripts/migrate-to-turso.js",
     "import:images": "node scripts/import-images.js",
+    "image-colors": "node scripts/image-colors.js",
     "descriptions": "node scripts/descriptions.js",
+    "live-prices": "node scripts/live-prices.js",
+    "import-prices": "node scripts/import-prices.js",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
@@ -30,8 +34,8 @@
     "shaders": "^4.0.5"
   },
   "dependencies": {
+    "@libsql/client": "^0.18.0",
     "bcryptjs": "^3.0.3",
-    "better-sqlite3": "^13.0.3",
     "compression": "^1.8.2",
     "dotenv": "^18.0.9",
     "ejs": "^7.0.2",

@@ -106,8 +106,8 @@ router.use(requireAdmin);
 
 /* ---------- Products ---------- */
 
-router.get('/', (req, res) => {
-  const list = products.list();
+router.get('/', async (req, res) => {
+  const list = await products.list();
   res.render('admin/dashboard', {
     products: list,
     hasSamples: list.some((p) => p.isSample),
@@ -145,17 +145,27 @@ const blankProduct = () =>
   });
 
 /** Rebuild a product-shaped object from submitted values so the form can be redisplayed. */
-const productFromForm = (value, existing) =>
-  toProduct({
-    ...value,
-    id: existing?.id ?? 0,
-    slug: existing?.slug ?? '',
-    image: existing?.image ?? '',
-    sort_order: 0,
-    updated_at: '',
-  });
+const productFromForm = (value, existing, variants = []) =>
+  toProduct(
+    {
+      ...value,
+      id: existing?.id ?? 0,
+      slug: existing?.slug ?? '',
+      image: existing?.image ?? '',
+      sort_order: 0,
+      updated_at: '',
+    },
+    variants.map((v, n) => ({ id: n, ...v }))
+  );
 
 /** Columns that describe a saved photo (empty when there is none). */
+const bgFields = (bg) => ({
+  bg_color: bg.color,
+  bg_color_top: bg.top,
+  bg_color_bottom: bg.bottom,
+  bg_is_dark: bg.isDark ? 1 : 0,
+  bg_mode: bg.mode,
+});
 const photoFields = (shot) =>
   shot
     ? {
@@ -164,6 +174,7 @@ const photoFields = (shot) =>
         img_h: shot.height,
         cut_w: shot.cutW,
         cut_h: shot.cutH,
+        ...bgFields(shot.bg),
       }
     : { image: '' };
 const keepPhoto = (p) => ({
@@ -172,12 +183,17 @@ const keepPhoto = (p) => ({
   img_h: p.imageH,
   cut_w: p.cutW,
   cut_h: p.cutH,
+  bg_color: p.bgColor,
+  bg_color_top: p.bgTop,
+  bg_color_bottom: p.bgBottom,
+  bg_is_dark: p.bgIsDark ? 1 : 0,
+  bg_mode: p.bgMode,
 });
 
-function uniqueSlug(base, exceptId = 0) {
+async function uniqueSlug(base, exceptId = 0) {
   const root = slugify(base) || 'perfume';
   let slug = root;
-  for (let n = 2; products.slugExists(slug, exceptId); n += 1) slug = `${root}-${n}`;
+  for (let n = 2; await products.slugExists(slug, exceptId); n += 1) slug = `${root}-${n}`;
   return slug;
 }
 
@@ -186,11 +202,11 @@ router.get('/products/new', (req, res) =>
 );
 
 router.post('/products', singleImage('photo'), async (req, res) => {
-  const { value, errors, fields } = parseProduct(req.body);
+  const { value, errors, fields, variants } = parseProduct(req.body);
   if (req.uploadError) errors.push(req.uploadError);
   if (errors.length) {
     return renderProductForm(res, {
-      p: productFromForm(value),
+      p: productFromForm(value, undefined, variants),
       errors,
       fields,
       status: 422,
@@ -198,13 +214,15 @@ router.post('/products', singleImage('photo'), async (req, res) => {
     });
   }
   const shot = req.file ? await saveProductImage(req.file.buffer) : null;
-  const slug = uniqueSlug(slugSource(value));
-  const id = products.create({
+  const slug = await uniqueSlug(slugSource(value));
+  const id = await products.create({
     ...value,
     description_status: 'approved',
     slug,
     ...photoFields(shot),
   });
+  await products.setVariants(id, variants);
+  if (value.price > 0 || variants.length) await products.stampPrice(id, 'manual');
   return res.redirect(`/admin?saved=${id}`);
 });
 
@@ -219,20 +237,20 @@ function descriptionStatus(existing, value, body) {
   return edited || body.description_approved === 'on' ? 'approved' : 'draft';
 }
 
-router.get('/products/:id/edit', (req, res, next) => {
-  const p = products.get(intId(req));
+router.get('/products/:id/edit', async (req, res, next) => {
+  const p = await products.get(intId(req));
   if (!p) return next();
   return renderProductForm(res, { p, isNew: false });
 });
 
 router.post('/products/:id', singleImage('photo'), async (req, res, next) => {
-  const existing = products.get(intId(req));
+  const existing = await products.get(intId(req));
   if (!existing) return next();
-  const { value, errors, fields } = parseProduct(req.body);
+  const { value, errors, fields, variants } = parseProduct(req.body);
   if (req.uploadError) errors.push(req.uploadError);
   if (errors.length) {
     return renderProductForm(res, {
-      p: productFromForm(value, existing),
+      p: productFromForm(value, existing, variants),
       errors,
       fields,
       status: 422,
@@ -240,7 +258,26 @@ router.post('/products/:id', singleImage('photo'), async (req, res, next) => {
     });
   }
   const shot = req.file ? await saveProductImage(req.file.buffer) : null;
-  products.update(existing.id, {
+  // Stamp the price date (and mark the price as the owner's own) when a price or size changed.
+  await products.setPrice(existing.id, {
+    price: value.price,
+    sale_price: value.sale_price,
+    price_visible: value.price_visible,
+    source: 'manual',
+  });
+  const sizes = (list) =>
+    JSON.stringify(
+      list.map((v) => [
+        v.size_ml ?? v.sizeMl,
+        v.price,
+        v.sale_price ?? v.salePrice,
+        v.in_stock ? 1 : v.inStock ? 1 : 0,
+      ])
+    );
+  if (sizes(variants) !== sizes(existing.variants))
+    await products.stampPrice(existing.id, 'manual');
+  await products.setVariants(existing.id, variants);
+  await products.update(existing.id, {
     ...value,
     description_status: descriptionStatus(existing, value, req.body),
     slug: existing.slug,
@@ -251,36 +288,36 @@ router.post('/products/:id', singleImage('photo'), async (req, res, next) => {
 });
 
 router.post('/products/:id/delete', async (req, res, next) => {
-  const p = products.get(intId(req));
+  const p = await products.get(intId(req));
   if (!p) return next();
-  products.remove(p.id);
+  await products.remove(p.id);
   await removeProductImage(p.image);
   return res.redirect('/admin?deleted=1');
 });
 
-router.post('/products/:id/stock', (req, res, next) => {
-  const p = products.get(intId(req));
+router.post('/products/:id/stock', async (req, res, next) => {
+  const p = await products.get(intId(req));
   if (!p) return next();
-  products.setStock(p.id, !p.inStock);
+  await products.setStock(p.id, !p.inStock);
   if (wantsJson(req)) return res.json({ ok: true, inStock: !p.inStock });
   return res.redirect(`/admin#p-${p.id}`);
 });
 
-router.post('/products/:id/feature', (req, res, next) => {
-  const p = products.get(intId(req));
+router.post('/products/:id/feature', async (req, res, next) => {
+  const p = await products.get(intId(req));
   if (!p) return next();
   const badges = p.badges.includes('featured')
     ? p.badges.filter((b) => b !== 'featured')
     : [...p.badges, 'featured'];
-  products.setBadges(p.id, badges);
+  await products.setBadges(p.id, badges);
   if (wantsJson(req)) return res.json({ ok: true, featured: badges.includes('featured') });
   return res.redirect(`/admin#p-${p.id}`);
 });
 
-router.post('/products/:id/move', (req, res, next) => {
-  const p = products.get(intId(req));
+router.post('/products/:id/move', async (req, res, next) => {
+  const p = await products.get(intId(req));
   if (!p) return next();
-  products.move(p.id, req.body.dir === 'up' ? -1 : 1);
+  await products.move(p.id, req.body.dir === 'up' ? -1 : 1);
   return res.redirect(`/admin#p-${p.id}`);
 });
 
@@ -292,7 +329,7 @@ const formatBytes = (n) =>
     : `${Math.max(1, Math.round(n / 1024))} KB`;
 
 router.get('/images', async (req, res) => {
-  const list = products.list();
+  const list = await products.list();
   const onDisk = await listProductFiles();
   const hero = heroProducts(list).map((p) => p.id);
   const used = new Set(list.map((p) => p.image).filter(Boolean));
@@ -326,7 +363,7 @@ router.get('/images', async (req, res) => {
 });
 
 router.post('/images/product/:id', singleImage('photo'), async (req, res, next) => {
-  const p = products.get(intId(req));
+  const p = await products.get(intId(req));
   if (!p) return next();
   if (req.uploadError || !req.file) {
     return res.redirect(
@@ -334,14 +371,14 @@ router.post('/images/product/:id', singleImage('photo'), async (req, res, next) 
     );
   }
   const shot = await saveProductImage(req.file.buffer);
-  products.setPhoto(p.id, photoFields(shot));
+  await products.setPhoto(p.id, photoFields(shot));
   await removeProductImage(p.image);
   return res.redirect('/admin/images?saved=1');
 });
 
 router.post('/images/orphan', async (req, res) => {
   const base = String(req.body.base || '');
-  const inUse = products.list().some((p) => p.image === base);
+  const inUse = (await products.list()).some((p) => p.image === base);
   if (base && !inUse) await removeProductImage(base);
   return res.redirect('/admin/images?deleted=1');
 });
@@ -361,6 +398,65 @@ router.post('/images/site/:slot/reset', async (req, res, next) => {
   if (!SLOTS[req.params.slot]) return next();
   await removeSiteImage(req.params.slot);
   return res.redirect('/admin/images?deleted=1');
+});
+
+/* ---------- Prices: every perfume on one screen ---------- */
+
+const priceNumber = (v) => {
+  const digits = String(v ?? '').replace(/[^\d]/g, '');
+  const n = digits ? Number.parseInt(digits, 10) : 0;
+  return n > 0 && n <= 10_000_000 ? n : 0;
+};
+
+router.get('/prices', async (req, res) => {
+  const list = await products.list();
+  const missing = list.filter((p) => !(p.price > 0) && !p.variants.some((v) => v.price > 0));
+  res.render('admin/prices', {
+    list: whichRows(req.query.show) === 'missing' ? missing : list,
+    total: list.length,
+    missingCount: missing.length,
+    showing: whichRows(req.query.show),
+    active: 'prices',
+    errors: [],
+  });
+});
+
+const whichRows = (v) => (v === 'missing' ? 'missing' : 'all');
+
+router.post('/prices', async (req, res) => {
+  const errors = [];
+  let changed = 0;
+  for (const p of await products.list()) {
+    if (req.body[`price_${p.id}`] === undefined) continue; // row was not on the screen
+    const price = priceNumber(req.body[`price_${p.id}`]);
+    const sale = priceNumber(req.body[`sale_${p.id}`]);
+    const visible = req.body[`hide_${p.id}`] === 'on' ? 0 : 1;
+    if (sale && !(price > 0 && sale < price)) {
+      errors.push(`${p.brand} ${p.name}: the sale price must be lower than the regular price.`);
+      continue;
+    }
+    if (price !== p.price || sale !== p.salePrice || (visible === 1) !== p.priceVisible) {
+      await products.setPrice(p.id, {
+        price,
+        sale_price: sale,
+        price_visible: visible,
+        source: 'manual',
+      });
+      changed += 1;
+    }
+  }
+  if (errors.length) {
+    const fresh = await products.list();
+    return res.status(422).render('admin/prices', {
+      list: fresh,
+      total: fresh.length,
+      missingCount: 0,
+      showing: 'all',
+      active: 'prices',
+      errors,
+    });
+  }
+  return res.redirect(`/admin/prices?saved=1&n=${changed}`);
 });
 
 /* ---------- Our Story ---------- */
@@ -385,7 +481,7 @@ router.post('/story', singleImage('photo'), async (req, res) => {
   const b = req.body;
   const list = (key, count, max) =>
     Array.from({ length: count }, (_, n) => clip(b[`${key}${n}`], max));
-  saveStoryCopy({
+  await saveStoryCopy({
     eyebrow: clip(b.eyebrow, 40),
     heading: clip(b.heading, 120),
     paragraphs: list('paragraph', 3, 700),
@@ -403,7 +499,7 @@ router.post('/story', singleImage('photo'), async (req, res) => {
     captionAm: clip(b.caption_am, 60),
   });
   const now = getStory().focus;
-  saveFocus(pct(b.focus_x, now.x), pct(b.focus_y, now.y));
+  await saveFocus(pct(b.focus_x, now.x), pct(b.focus_y, now.y));
   if (req.file) await saveStoryPhoto(req.file.buffer);
   else if (b.remove_photo) await removeStoryPhoto();
   return res.redirect('/admin/story?saved=1');
@@ -424,8 +520,8 @@ const blankReview = () => ({
 const renderReviewForm = (res, { r, errors = [], fields = {}, status = 200, isNew }) =>
   res.status(status).render('admin/review-form', { r, errors, fields, isNew, active: 'reviews' });
 
-router.get('/reviews', (req, res) =>
-  res.render('admin/reviews', { reviews: reviews.list(), active: 'reviews' })
+router.get('/reviews', async (req, res) =>
+  res.render('admin/reviews', { reviews: await reviews.list(), active: 'reviews' })
 );
 
 router.get('/reviews/new', (req, res) => renderReviewForm(res, { r: blankReview(), isNew: true }));
@@ -443,7 +539,7 @@ router.post('/reviews', singleImage('screenshot'), async (req, res) => {
     });
   }
   const shot = req.file ? await saveReviewImage(req.file.buffer) : null;
-  reviews.create({
+  await reviews.create({
     ...value,
     image: shot?.name ?? '',
     image_w: shot?.width ?? 0,
@@ -452,14 +548,14 @@ router.post('/reviews', singleImage('screenshot'), async (req, res) => {
   return res.redirect('/admin/reviews?saved=1');
 });
 
-router.get('/reviews/:id/edit', (req, res, next) => {
-  const r = reviews.get(intId(req));
+router.get('/reviews/:id/edit', async (req, res, next) => {
+  const r = await reviews.get(intId(req));
   if (!r) return next();
   return renderReviewForm(res, { r, isNew: false });
 });
 
 router.post('/reviews/:id', singleImage('screenshot'), async (req, res, next) => {
-  const existing = reviews.get(intId(req));
+  const existing = await reviews.get(intId(req));
   if (!existing) return next();
   const { value, errors, fields } = parseReview(req.body);
   if (req.uploadError) errors.push(req.uploadError);
@@ -475,7 +571,7 @@ router.post('/reviews/:id', singleImage('screenshot'), async (req, res, next) =>
   const removeShot = req.body.remove_image === 'on';
   const shot = req.file ? await saveReviewImage(req.file.buffer) : null;
   const keep = !shot && !removeShot;
-  reviews.update(existing.id, {
+  await reviews.update(existing.id, {
     ...value,
     image: shot?.name ?? (keep ? existing.image : ''),
     image_w: shot?.width ?? (keep ? existing.image_w : 0),
@@ -486,9 +582,9 @@ router.post('/reviews/:id', singleImage('screenshot'), async (req, res, next) =>
 });
 
 router.post('/reviews/:id/delete', async (req, res, next) => {
-  const r = reviews.get(intId(req));
+  const r = await reviews.get(intId(req));
   if (!r) return next();
-  reviews.remove(r.id);
+  await reviews.remove(r.id);
   await removeReviewImage(r.image);
   return res.redirect('/admin/reviews?deleted=1');
 });

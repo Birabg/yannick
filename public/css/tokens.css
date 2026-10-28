@@ -54,6 +54,13 @@
   --c-surface: var(--surface-2);
   --c-card: var(--surface);
   --c-photo: var(--surface-2);
+  /* The backdrop behind a product photo. Each product overrides these with its photo's own colour (class bgc-N). */
+  --card-bg: var(--c-surface);
+  --card-bg-top: var(--c-surface);
+  --card-bg-bottom: var(--c-surface);
+  --card-fg: var(--c-text);
+  --card-fg-top: var(--c-text);
+  --card-fg-bottom: var(--c-text);
   --c-chip: var(--chip);
   --c-text: var(--text);
   --c-muted: var(--text-muted);

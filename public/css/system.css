@@ -143,7 +143,7 @@ h3 em,
 }
 .photo {
   border-radius: var(--r-card);
-  background: var(--card, var(--c-photo));
+  background: linear-gradient(var(--card-bg-top), var(--card-bg-bottom));
 }
 .card .photo {
   -webkit-mask: var(--notch-mask);
@@ -495,7 +495,7 @@ h3 em,
   height: 5rem;
   overflow: hidden;
   border-radius: 20px;
-  background: var(--card);
+  background: linear-gradient(var(--card-bg-top), var(--card-bg-bottom));
 }
 @media (min-width: 900px) {
   .pick {
@@ -576,22 +576,13 @@ h3 em,
 .pick__photo,
 .stack__img,
 .order__bottle {
-  object-position: var(--fx, 50%) var(--fy, 50%);
-  filter: var(--photo-filter);
+  object-position: 50% 50%;
 }
 .photo__img,
 .hc__img,
 .pick__photo,
 .stack__img {
-  object-fit: cover;
-}
-/* Tall studio shots show the whole bottle; their white backdrop blends into the card colour. */
-.photo__img.fit-contain,
-.hc__img.fit-contain,
-.pick__photo.fit-contain,
-.stack__img.fit-contain {
   object-fit: contain;
-  padding: 4% 3% 5%;
 }
 .hc__img.is-fallback,
 .photo__img.is-fallback,
@@ -605,7 +596,6 @@ h3 em,
   display: block;
   width: 100%;
   height: 100%;
-  mix-blend-mode: multiply;
 }
 .stack__img {
   transform: scale(1.35);
@@ -616,14 +606,6 @@ h3 em,
 .order__bottle {
   object-fit: contain;
   padding: 6% 8%;
-}
-.is-ask,
-.card__price.is-ask {
-  color: var(--text-muted);
-  font-weight: 600;
-}
-.detail__price.is-ask {
-  font-size: var(--t-m);
 }
 
 /* the amber glass: a darker vignette in the dark theme keeps text over it readable */
@@ -642,16 +624,6 @@ h3 em,
 :root[data-theme='dark'] .card:hover .card__media::after,
 :root[data-theme='dark'] .card:focus-within .card__media::after {
   background-color: var(--sun);
-}
-
-/* Photos are shown exactly as supplied, with their own backdrop (no blending onto the card colour). */
-.photo__img,
-.hc__img,
-.pick__photo,
-.stack__img,
-.order__bottle,
-.lib__img {
-  mix-blend-mode: normal;
 }
 
 /* ---------- Filter tabs: small rectangles, uppercase, amber when active ---------- */

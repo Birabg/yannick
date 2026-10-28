@@ -12,7 +12,7 @@
  */
 const fs = require('node:fs');
 const path = require('node:path');
-const { db, products } = require('../src/db');
+const { db, ready, products } = require('../src/db');
 const crypto = require('node:crypto');
 const { saveProductImage, removeProductImage, PIPELINE_VERSION } = require('../src/lib/images');
 const { slugify, slugSource } = require('../src/lib/format');
@@ -23,18 +23,17 @@ const replaceSamples = process.argv.includes('--replace-samples');
 const reset = process.argv.includes('--reset');
 
 async function main() {
+  await ready();
   if (replaceSamples) {
-    for (const row of db.prepare('SELECT id, image FROM products WHERE is_sample = 1').all()) {
-      products.remove(row.id);
+    for (const row of await db.all('SELECT id, image FROM products WHERE is_sample = 1')) {
+      await products.remove(row.id);
       await removeProductImage(row.image);
     }
   }
 
   if (reset) {
-    for (const row of db
-      .prepare("SELECT id, image FROM products WHERE image LIKE 'photo-%'")
-      .all()) {
-      products.remove(row.id);
+    for (const row of await db.all("SELECT id, image FROM products WHERE image LIKE 'photo-%'")) {
+      await products.remove(row.id);
       await removeProductImage(row.image);
     }
   }
@@ -63,20 +62,23 @@ async function main() {
       img_h: shot.height,
       cut_w: shot.cutW,
       cut_h: shot.cutH,
+      bg_color: shot.bg.color,
+      bg_color_top: shot.bg.top,
+      bg_color_bottom: shot.bg.bottom,
+      bg_is_dark: shot.bg.isDark ? 1 : 0,
+      bg_mode: shot.bg.mode,
     };
     const slug = slugify(slugSource({ brand: item.brand, name: item.name, size: '' }));
-    const existing = products.getBySlug(slug);
+    const existing = await products.getBySlug(slug);
     if (existing) {
       if (existing.image !== base) await removeProductImage(existing.image);
-      db.prepare(
-        'UPDATE products SET image=@image, img_w=@img_w, img_h=@img_h, cut_w=@cut_w, cut_h=@cut_h WHERE id=@id'
-      ).run({
-        ...photo,
-        id: existing.id,
-      });
+      await db.run(
+        'UPDATE products SET image=@image, img_w=@img_w, img_h=@img_h, cut_w=@cut_w, cut_h=@cut_h, bg_color=@bg_color, bg_color_top=@bg_color_top, bg_color_bottom=@bg_color_bottom, bg_is_dark=@bg_is_dark, bg_mode=@bg_mode WHERE id=@id',
+        { ...photo, id: existing.id }
+      );
       continue;
     }
-    products.create({
+    await products.create({
       slug,
       name: item.name,
       brand: item.brand,
@@ -112,7 +114,9 @@ async function main() {
   );
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+main()
+  .catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+  })
+  .finally(() => db.close());

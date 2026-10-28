@@ -27,7 +27,6 @@
       <label class="field<%= fld('name') %>"><span class="field__label">Name *</span><input name="name" value="<%= p.name %>" maxlength="80" required placeholder="Bleu de Chanel"><%- err('name') %></label>
       <label class="field<%= fld('brand') %>"><span class="field__label">Brand *</span><input name="brand" value="<%= p.brand %>" maxlength="60" required list="brands" placeholder="Chanel"><%- err('brand') %></label>
       <datalist id="brands"><% site.houses.forEach(function (h) { %><option value="<%= h %>"><% }) %></datalist>
-      <label class="field<%= fld('price') %>"><span class="field__label">Price (ETB)</span><input name="price" value="<%= p.price || '' %>" inputmode="numeric" data-numeric placeholder="Leave empty to show &quot;Ask for price&quot;"><%- err('price') %></label>
       <label class="field<%= fld('size') %>"><span class="field__label">Size</span><input name="size" value="<%= p.size %>" maxlength="20" placeholder="100ml"><%- err('size') %></label>
       <label class="field"><span class="field__label">Concentration</span>
         <select name="concentration">
@@ -44,9 +43,30 @@
     </div>
 
     <fieldset class="checks">
+      <legend>Price</legend>
+      <div class="grid-2">
+        <label class="field<%= fld('price') %>"><span class="field__label">Price (ETB)</span><input name="price" value="<%= p.price || '' %>" inputmode="numeric" data-numeric placeholder="Leave empty to show &quot;Ask for price&quot;"><%- err('price') %></label>
+        <label class="field<%= fld('sale_price') %>"><span class="field__label">Sale price (ETB, optional)</span><input name="sale_price" value="<%= p.salePrice || '' %>" inputmode="numeric" data-numeric placeholder="Lower than the price"><%- err('sale_price') %></label>
+      </div>
+      <label class="check"><input type="checkbox" name="price_hidden" <%= p.priceVisible ? '' : 'checked' %>><span>Hide the price on the site (it shows &ldquo;Ask for price&rdquo; and a WhatsApp link that asks for it)</span></label>
+      <p class="hint"><% if (p.priceUpdatedAt) { %>Price last updated <strong><%= p.priceUpdatedAt.slice(0, 10) %></strong><%= p.priceSource === 'live-site' ? ', imported from the old website' : p.priceSource === 'csv' ? ', imported from the price sheet' : '' %>.<% } else { %>No price has been set yet.<% } %> Whole numbers only, in ETB.</p>
+
+      <p class="field__label">More sizes (optional)</p>
+      <p class="hint">Only if this perfume comes in more than one size. Add one row per size, each with its own price. The site then shows &ldquo;From ETB &hellip;&rdquo; on the card and size buttons in the panel. Leave these empty for a single size.</p>
+      <% const rows = Math.min(6, Math.max(2, p.variants.length + 1)); for (let n = 0; n < rows; n++) { const v = p.variants[n] || null; %>
+      <div class="vrow">
+        <label class="field<%= fld('variant_size_' + n) %>"><span class="field__label">Size (ml)</span><input name="variant_size_<%= n %>" value="<%= v ? v.sizeMl : '' %>" inputmode="numeric" data-numeric placeholder="50"><%- err('variant_size_' + n) %></label>
+        <label class="field<%= fld('variant_price_' + n) %>"><span class="field__label">Price (ETB)</span><input name="variant_price_<%= n %>" value="<%= v ? v.price : '' %>" inputmode="numeric" data-numeric><%- err('variant_price_' + n) %></label>
+        <label class="field<%= fld('variant_sale_' + n) %>"><span class="field__label">Sale price</span><input name="variant_sale_<%= n %>" value="<%= v && v.salePrice ? v.salePrice : '' %>" inputmode="numeric" data-numeric><%- err('variant_sale_' + n) %></label>
+        <label class="check"><input type="checkbox" name="variant_stock_<%= n %>" <%= !v || v.inStock ? 'checked' : '' %>><span>In stock</span></label>
+      </div>
+      <% } %>
+    </fieldset>
+
+    <fieldset class="checks">
       <legend>Collection sections</legend>
-      <p class="hint">Each tick puts the perfume under that filter tab on the site. Men and Women also follow the Category above, so they stay ticked for the matching category.</p>
-      <% site.collections.forEach(function (c) { %>
+      <p class="hint">Each tick puts the perfume under that filter tab on the site. Men and Women also follow the Category above, so they stay ticked for the matching category. &ldquo;Affordable&rdquo; follows the real price by itself (under ETB <%= site.affordableBelow.toLocaleString('en-US') %>).</p>
+      <% site.collections.filter(function (c) { return c.key !== 'affordable'; }).forEach(function (c) { %>
       <label class="check"><input type="checkbox" name="collections" value="<%= c.key %>" <%= p.collections.includes(c.key) ? 'checked' : '' %>><span><%= c.label %></span></label>
       <% }) %>
     </fieldset>
@@ -108,23 +128,33 @@
   <fieldset class="box">
     <legend>Photo</legend>
     <%- include('_dropzone', { name: 'photo', src: p.image ? imageUrl(p, 'sm') : '', alt: 'Photo preview' }) %>
-    <p class="hint">Tip: shoot the bottle on a plain white background. The website tints it with the card colour. The photo is saved in three sizes, keeping its shape.</p>
-    <div class="grid-2">
-      <label class="field"><span class="field__label">Photo fit</span>
-        <select name="fit">
-          <option value="cover" <%= p.fit === 'cover' ? 'selected' : '' %>>Fill the card (crop around the focus point)</option>
-          <option value="contain" <%= p.fit === 'contain' ? 'selected' : '' %>>Show the whole bottle</option>
-        </select>
-      </label>
-      <label class="field"><span class="field__label">Card colour</span>
-        <select name="tint">
-          <option value="">Automatic (from scent family or category)</option>
-          <% [['fresh', 'Lime'], ['woody', 'Deep green'], ['oriental', 'Burnt orange'], ['men', 'Sky'], ['women', 'Pink'], ['none', 'Sage']].forEach(function (t) { %><option value="<%= t[0] %>" <%= p.tint === t[0] ? 'selected' : '' %>><%= t[1] %></option><% }) %>
-        </select>
-      </label>
-      <label class="field"><span class="field__label">Focus, left to right: <output data-out="focus_x"><%= p.focusX %></output>%</span><input type="range" name="focus_x" min="0" max="100" step="10" value="<%= p.focusX %>" data-range="focus_x"></label>
-      <label class="field"><span class="field__label">Focus, top to bottom: <output data-out="focus_y"><%= p.focusY %></output>%</span><input type="range" name="focus_y" min="0" max="100" step="10" value="<%= p.focusY %>" data-range="focus_y"></label>
+    <p class="hint">Tip: shoot the bottle on a plain white background. The card and panel take the colour of the photo&rsquo;s own background. The photo is saved in three sizes, keeping its shape.</p>
+    <%
+      const det = p.bgMode === 'alpha' ? '' : p.bgColor;
+      const shown = p.bgOverride || det;
+    %>
+    <div class="field bgpick">
+      <span class="field__label">Photo background colour</span>
+      <% if (!p.image) { %>
+      <p class="hint">Add a photo first. The card and the opened panel then take the colour of the photo&rsquo;s own background.</p>
+      <% } else if (p.bgMode === 'alpha' && !p.bgOverride) { %>
+      <p class="hint">This photo has a transparent background, so the card uses the page colour with a soft shadow under the bottle. You can still pick a colour below.</p>
+      <% } %>
+      <% if (p.image) { %>
+      <div class="bgpick__row">
+        <% if (det) { %>
+        <span class="bgpick__item"><span class="bgpick__swatch" data-swatch="<%= det %>" aria-hidden="true"></span><span>Detected <code><%= det %></code><% if (p.bgMode === 'busy') { %> (the edges are busy, so this is a calmer version)<% } %></span></span>
+        <% } %>
+        <label class="bgpick__item"><input type="color" name="bg_override" value="<%= shown || '#ffffff' %>" aria-label="Background colour"><span>Your colour</span></label>
+        <label class="check"><input type="checkbox" name="bg_override_on" <%= p.bgOverride ? 'checked' : '' %>><span>Use my colour instead of the detected one</span></label>
+      </div>
+      <p class="hint">Photos are measured at the edges when they are saved. If the card does not match the photo, tick the box and pick the colour. Your choice is kept when photos are re-measured.</p>
+      <% } %>
     </div>
+    <input type="hidden" name="fit" value="<%= p.fit %>">
+    <input type="hidden" name="tint" value="<%= p.tint %>">
+    <input type="hidden" name="focus_x" value="<%= p.focusX %>">
+    <input type="hidden" name="focus_y" value="<%= p.focusY %>">
     <label class="field"><span class="field__label">Photo description (alt text)</span><input name="img_alt" value="<%= p.imageAlt %>" maxlength="140" placeholder="Describe the bottle for people who cannot see it"></label>
     <label class="check check--box"><input type="checkbox" name="needs_details" <%= p.needsDetailsFlag ? 'checked' : '' %>><span><strong>Flag for review.</strong> Keeps the &ldquo;Needs details&rdquo; tag on. It also appears by itself while the price, size or concentration is empty.</span></label>
   </fieldset>
@@ -149,7 +179,7 @@
       <h3 class="card__name" data-preview-name><%= p.name || 'Perfume name' %></h3>
       <p class="card__line">
         <span data-preview-meta><%= [p.size, p.concentration].filter(Boolean).join(' · ') || '100ml' %></span>
-        <span class="card__price" data-preview-price><%= fmt.price(p.price) %></span>
+        <span class="card__price" data-preview-price><%= fmt.priceText(p) %></span>
       </p>
     </div>
   </article>

@@ -1,9 +1,16 @@
 import { prefersReducedMotion } from './motion.js';
 
+// A perfume without a price goes last whichever way the list is sorted.
+const priceOf = (card) => Number(card.dataset.price) || 0;
+const byPrice = (direction) => (a, b) => {
+  const [x, y] = [priceOf(a), priceOf(b)];
+  if (!x || !y) return !x && !y ? a.dataset.order - b.dataset.order : !x ? 1 : -1;
+  return (x - y) * direction || a.dataset.order - b.dataset.order;
+};
 const SORTERS = {
   featured: (a, b) => a.dataset.order - b.dataset.order,
-  low: (a, b) => a.dataset.price - b.dataset.price,
-  high: (a, b) => b.dataset.price - a.dataset.price,
+  low: byPrice(1),
+  high: byPrice(-1),
 };
 const EASE = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 

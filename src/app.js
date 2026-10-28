@@ -10,9 +10,12 @@ const i18n = require('../config/i18n');
 const { root, isProd, siteUrl, uploadsDir } = require('./env');
 const { asset, distAsset } = require('./lib/assets');
 const format = require('./lib/format');
+const pricing = require('./lib/pricing');
 const { imageUrl } = require('./lib/seo');
 const photo = require('./lib/photo');
 const { siteImage, isCustom: siteImageIsCustom } = require('./lib/siteImages');
+const { ready, settings } = require('./db');
+const { ensureAdminPassword } = require('./lib/adminAuth');
 const publicRoutes = require('./routes/public');
 
 /** Sizes of the footer photo written by scripts/make-footer.js; null (gradient fallback) if it was not run. */
@@ -29,6 +32,18 @@ const footerPhoto = readFooterPhoto();
 const seoRoutes = require('./routes/seo');
 const adminRoutes = require('./routes/admin');
 const styleguideRoutes = require('./routes/styleguide');
+
+/** One-time setup per server instance; a failed attempt is retried on the next request. */
+let booting = null;
+const boot = () => {
+  booting ||= ready()
+    .then(ensureAdminPassword)
+    .catch((err) => {
+      booting = null;
+      throw err;
+    });
+  return booting;
+};
 
 const forever = { maxAge: '365d', immutable: true, index: false };
 const escapeHtml = (s) =>
@@ -100,6 +115,7 @@ function createApp() {
       asset,
       distAsset,
       fmt: format,
+      pricing,
       imageUrl,
       photo,
       siteImage,
@@ -116,6 +132,13 @@ function createApp() {
       seo: {},
       path: req.path,
     });
+    next();
+  });
+
+  // Create the tables (first request on a fresh instance) and refresh the settings every page reads.
+  app.use(async (req, res, next) => {
+    await boot();
+    await settings.load();
     next();
   });
 

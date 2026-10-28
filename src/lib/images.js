@@ -5,6 +5,7 @@ const sharp = require('sharp');
 const { uploadsDir } = require('../env');
 const { variantWidths } = require('./photo');
 const { cutout } = require('./cutout');
+const { detectBackground } = require('./bgcolor');
 
 const PRODUCT_DIR = path.join(uploadsDir, 'products');
 const REVIEW_DIR = path.join(uploadsDir, 'reviews');
@@ -20,7 +21,7 @@ const token = () => crypto.randomBytes(8).toString('hex');
  * aspect ratio and dropping all metadata. A plain studio backdrop is lifted off (see cutout.js) so the
  * bottle keeps its true colours on the card; otherwise transparent areas become white and the card
  * blends the photo instead. Returns { base, width, height, cutout } for the largest saved file.
- * Pass `base` to write to a fixed name (the importer does, so it can be re-run safely).
+ * `bg` is the detected backdrop colour. Pass `base` to write to a fixed name (the importer does, so it can be re-run safely).
  */
 async function saveProductImage(buffer, { base = token() } = {}) {
   await fs.mkdir(PRODUCT_DIR, { recursive: true });
@@ -29,9 +30,11 @@ async function saveProductImage(buffer, { base = token() } = {}) {
     .flatten({ background: BACKDROP })
     .toBuffer();
 
-  // Photos are used exactly as supplied. A second, background-free copy (`<base>-cut.webp`) is made
-  // when the backdrop is a plain studio colour, for places that sit a bottle on a coloured panel.
-  const source = flat;
+  // The photo's own backdrop colour, for the card and panel behind it (see bgcolor.js).
+  const bg = await detectBackground(buffer);
+  // A photo with a transparent backdrop keeps its transparency, so the card can show the theme surface
+  // and a soft shadow; every other photo is saved exactly as supplied, on white.
+  const source = bg.mode === 'alpha' ? await sharp(buffer).rotate().toBuffer() : flat;
 
   const { data, info } = await sharp(source)
     .resize({ width: 1600, withoutEnlargement: true })
@@ -53,6 +56,7 @@ async function saveProductImage(buffer, { base = token() } = {}) {
     height: info.height,
     cutW: cutShot.width,
     cutH: cutShot.height,
+    bg,
   };
 }
 

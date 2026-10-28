@@ -11,7 +11,27 @@
   let step = 0;
   const num = function () { return String(++step).padStart(2, '0'); };
 %>
-<%- include('partials/head', { preloadImage: heroProducts[0] || null }) %>
+<%- include('partials/head', { splash: true, preloadImage: heroProducts[0] || null }) %>
+<%- include('partials/splash-art') %>
+<script nonce="<%= cspNonce %>">
+(function () {
+  var h = document.documentElement, t = document.getElementById('sp-t');
+  if (!t || !h.classList.contains('sp')) return;
+  var el = t.content.firstElementChild, T = [];
+  t.parentNode.replaceChild(t.content, t);
+  h.classList.add('sp-on');
+  function end() { T.forEach(clearTimeout); removeEventListener('keydown', skip); window.__spf(); }
+  function out(quick) {
+    h.classList.add('sp-go');
+    el.classList.add(quick === true ? 'quick' : 'out');
+    T.push(setTimeout(end, quick === true ? 170 : 470));
+  }
+  function skip() { if (el.classList.contains('out')) end(); else if (!el.classList.contains('quick')) out(true); }
+  el.addEventListener('click', skip);
+  addEventListener('keydown', skip);
+  T.push(setTimeout(out, 1150));
+})();
+</script>
 <main id="main">
 
   <!-- Hero -->
@@ -43,7 +63,7 @@
       <% if (tall.length >= 3) { %>
       <div class="stack">
         <ul class="stack__list" aria-hidden="true">
-          <% tall.slice(0, 3).forEach(function (p) { %><li class="stack__item fam--<%= fmt.cardColor(p) %>"><%- include('components/photo', { p: p, cls: 'stack__img', alt: '', sizes: '64px' }) %></li><% }) %>
+          <% tall.slice(0, 3).forEach(function (p) { %><li class="stack__item <%= photo.bgClass(p) %>"><%- include('components/photo', { p: p, cls: 'stack__img', alt: '', sizes: '64px' }) %></li><% }) %>
         </ul>
         <a class="stack__plus" href="#collection" aria-label="See the whole collection"><%- icon('plus') %></a>
       </div>
@@ -192,11 +212,11 @@
           <ul class="mood__list">
             <% m.picks.forEach(function (p) { %>
             <li class="pick">
-              <span class="pick__img fam--<%= fmt.cardColor(p) %>"><%- include('components/photo', { p: p, cls: 'pick__photo', alt: '', sizes: '96px' }) %></span>
+              <span class="pick__img <%= photo.bgClass(p) %>"><%- include('components/photo', { p: p, cls: 'pick__photo', alt: '', sizes: '96px' }) %></span>
               <div class="pick__body">
                 <p class="pick__brand"><%= p.brand %></p>
                 <h3 class="pick__name"><a href="/perfume/<%= p.slug %>" data-open-product><%= p.name %></a></h3>
-                <p class="pick__meta"><%= [p.size, p.concentration, fmt.price(p.price)].filter(Boolean).join(' · ') %></p>
+                <p class="pick__meta"><%= [p.size, p.concentration, fmt.priceText(p)].filter(Boolean).join(' · ') %></p>
               </div>
               <a class="btn btn--sm pick__order" href="<%= fmt.orderLink(p) %>" target="_blank" rel="noopener"><span>Order</span><span class="sr-only"> <%= fmt.productLabel(p) %> on WhatsApp</span></a>
             </li>

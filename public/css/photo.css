@@ -106,14 +106,6 @@
 .card .photo.ar-24 {
   aspect-ratio: 24 / 20;
 }
-.card .photo[class*='ar-'] .photo__img {
-  object-fit: cover;
-  padding: 0;
-}
-.card .photo.ar-clamped .photo__img {
-  object-fit: contain;
-}
-
 /* Hero card height follows the uploaded picture's shape: hh-N = height/width x 20 (see heightClass in src/lib/photo.js). */
 .hc.hh-20 {
   --h: 1;
@@ -166,40 +158,29 @@
     height: calc(var(--cw) * 0.72 * var(--h, 1));
   }
 }
-.hc[class*='hh-'] .hc__img {
-  object-fit: cover;
-  padding: 0;
-}
-.hc.hh-clamped .hc__img {
-  object-fit: contain;
-}
-
-/* Photos keep their own white backdrop, so a hairline keeps the card edge visible on the page. */
-.hc__shape::before,
-.card .photo::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  border-radius: inherit;
-  box-shadow: inset 0 0 0 1px var(--c-border);
-  pointer-events: none;
+/* The card is the photo's own backdrop colour, so the picture runs into it: no border, no blending, no filter. */
+.photo__img,
+.hc__img,
+.pick__photo,
+.stack__img,
+.order__bottle {
+  mix-blend-mode: normal;
+  filter: none;
 }
 
-/* Opened product (panel and page): the photo's backdrop blends into the card colour. */
-.detail .photo__img {
-  mix-blend-mode: multiply;
+/* A photo with a transparent background sits on the theme surface with a soft contact shadow. */
+.is-alpha .photo__img,
+.is-alpha .hc__img {
+  filter: drop-shadow(0 10px 8px rgb(20 17 15 / 0.22));
 }
-.detail .photo__img {
-  /* feather the edges so the photo's own backdrop melts into the card colour */
-  -webkit-mask-image:
-    linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
-    linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
-    linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
-  mask-composite: intersect;
+
+/* The opened panel and the product page: the photo area is the same colour or gradient, edge to edge. */
+.detail__photo {
+  background: linear-gradient(var(--card-bg-top), var(--card-bg-bottom));
+}
+.detail .photo {
+  border-radius: 0;
+  background: transparent;
 }
 
 /* Phones: two columns side by side, so every card photo gets the same 4:5 box and the rows line up. */
@@ -207,4 +188,161 @@
   .card .photo[class*='ar-'] {
     aspect-ratio: 4 / 5;
   }
+}
+
+/* ---------- Panel header and body ---------- */
+/* The bar behind the close button wears the photo's top colour, and the photo area below it carries on
+   with the same colour or gradient, so header and picture read as one surface. The body is the theme
+   surface, with rounded top corners that sit on the photo's bottom colour. */
+.sheet__bar {
+  border-bottom-color: transparent;
+  background: var(--sheet-bg, var(--c-bg));
+  color: var(--sheet-fg, var(--c-text));
+  transition: background-color 300ms var(--ease);
+}
+.sheet__grab {
+  background: currentColor;
+  opacity: 0.4;
+}
+.sheet__title {
+  color: inherit;
+  opacity: 0.8;
+}
+/* a solid chip, so the close button reads on any photo colour */
+.sheet__bar .icon-btn {
+  border-color: transparent;
+  background: var(--c-bg);
+  color: var(--c-text);
+}
+.sheet .detail {
+  background: var(--card-bg-bottom);
+}
+.sheet .detail__body {
+  border-radius: 24px 24px 0 0;
+  background: var(--c-bg);
+}
+.sheet .skeleton--tall {
+  border-radius: 0;
+  background: linear-gradient(var(--card-bg-top), var(--card-bg-bottom));
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet__bar {
+    transition: none;
+  }
+}
+/* the badges sit on the photo's colour: a solid chip keeps them readable on any of them */
+.photo__flags .tag {
+  border-color: var(--c-border);
+  background: var(--c-bg);
+  color: var(--c-text);
+}
+.photo__flags .tag--new {
+  border-color: transparent;
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+}
+.photo__flags .tag--bestseller,
+.photo__flags .tag--soldout {
+  border-color: transparent;
+  background: var(--c-text);
+  color: var(--c-bg);
+}
+
+/* Where a photo is letterboxed (the panel, phone cards), its side edges are softened a little so a
+   one-shade difference between the photo's edge and the backdrop cannot show as a line. */
+.detail .photo__img:not(.is-fallback),
+.card .photo__img:not(.is-fallback) {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+}
+
+/* ---------- Prices ---------- */
+/* On the card the price sits under the name: medium weight, a little larger than the meta text. */
+.card__price {
+  margin: 4px 0 0;
+  color: var(--c-text);
+  font-size: 1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.price {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.6em;
+}
+.price--ask {
+  color: var(--c-muted);
+  font-weight: 600;
+}
+.price__was {
+  color: var(--c-muted);
+  font-size: 0.875em;
+  font-weight: 400;
+  text-decoration-thickness: 1px;
+}
+/* Sold out: the price stays, softer. */
+.price.is-muted {
+  color: var(--c-muted);
+}
+.price.is-muted .price__now {
+  font-weight: 500;
+}
+.price--lg {
+  font-family: var(--font-display);
+  font-size: var(--t-m);
+  font-weight: 700;
+  line-height: 1.1;
+}
+.detail__price {
+  line-height: 1.1;
+}
+.detail__price [hidden] {
+  display: none;
+}
+.tag--sale {
+  border-color: transparent;
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+}
+.photo__flags .tag--sale {
+  border-color: transparent;
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+}
+
+/* ---------- Size buttons (panel) ---------- */
+.sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1);
+  margin: 0 0 var(--s-3);
+}
+.size-chip {
+  min-height: 44px;
+  padding: 0 var(--s-2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-text);
+  font-size: var(--t-small);
+  font-weight: 500;
+  transition:
+    border-color var(--d-fast) var(--ease),
+    background-color var(--d-fast) var(--ease);
+}
+.size-chip:hover {
+  border-color: var(--c-text);
+}
+.size-chip[aria-checked='true'] {
+  border-color: var(--tab-active-line);
+  background: var(--tab-active-tint);
+}
+.size-chip.is-out {
+  color: var(--c-muted);
+}
+.size-chip:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 3px;
 }

@@ -6,7 +6,7 @@
  */
 const path = require('node:path');
 const sharp = require('sharp');
-const { products } = require('../src/db');
+const { db, ready, products } = require('../src/db');
 const { heroProducts } = require('../src/lib/hero');
 const { photoUrl } = require('../src/lib/photo');
 const { cardColor } = require('../src/lib/format');
@@ -29,7 +29,8 @@ const LEFT = Math.round((W - (5 * CARD_W + 4 * GAP)) / 2);
 const TOP = 300;
 
 async function main() {
-  const picks = heroProducts(products.list())
+  await ready();
+  const picks = heroProducts(await products.list())
     .filter((p) => p.image)
     .slice(0, 5);
   if (picks.length < 3) throw new Error('Need at least three products with photos.');
@@ -73,7 +74,9 @@ async function main() {
   console.log(`Wrote ${out}`);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+main()
+  .catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+  })
+  .finally(() => db.close());

@@ -3,7 +3,7 @@
  * Prices, notes and descriptions are placeholders: replace them with your real products.
  * Re-running removes the old samples first and never touches products you added yourself.
  */
-const { db, products } = require('./db');
+const { db, ready, products } = require('./db');
 const { saveProductImage, removeProductImage } = require('./lib/images');
 const { slugify, slugSource } = require('./lib/format');
 
@@ -195,16 +195,17 @@ function bottleSvg([liquid]) {
 }
 
 async function main() {
-  const old = db.prepare('SELECT id, image FROM products WHERE is_sample = 1').all();
+  await ready();
+  const old = await db.all('SELECT id, image FROM products WHERE is_sample = 1');
   for (const row of old) {
-    products.remove(row.id);
+    await products.remove(row.id);
     await removeProductImage(row.image);
   }
 
   // New products are added at the top, so insert in reverse to keep this list's order.
   for (const s of [...SAMPLES].reverse()) {
     const shot = await saveProductImage(bottleSvg(s.colors));
-    products.create({
+    await products.create({
       slug: slugify(slugSource(s)),
       name: s.name,
       brand: s.brand,
@@ -234,7 +235,9 @@ async function main() {
   console.log('Replace them in /admin with your real products, prices and photos.');
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+main()
+  .catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+  })
+  .finally(() => db.close());

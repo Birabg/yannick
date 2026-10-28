@@ -298,3 +298,15 @@ document.querySelectorAll('[data-count]').forEach((field) => {
   field.addEventListener('input', update);
   update();
 });
+
+// Detected backdrop colour of a photo, shown as a swatch (set here because the page cannot carry style attributes).
+document.querySelectorAll('[data-swatch]').forEach((el) => {
+  el.style.backgroundColor = el.dataset.swatch;
+});
+// Picking a colour switches "use my colour" on.
+document.querySelectorAll('input[name="bg_override"]').forEach((input) => {
+  input.addEventListener('input', () => {
+    const on = input.form.querySelector('input[name="bg_override_on"]');
+    if (on) on.checked = true;
+  });
+});

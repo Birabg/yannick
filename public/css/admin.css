@@ -618,3 +618,106 @@
   max-width: 22rem;
   margin-top: var(--s-2);
 }
+
+.bgpick__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+}
+.bgpick__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+.bgpick__swatch {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--c-border);
+  border-radius: 50%;
+}
+.bgpick input[type='color'] {
+  width: 3rem;
+  height: 2.25rem;
+  padding: 2px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+  background: transparent;
+}
+
+/* extra-size rows in the product form */
+.vrow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: end;
+  gap: var(--s-1) var(--s-2);
+  margin-bottom: var(--s-1);
+}
+@media (min-width: 760px) {
+  .vrow {
+    grid-template-columns: 1fr 1.4fr 1.4fr auto;
+  }
+}
+
+/* ---------- Prices table ---------- */
+.ptable-wrap {
+  margin-top: var(--s-3);
+}
+.ptable {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ptable th,
+.ptable td {
+  padding: var(--s-1) var(--s-2);
+  border-bottom: 1px solid var(--c-border);
+  text-align: left;
+  vertical-align: middle;
+}
+.ptable thead th {
+  color: var(--c-muted);
+  font-size: var(--t-label);
+  font-weight: 500;
+}
+.ptable tbody th {
+  font-weight: 600;
+}
+.ptable__meta {
+  display: block;
+  color: var(--c-muted);
+  font-size: var(--t-label);
+  font-weight: 400;
+}
+.ptable__input {
+  width: 9rem;
+  max-width: 100%;
+}
+.ptable__date {
+  color: var(--c-muted);
+  font-size: var(--t-small);
+}
+.ptable .is-missing {
+  background: var(--c-danger-bg);
+}
+@media (max-width: 759px) {
+  .ptable thead {
+    position: absolute;
+    left: -9999px;
+  }
+  .ptable tr {
+    display: grid;
+    gap: 4px;
+    padding: var(--s-2) 0;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .ptable th,
+  .ptable td {
+    padding: 2px var(--s-1);
+    border: 0;
+  }
+  .ptable td::before {
+    content: attr(data-label) ': ';
+    color: var(--c-muted);
+    font-size: var(--t-label);
+  }
+}
