@@ -418,6 +418,21 @@ h3 em,
   font-weight: 600;
   letter-spacing: -0.02em;
 }
+/* theme palette instead of scent-family colours: amber, surface, ink (follows light/dark) */
+.nc.fam--fresh,
+.nc.fam--oriental,
+.nc.fam--woody {
+  --card: var(--c-surface);
+  --card-fg: var(--c-text);
+}
+.nc:nth-child(1) {
+  --card: var(--amber);
+  --card-fg: var(--ink);
+}
+.nc:nth-child(3) {
+  --card: var(--c-inv-bg);
+  --card-fg: var(--c-inv-text);
+}
 @media (min-width: 900px) {
   .nc-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -984,4 +999,17 @@ h3 em,
   .js .rise.d5 {
     transition-delay: 360ms;
   }
+}
+
+/* ---------- product cards: every photo box is the same 4:5 size, whatever the uploaded picture's shape ---------- */
+.card .photo[class*='ar-'] {
+  aspect-ratio: 4 / 5;
+}
+.card .photo[class*='ar-'] .photo__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.card .photo[class*='ar-'].ar-clamped .photo__img {
+  object-fit: contain;
 }

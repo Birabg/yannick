@@ -2,6 +2,7 @@
   /* params: p (product), order (position in featured order) */
   const label = fmt.productLabel(p);
   const fam = fmt.cardColor(p);
+  const bd = backdrop.rule(p);
   const haystack = [p.name, p.brand, p.family, p.notes.top, p.notes.heart, p.notes.base].flat().join(' ').toLowerCase();
 %>
 <li class="grid__item" data-card
@@ -11,7 +12,8 @@
     data-order="<%= order %>" data-search="<%= haystack %>">
   <article class="card fam--<%= fam %><%= p.inStock ? '' : ' is-soldout' %>">
     <div class="card__media">
-      <div class="photo <%= photo.ratioClass(p) %>">
+      <% if (bd) { %><style nonce="<%= cspNonce %>"><%- bd.css %></style><% } %>
+      <div class="photo <%= photo.ratioClass(p) %><%= bd ? " " + bd.name : "" %>">
         <%- include('photo', { p: p, sizes: '(min-width: 1280px) 380px, (min-width: 760px) 30vw, 92vw' }) %>
         <div class="photo__flags">
           <% if (!p.inStock) { %><%- include('badge', { kind: 'soldout', label: 'Sold out' }) %><% } %>

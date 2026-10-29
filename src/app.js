@@ -12,6 +12,7 @@ const { asset, distAsset } = require('./lib/assets');
 const format = require('./lib/format');
 const { imageUrl } = require('./lib/seo');
 const photo = require('./lib/photo');
+const backdrop = require('./lib/backdrop');
 const { siteImage, isCustom: siteImageIsCustom } = require('./lib/siteImages');
 const publicRoutes = require('./routes/public');
 
@@ -102,6 +103,7 @@ function createApp() {
       fmt: format,
       imageUrl,
       photo,
+      backdrop,
       siteImage,
       footerPhoto,
       siteImageIsCustom,

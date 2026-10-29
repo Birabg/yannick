@@ -186,20 +186,12 @@
   pointer-events: none;
 }
 
-/* Opened product (panel and page): the photo's backdrop blends into the card colour. */
+/* Opened product (panel and page): the photo is shown as supplied, with no blending or feathered edges.
+   The photo area is painted the photo's own backdrop colour (the bd-* class), so it sits flush. */
 .detail .photo__img {
-  mix-blend-mode: multiply;
-}
-.detail .photo__img {
-  /* feather the edges so the photo's own backdrop melts into the card colour */
-  -webkit-mask-image:
-    linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
-    linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
-    linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
-  mask-composite: intersect;
+  mix-blend-mode: normal;
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 
 /* Phones: two columns side by side, so every card photo gets the same 4:5 box and the rows line up. */
