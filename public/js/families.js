@@ -25,7 +25,10 @@ function initAccordion(row) {
   };
 
   const wanted = new URLSearchParams(location.search).get('family');
-  const start = Math.max(0, panels.findIndex((p) => p.dataset.key === wanted));
+  const start = Math.max(
+    0,
+    panels.findIndex((p) => p.dataset.key === wanted)
+  );
   row.style.transition = 'none';
   open(start);
   row.getBoundingClientRect();
@@ -61,7 +64,8 @@ function initAccordion(row) {
 function initToTop() {
   const button = document.querySelector('[data-totop]');
   if (!button) return;
-  const sync = () => button.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.8);
+  const sync = () =>
+    button.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.8);
   window.addEventListener('scroll', sync, { passive: true });
   sync();
   button.addEventListener('click', () => {

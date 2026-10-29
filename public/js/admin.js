@@ -253,7 +253,6 @@ if (previewForm) {
       (category === 'men' || category === 'women' ? category : 'none');
 
     const img = card.querySelector('[data-preview-img]');
-    img.style.objectPosition = `${field('focus_x').value}% ${field('focus_y').value}%`;
     img.classList.toggle('fit-contain', field('fit').value === 'contain');
     card.className = `card fam--${family}`;
     card.classList.toggle('is-soldout', field('in_stock').value === '0');

@@ -17,7 +17,6 @@
 }
 @media (min-width: 900px) {
   .foot {
-    min-height: 100svh;
     padding-bottom: 0;
   }
 }
@@ -25,7 +24,8 @@
 /* the photo: lower ~65% on desktop, edge to edge, fading up into the dark band */
 .foot__photo {
   position: absolute;
-  z-index: -1;
+  z-index: 0;
+  pointer-events: none;
   inset: auto 0 0 0;
   height: 65%;
   overflow: hidden;
@@ -85,7 +85,12 @@
   pointer-events: none;
 }
 
-/* content */
+/* content: everything here sits above the photo and its glow (z-index 0) */
+.foot__main,
+.foot__legal {
+  position: relative;
+  z-index: 1;
+}
 .foot__main {
   display: flex;
   flex-direction: column;
@@ -102,10 +107,62 @@
   line-height: 1;
 }
 .foot__mark {
-  width: 28px;
-  height: 28px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+.foot__id {
+  display: grid;
+  gap: 14px;
+  max-width: 30rem;
+}
+.foot__tag {
+  margin: 0;
+  color: var(--foot-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.foot__social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.foot__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(242, 238, 232, 0.28);
+  border-radius: 9999px;
+  color: var(--foot-text);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    border-color 200ms var(--ease),
+    background-color 200ms var(--ease),
+    color 200ms var(--ease);
+}
+.foot__chip .icon {
+  width: 18px;
+  height: 18px;
+}
+.foot__chip:hover,
+.foot__chip:focus-visible {
+  border-color: var(--foot-amber);
+  background: var(--foot-amber);
+  color: var(--foot-ink);
+}
+.foot__chip:focus-visible {
+  outline: 2px solid var(--foot-amber);
+  outline-offset: 3px;
 }
 .foot__cols {
+  align-items: start;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px 24px;
@@ -130,7 +187,7 @@
   align-items: center;
   min-height: 48px;
   color: var(--foot-muted);
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   text-decoration: none;
   transition: color 200ms var(--ease);
 }
@@ -178,27 +235,51 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-top: 56px;
+  margin-top: 40px;
   color: var(--foot-faint);
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
 }
 .foot__legal p {
   margin: 0;
 }
 
-/* giant wordmark: SVG, so it scales with the page and never wraps; the viewBox cuts the letters off */
+/*
+ * Giant wordmark: an SVG, so it scales with the page and never wraps. It fills the footer container
+ * edge to edge (the same left and right as the links above), and its viewBox holds the whole word,
+ * baseline included. One solid colour at full opacity, in a layer above the photo. The shade behind it
+ * darkens the glow only where the letters are, so the cream "i" never melts into the bright window.
+ */
+.foot__wordwrap {
+  position: relative;
+  z-index: 1;
+  margin-top: 56vw;
+  padding-bottom: 80px; /* clear of the round back-to-top button */
+}
+.foot__wordwrap::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -45% -50vw 0;
+  background: linear-gradient(
+    to top,
+    rgba(20, 17, 15, 0.62) 0%,
+    rgba(20, 17, 15, 0.38) 45%,
+    rgba(20, 17, 15, 0) 100%
+  );
+  pointer-events: none;
+}
 .foot__word {
   display: block;
-  width: 96vw;
+  width: 100%;
   height: auto;
-  margin: 56vw auto 0;
-  overflow: hidden;
+  overflow: visible;
   fill: var(--foot-text);
-  fill-opacity: 0.95;
+  fill-opacity: 1;
   font-family: var(--font-display);
-  font-size: 300px;
+  font-size: 142px;
   font-weight: 800;
   letter-spacing: -0.04em;
+  white-space: nowrap;
   transform: translateY(calc((1 - var(--foot-rise, 1)) * 24px));
 }
 
@@ -225,11 +306,10 @@
   .foot__legal {
     flex-direction: row;
     justify-content: space-between;
-    margin-top: clamp(56px, 8vw, 96px);
+    margin-top: clamp(32px, 4vw, 56px);
   }
-  .foot__word {
-    width: 84vw;
-    margin: auto auto 0;
+  .foot__wordwrap {
+    margin-top: clamp(24px, 4vw, 56px);
   }
 }
 @media (max-width: 699px) {

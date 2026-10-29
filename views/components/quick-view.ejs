@@ -1,0 +1,107 @@
+<%
+  /* The quick-view panel for one perfume (fetched by public/js/quickview.js as /perfume/<slug>?partial=1).
+     params: p (product), related (up to 4 other bottles from the same family or house; empty when there are fewer than 3).
+     Only what the data holds is shown: an empty part is left out, never a blank label. */
+  const label = fmt.productLabel(p);
+  const fam = fmt.cardColor(p);
+  const price = fmt.price(p.price);
+  const pageUrl = siteUrl + '/perfume/' + p.slug;
+  const groups = [['top', 'qv.top', 'Top', p.notes.top], ['heart', 'qv.heart', 'Heart', p.notes.heart], ['base', 'qv.base', 'Base', p.notes.base]].filter(function (g) { return g[3].length; });
+  const meters = [['qv.longevity', 'Longevity', p.longevity], ['qv.projection', 'Projection', p.projection]].filter(function (m) { return m[2] > 0; });
+  const meta = [p.concentration, p.size].filter(Boolean).join(' · ');
+  const familyChips = site.collections.filter(function (c) { return ['fresh', 'woody', 'oriental'].includes(c.key) && p.collections.includes(c.key); });
+  const tags = site.badges.filter(function (b) { return p.badges.includes(b.key) && b.key !== 'featured'; });
+  const waText = p.inStock
+    ? "Hello Yannick Scents, I'd like to order " + label + (p.price > 0 ? ' (' + price + ')' : '') + '. ' + pageUrl
+    : 'Hello Yannick Scents, could you tell me when ' + label + ' will be back in stock? ' + pageUrl;
+%>
+<article class="qv fam--<%= fam %>" data-qv data-slug="<%= p.slug %>" data-title="<%= p.name %>">
+  <div class="qv__photo">
+    <div class="qv__plate" data-qv-zoom>
+      <% if (p.cutW > 0) { %><img class="qv__img is-cut" src="/uploads/products/<%= p.image %>-cut.webp" width="<%= p.cutW %>" height="<%= p.cutH %>" alt="<%= p.imageAlt || label + ' bottle' %>" decoding="async" data-photo>
+      <% } else { %><%- include('photo', { p: p, cls: 'qv__img', variant: 'lg', eager: true, sizes: '(min-width: 768px) 440px, 90vw' }) %><% } %>
+      <div class="qv__tags">
+        <% if (!p.inStock) { %><span class="card__tag card__tag--soldout" <%- i('qv.soldOut') %>><%= t('qv.soldOut') %></span><% } %>
+        <% if (p.isSample) { %><span class="card__tag">Sample</span><% } %>
+        <% tags.forEach(function (b) { %><span class="card__tag card__tag--<%= b.key %>"><%= b.label %></span><% }) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="qv__body">
+    <p class="qv__brand"><%= p.brand %></p>
+    <h2 class="qv__name" id="qv-title" tabindex="-1"><%= p.name %></h2>
+    <% if (meta) { %><p class="qv__meta"><%= meta %></p><% } %>
+
+    <p class="qv__price<%= p.price > 0 ? '' : ' is-ask' %>"><% if (p.price > 0) { %><small><%= site.currency %></small><%= p.price.toLocaleString('en-US') %><% } else { %><span <%- i('qv.ask') %>><%= t('qv.ask') %></span><% } %></p>
+    <p class="qv__stock <%= p.inStock ? 'is-in' : 'is-out' %>"><span class="qv__dot" aria-hidden="true"></span><span <%- i(p.inStock ? 'qv.inStock' : 'qv.soldOut') %>><%= t(p.inStock ? 'qv.inStock' : 'qv.soldOut') %></span></p>
+
+    <% if (p.tagline) { %><p class="qv__tagline"<% if (p.taglineAm) { %> data-am="<%= p.taglineAm %>"<% } %>><%= p.tagline %></p><% } %>
+    <% if (p.description) { %><p class="qv__text"<% if (p.descriptionAm) { %> data-am="<%= p.descriptionAm %>"<% } %>><%= p.description %></p><% } %>
+
+    <% if (familyChips.length || groups.length) { %>
+    <section class="qv__scent" aria-labelledby="qv-scent-title">
+      <h3 class="qv__h" id="qv-scent-title" <%- i('qv.scent') %>><%= t('qv.scent') %></h3>
+      <% if (familyChips.length) { %><p class="qv__family"><% familyChips.forEach(function (c) { %><span class="qv__chip"><%= c.label %></span> <% }) %></p><% } %>
+      <% if (groups.length) { %>
+      <ul class="qv__notes">
+        <% groups.forEach(function (g) { %>
+        <li class="qv__note qv__note--<%= g[0] %>">
+          <span class="qv__note-label" <%- i(g[1]) %>><%= t(g[1]) %></span>
+          <span class="qv__note-list"><%= g[3].join(', ') %></span>
+        </li>
+        <% }) %>
+      </ul>
+      <% } %>
+      <% if (meters.length) { %>
+      <div class="meters">
+        <% meters.forEach(function (m) { %>
+        <div class="meter">
+          <span class="meter__label" <%- i(m[0]) %>><%= t(m[0]) %></span>
+          <span class="meter__bars" role="img" aria-label="<%= m[1] %>: <%= m[2] %> / 5">
+            <% for (let n = 1; n <= 5; n++) { %><span class="meter__bar<%= n <= m[2] ? ' is-on' : '' %>"></span><% } %>
+          </span>
+          <span class="qv__meter-val" aria-hidden="true"><%= m[2] %>/5</span>
+        </div>
+        <% }) %>
+      </div>
+      <% } %>
+    </section>
+    <% } %>
+
+    <div class="qv__tools">
+      <button type="button" class="qv__ghost" data-qv-copy><%- icon('copy') %><span <%- i('qv.copy') %>><%= t('qv.copy') %></span></button>
+      <button type="button" class="qv__ghost" data-qv-share hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg><span <%- i('qv.share') %>><%= t('qv.share') %></span></button>
+      <a class="qv__link" href="/perfume/<%= p.slug %>"><span <%- i('qv.full') %>><%= t('qv.full') %></span><%- icon('arrow') %></a>
+      <span class="sr-only" data-qv-copied <%- i('qv.copied') %>><%= t('qv.copied') %></span>
+    </div>
+    <p class="qv__trust" <%- i('qv.trust') %>><%= t('qv.trust') %></p>
+  </div>
+
+  <% if (related.length) { %>
+  <section class="qv__related" aria-labelledby="qv-rel-title">
+    <h3 class="qv__h" id="qv-rel-title" <%- i('qv.related') %>><%= t('qv.related') %></h3>
+    <ul class="qv__rel-list">
+      <% related.forEach(function (r) { %>
+      <li>
+        <a class="qv__rel" href="/perfume/<%= r.slug %>" data-open-product>
+          <span class="qv__rel-plate"><% if (r.cutW > 0) { %><img src="/uploads/products/<%= r.image %>-cut.webp" width="<%= r.cutW %>" height="<%= r.cutH %>" alt="" loading="lazy" decoding="async" data-photo><% } else { %><%- include('photo', { p: r, cls: 'qv__rel-img', alt: '', sizes: '160px' }) %><% } %></span>
+          <span class="qv__rel-brand"><%= r.brand %></span>
+          <span class="qv__rel-name"><%= r.name %></span>
+          <span class="qv__rel-price<%= r.price > 0 ? '' : ' is-ask' %>"><% if (r.price > 0) { %><%= fmt.price(r.price) %><% } else { %><span <%- i('qv.ask') %>><%= t('qv.ask') %></span><% } %></span>
+        </a>
+      </li>
+      <% }) %>
+    </ul>
+  </section>
+  <% } %>
+  <div class="qv__actions">
+    <div class="qv__actions-in">
+    <a class="btn btn--lg <%= p.inStock ? 'btn--primary' : 'btn--outline' %> qv__order" href="<%= fmt.waLink(waText) %>" target="_blank" rel="noopener noreferrer"
+       data-wa data-wa-num="<%= site.contact.whatsapp %>" data-wa-label="<%= label %>" data-wa-price="<%= p.price > 0 ? price : '' %>" data-wa-url="<%= pageUrl %>" data-wa-stock="<%= p.inStock ? 1 : 0 %>">
+      <%- icon('whatsapp') %><span <%- i(p.inStock ? 'qv.order' : 'qv.askBack') %>><%= t(p.inStock ? 'qv.order' : 'qv.askBack') %></span>
+    </a>
+    <a class="btn btn--lg btn--outline qv__call" href="tel:<%= site.contact.phone %>"><%- icon('phone') %><span <%- i('qv.call') %>><%= t('qv.call') %></span></a>
+    </div>
+  </div>
+</article>

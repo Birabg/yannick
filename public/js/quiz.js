@@ -1,9 +1,14 @@
+import { prefersReducedMotion } from './motion.js';
+
 /**
- * "Find my scent": three taps, then 1-3 bottles from the cards already on the page
- * and a one-tap WhatsApp message that lists them.
+ * "Find my scent": three steps, then one to three bottles drawn with the shop's own product card
+ * and a one-tap WhatsApp message that lists them. The questions come from site.quiz, the words around
+ * them from the i18n files (both languages are embedded, and the guide follows the language toggle).
  */
 const TOP_PICKS = 3;
 const BUDGET_SLACK = 0.25; // how far outside the chosen range still counts as "close"
+const SLIDE_MS = 300;
+const EASE = 'cubic-bezier(.22, .8, .2, 1)';
 
 const el = (tag, className, text) => {
   const node = document.createElement(tag);
@@ -12,20 +17,18 @@ const el = (tag, className, text) => {
   return node;
 };
 
+/** The bottles on the shelf, read from the collection grid (not from the cards this guide draws). */
 function readProducts() {
-  return [...document.querySelectorAll('[data-card]')].map((card) => ({
+  return [...document.querySelectorAll('#grid [data-card]')].map((card) => ({
+    node: card,
     slug: card.dataset.slug,
     label: card.dataset.label,
-    name: card.dataset.name,
-    brand: card.dataset.brand,
     priceText: card.dataset.priceText,
     price: Number(card.dataset.price),
     category: card.dataset.category,
     collections: card.dataset.collections.split(' '),
-    fam: card.dataset.fam,
     inStock: card.dataset.instock === '1',
     order: Number(card.dataset.order),
-    image: card.querySelector('.photo__img')?.currentSrc || card.querySelector('.photo__img')?.src,
   }));
 }
 
@@ -53,24 +56,13 @@ function score(p, answers, { useBudget, useVibe }) {
   return points;
 }
 
+/** Tries the exact answers first, then drops the budget, then the style, and says which it did. */
 function recommend(products, answers) {
   const attempts = [
     { useBudget: true, useVibe: true, note: '' },
-    {
-      useBudget: false,
-      useVibe: true,
-      note: 'Nothing in that budget, so these are the closest matches for the style.',
-    },
-    {
-      useBudget: true,
-      useVibe: false,
-      note: 'No exact style match, so these fit who it is for and your budget.',
-    },
-    {
-      useBudget: false,
-      useVibe: false,
-      note: 'No exact match, so these are what we have for who it is for.',
-    },
+    { useBudget: false, useVibe: true, note: 'quiz.noteBudget' },
+    { useBudget: true, useVibe: false, note: 'quiz.noteStyle' },
+    { useBudget: false, useVibe: false, note: 'quiz.noteWho' },
   ];
   for (const attempt of attempts) {
     const ranked = products
@@ -88,53 +80,89 @@ export function initQuiz() {
   const root = document.getElementById('quiz');
   const dataNode = document.getElementById('quiz-data');
   if (!root || !dataNode) return;
-  const { steps, whatsapp } = JSON.parse(dataNode.textContent);
+  const { steps, whatsapp, strings } = JSON.parse(dataNode.textContent);
   const products = readProducts();
   const panel = root.querySelector('[data-quiz-panel]');
   const answers = {};
   let step = 0;
+  let focusNext = false;
+
+  const lang = () => (document.documentElement.lang === 'am' ? 'am' : 'en');
+  const t = (key, vars = {}) =>
+    (strings[lang()][key] ?? strings.en[key] ?? key).replace(/\{(\w+)\}/g, (_, k) => vars[k]);
   const waLink = (text) => `https://wa.me/${whatsapp}?text=${encodeURIComponent(text)}`;
 
-  function progress(current) {
-    const wrap = el('div', 'quiz__progress');
-    const dots = el('span', 'quiz__dots');
-    steps.forEach((_, i) =>
-      dots.append(
-        el('span', `quiz__dot${i < current ? ' is-done' : i === current ? ' is-now' : ''}`)
-      )
-    );
-    wrap.append(dots, el('span', '', `${Math.min(current + 1, steps.length)} / ${steps.length}`));
+  /** Three amber segments and the words "Step 1 of 3" (the words carry the meaning, the colour only echoes it). */
+  function progress() {
+    const done = step >= steps.length;
+    const wrap = el('div', 'quiz__top');
+    const bar = el('div', 'quiz__bar');
+    bar.setAttribute('aria-hidden', 'true');
+    steps.forEach((_, i) => {
+      const seg = el('span', 'quiz__seg');
+      if (done || i < step) seg.classList.add('is-done');
+      else if (i === step) seg.classList.add('is-now');
+      seg.append(el('span', 'quiz__fill'));
+      bar.append(seg);
+    });
+    const label = done ? t('quiz.done') : t('quiz.stepOf', { n: step + 1, total: steps.length });
+    wrap.append(bar, el('p', 'quiz__step', label));
     return wrap;
   }
 
-  function renderQuestion() {
-    const { id, question, options } = steps[step];
-    const heading = el('h3', 'quiz__q', question);
+  /** One question: a radio group of big option cards. Arrow keys move, Enter or Space chooses. */
+  function question() {
+    const { id, question: text, options } = steps[step];
+    const slide = el('div', 'quiz__slide');
+    const heading = el('h3', 'quiz__q', text);
+    heading.id = `quiz-q-${id}`;
     heading.tabIndex = -1;
-    const list = el('div', `quiz__options quiz__options--${options.length}`);
-    options.forEach((option) => {
+    const group = el('div', `quiz__options quiz__options--${options.length}`);
+    group.setAttribute('role', 'radiogroup');
+    group.setAttribute('aria-labelledby', heading.id);
+    const chosen = answers[id];
+    const buttons = options.map((option, n) => {
       const button = el('button', 'quiz__opt');
       button.type = 'button';
-      button.append(el('span', 'quiz__opt-label', option.label));
-      if (option.sub) button.append(el('span', 'quiz__opt-sub', option.sub));
-      button.addEventListener('click', () => {
-        answers[id] = option;
-        step += 1;
-        render();
+      button.setAttribute('role', 'radio');
+      const picked = chosen ? chosen.key === option.key : false;
+      button.setAttribute('aria-checked', String(picked));
+      button.tabIndex = picked || (!chosen && n === 0) ? 0 : -1;
+      const body = el('span', 'quiz__opt-body');
+      body.append(el('span', 'quiz__opt-label', option.label));
+      if (option.sub) body.append(el('span', 'quiz__opt-sub', option.sub));
+      const arrow = el('span', 'quiz__opt-go');
+      arrow.setAttribute('aria-hidden', 'true');
+      arrow.innerHTML =
+        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+      const mark = el('span', 'quiz__mark');
+      mark.setAttribute('aria-hidden', 'true');
+      button.append(mark, body, arrow);
+      button.addEventListener('click', () => choose(id, option));
+      button.addEventListener('keydown', (event) => {
+        const move = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[event.key];
+        if (!move) return;
+        event.preventDefault();
+        const next = buttons[(n + move + buttons.length) % buttons.length];
+        buttons.forEach((b) => (b.tabIndex = b === next ? 0 : -1));
+        next.focus();
       });
-      list.append(button);
+      return button;
     });
-    panel.replaceChildren(progress(step), heading, list);
-    if (step > 0) {
-      const back = el('button', 'btn btn--paper btn--sm quiz__back', 'Back');
-      back.type = 'button';
-      back.addEventListener('click', () => {
-        step -= 1;
-        render();
-      });
-      panel.append(back);
-    }
-    return heading;
+    group.append(...buttons);
+    slide.append(heading, el('p', 'quiz__hint', t('quiz.hint')), group);
+    if (step > 0) slide.append(backButton());
+    return { slide, focus: heading };
+  }
+
+  function backButton() {
+    const back = el('button', 'quiz__back');
+    back.type = 'button';
+    back.innerHTML =
+      '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>';
+    back.append(el('span', '', t('quiz.back')));
+    back.addEventListener('click', () => go(step - 1, -1));
+    return back;
   }
 
   function orderMessage(picks) {
@@ -145,47 +173,33 @@ export function initQuiz() {
     return `Hello Yannick Scents, I took the Find My Scent quiz and these match me:\n${lines.join('\n')}\nCan you help me pick one and order?`;
   }
 
-  function renderResult() {
+  /** The result: up to three of the shop's own product cards (copies of the ones in the collection). */
+  function result() {
     const { picks, note } = recommend(products, answers);
     const summary = `${answers.who.label} · ${answers.vibe.label} · ${answers.budget.label}`;
-    const heading = el(
-      'h3',
-      'quiz__q',
-      picks.length ? 'Our suggestions for you.' : 'No match. Ask Yannick directly.'
-    );
+    const slide = el('div', 'quiz__slide');
+    const heading = el('h3', 'quiz__q', picks.length ? t('quiz.resultTitle') : t('quiz.noneTitle'));
     heading.tabIndex = -1;
-    const wrap = el('div', 'quiz__result');
-    wrap.append(el('p', 'quiz__note', summary));
-    if (note) wrap.append(el('p', 'quiz__note', note));
+    slide.append(heading, el('p', 'quiz__summary', summary));
+    if (note) slide.append(el('p', 'quiz__note', t(note)));
 
-    picks.forEach((p, i) => {
-      const row = el('div', `quiz__pick fam--${p.fam}`);
-      const photo = el('div', 'photo');
-      if (p.image) {
-        const img = el('img', 'photo__img');
-        img.src = p.image;
-        img.alt = '';
-        img.width = 480;
-        img.height = 600;
-        photo.append(img);
-      }
-      const text = el('div', 'quiz__pick-body');
-      text.append(el('span', 'quiz__pick-rank', `No. ${i + 1}`));
-      text.append(el('p', 'quiz__pick-name', p.name));
-      text.append(el('p', 'quiz__pick-meta', `${p.brand} · ${p.priceText}`));
-      const link = el('a', 'btn btn--outline btn--sm quiz__pick-link', 'Details');
-      link.href = `/perfume/${p.slug}`;
-      link.setAttribute('data-open-product', '');
-      text.append(link);
-      row.append(photo, text);
-      wrap.append(row);
-    });
+    if (picks.length) {
+      const list = el('ul', `quiz__picks quiz__picks--${picks.length}`);
+      picks.forEach((p, i) => {
+        const item = el('li', 'quiz__pick');
+        item.append(el('span', 'quiz__rank', `No. ${i + 1}`));
+        const card = p.node.querySelector('.card').cloneNode(true);
+        item.append(card);
+        list.append(item);
+      });
+      slide.append(list);
+    }
 
     const actions = el('div', 'quiz__actions');
     const order = el(
       'a',
       'btn btn--primary btn--lg',
-      picks.length ? 'Order on WhatsApp' : 'Ask on WhatsApp'
+      picks.length ? t('quiz.order') : t('quiz.ask')
     );
     order.href = waLink(
       picks.length
@@ -194,23 +208,71 @@ export function initQuiz() {
     );
     order.target = '_blank';
     order.rel = 'noopener';
-    const again = el('button', 'btn btn--paper btn--lg', 'Start over');
+    const again = el('button', 'btn btn--outline btn--lg', t('quiz.again'));
     again.type = 'button';
     again.addEventListener('click', () => {
-      step = 0;
-      render();
+      Object.keys(answers).forEach((key) => delete answers[key]);
+      go(0, -1);
     });
     actions.append(order, again);
-    wrap.append(actions);
-    panel.replaceChildren(progress(steps.length), heading, wrap);
-    return heading;
+    slide.append(actions, backButton());
+    return { slide, focus: heading };
   }
 
-  function render() {
-    const heading = step < steps.length ? renderQuestion() : renderResult();
-    if (step > 0 || panel.dataset.started) heading.focus({ preventScroll: true });
-    panel.dataset.started = 'true';
+  /** Draws the current step. `dir` is 1 going forward, -1 going back, 0 for no movement (language change). */
+  function render(dir) {
+    const old = panel.querySelector('.quiz__slide');
+    const { slide, focus } = step < steps.length ? question() : result();
+    const top = progress();
+    const stage = el('div', 'quiz__stage');
+    stage.append(slide);
+    const calm = prefersReducedMotion() || dir === 0;
+
+    if (!calm && old) {
+      // the old slide fades out over the new one, which slides in: transform and opacity only
+      const leaving = old.cloneNode(true);
+      leaving.classList.add('is-leaving');
+      leaving.setAttribute('aria-hidden', 'true');
+      leaving.querySelectorAll('button, a').forEach((n) => (n.tabIndex = -1));
+      stage.append(leaving);
+      leaving
+        .animate(
+          [
+            { opacity: 1, transform: 'translate3d(0, 0, 0)' },
+            { opacity: 0, transform: `translate3d(${-24 * dir}px, 0, 0)` },
+          ],
+          { duration: SLIDE_MS * 0.7, easing: EASE, fill: 'forwards' }
+        )
+        .finished.then(
+          () => leaving.remove(),
+          () => leaving.remove()
+        );
+      slide.animate(
+        [
+          { opacity: 0, transform: `translate3d(${24 * dir}px, 0, 0)` },
+          { opacity: 1, transform: 'translate3d(0, 0, 0)' },
+        ],
+        { duration: SLIDE_MS, easing: EASE }
+      );
+    }
+    panel.replaceChildren(top, stage);
+    if (focusNext && dir !== 0) focus.focus({ preventScroll: true });
   }
 
-  render();
+  function go(to, dir) {
+    step = to;
+    focusNext = true;
+    render(dir);
+  }
+  function choose(id, option) {
+    answers[id] = option;
+    go(step + 1, 1);
+  }
+
+  render(0);
+  // keep the panel's words in step with the language toggle
+  new MutationObserver(() => render(0)).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['lang'],
+  });
 }

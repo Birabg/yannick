@@ -36,10 +36,42 @@
   border-color: transparent;
 }
 
+.logo__img {
+  display: block;
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgb(255 190 90 / 0.45);
+}
+.logo__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12em;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.logo .logo__text em {
+  font-family: var(--font-body);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 0.78em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+@media (max-width: 767px) {
+  .logo__img {
+    width: 44px;
+    height: 44px;
+  }
+  .logo__text {
+    font-size: 1.05rem;
+  }
+}
 .logo {
   display: inline-flex;
-  align-items: baseline;
-  gap: 0.3em;
+  align-items: center;
+  gap: 0.6rem;
   color: inherit;
   font-size: clamp(1.4rem, 1.15rem + 1vw, 1.75rem);
   font-weight: 600;

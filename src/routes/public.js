@@ -1,12 +1,16 @@
 const express = require('express');
 const site = require('../../config/site');
 const { products, reviews } = require('../db');
-const { storeSchema, productSchema, imageUrl } = require('../lib/seo');
+const { storeSchema, organizationSchema, productSchema, imageUrl } = require('../lib/seo');
 const { price } = require('../lib/format');
 const { moodPicks } = require('../lib/mood');
 const { heroProducts: pickHero } = require('../lib/hero');
 const { getStory } = require('../lib/story');
 const familyLib = require('../lib/families');
+const houseLib = require('../lib/houses');
+const lovedLib = require('../lib/loved');
+const hoursLib = require('../lib/hours');
+const i18n = require('../../config/i18n');
 const { families: familyConfig } = require('../../config/families');
 
 const router = express.Router();
@@ -21,9 +25,8 @@ router.get('/', (req, res) => {
   const list = products.list();
   // Hero cards: featured bottles first, then the rest of the shelf. Photos are the product photos, so the admin controls them.
   const heroProducts = pickHero(list);
-  // The houses on the site are the brands actually on the shelf (the configured list is only a fallback).
-  const brands = [...new Set(list.map((p) => p.brand))];
-  const houses = brands.length ? brands : site.houses;
+  // The houses are the seed list plus every brand on the shelf, most perfumes first (config/houses.js).
+  const houses = houseLib.build(list);
   // Filter pills appear only for shelves that have at least one bottle.
   const shelves = site.collections.filter((c) => list.some((p) => p.collections.includes(c.key)));
   // Filter tabs: the configured order, with how many products each holds; empty sections are hidden.
@@ -33,11 +36,8 @@ router.get('/', (req, res) => {
       return { key, label: c.label, count: list.filter((p) => p.collections.includes(key)).length };
     })
     .filter((t) => t.count > 0);
-  // "Most Loved Right Now": only what the owner ticked Best Seller, in the owner's order. Nothing else fills it.
-  const loved = list
-    .filter((p) => p.badges.includes('bestseller'))
-    .sort((a, b) => (a.bestOrder || 999) - (b.bestOrder || 999))
-    .slice(0, 8);
+  // "Most Loved Right Now": the Best Sellers, topped up from featured and newest so the row is never nearly empty (src/lib/loved.js).
+  const loved = lovedLib.pick(list);
   const story = getStory();
   const reviewList = reviews.list();
   const quote = reviewList.find((r) => r.text) || null;
@@ -46,7 +46,18 @@ router.get('/', (req, res) => {
     moods: moodPicks(list),
     families: familyLib.available(list),
     heroProducts,
+    // "+N more" next to the round thumbnails: every bottle the hero does not already show (cards and thumbnails)
+    moreCount: Math.max(0, list.length - heroProducts.length),
     houses,
+    houseCss: houseLib.css(houses),
+    hours: hoursLib.view(),
+    // The guide is drawn in the browser, so it carries both languages' strings and follows the toggle.
+    quizStrings: Object.fromEntries(
+      Object.entries(i18n).map(([lang, all]) => [
+        lang,
+        Object.fromEntries(Object.entries(all).filter(([key]) => key.startsWith('quiz.'))),
+      ])
+    ),
     shelves,
     story,
     tabs,
@@ -58,7 +69,7 @@ router.get('/', (req, res) => {
       title: `${site.brand.name} | ${site.brand.tagline} - Original Perfumes in Addis Ababa`,
       description: site.brand.description,
       canonical: '/',
-      jsonLd: [storeSchema()],
+      jsonLd: [storeSchema(), organizationSchema()],
     },
   });
 });
@@ -81,11 +92,22 @@ router.get('/families/:key', (req, res, next) => {
 });
 router.get('/perfume/:slug', (req, res, next) => {
   const product = products.getBySlug(req.params.slug);
-  if (!product) return next();
+  // The quick view asks for a fragment; an unknown name is an empty answer, not an error.
+  if (!product) return req.query.partial === '1' ? res.status(204).end() : next();
 
   // The collection modal fetches this fragment so it shares one template with the full page.
   if (req.query.partial === '1') {
-    return res.render('components/product-detail', { p: product, sheet: true });
+    // "You may also like": bottles from the same scent family (fresh, woody, oriental) or the same house, the closest match first
+    const families = ['fresh', 'woody', 'oriental'];
+    const score = (x) =>
+      families.filter((key) => product.collections.includes(key) && x.collections.includes(key)).length +
+      (x.brand === product.brand ? 2 : 0);
+    const related = products
+      .list()
+      .filter((x) => x.id !== product.id && score(x) > 0)
+      .sort((a, b) => score(b) - score(a))
+      .slice(0, 4);
+    return res.render('components/quick-view', { p: product, related: related.length >= 3 ? related : [] });
   }
 
   const label = `${product.brand} ${product.name} ${product.size}`;

@@ -1,0 +1,10 @@
+<%# params: items (up to 5 products), more (how many bottles the hero does not show) %>
+<div class="hero__cards">
+  <div class="hero__cards-head">
+    <p class="hero__cards-title" aria-hidden="true" <%- i('hero.featured') %>><%= t('hero.featured') %></p>
+    <% if (more > 0) { %><a class="hero__more" href="#collection" aria-label="<%= t('hero.moreAria') %>" data-i18n-aria="hero.moreAria"><span>+<%= more %> <span <%- i('hero.more') %>><%= t('hero.more') %></span></span><%- icon('arrow') %></a><% } %>
+  </div>
+  <ul class="hero__row" data-cards aria-label="<%= t('hero.featured') %>" data-i18n-aria="hero.featured">
+    <% items.forEach(function (p, n) { %><%- include('hero-card', { p: p, slot: n + 1, eager: n < 2 }) %><% }) %>
+  </ul>
+</div>

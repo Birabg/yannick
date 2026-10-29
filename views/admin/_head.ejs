@@ -6,7 +6,9 @@
   <meta name="robots" content="noindex, nofollow">
   <%- include('../partials/theme-init') %>
   <title><%= seo.title %> | <%= site.brand.name %> Admin</title>
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/urbanist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="<%= asset('admin.css') %>">
 </head>
@@ -16,7 +18,7 @@
   <% if (locals.showNav !== false) { %>
   <header class="admin-bar tone--inv">
     <div class="admin-bar__inner">
-      <a class="admin-bar__brand" href="/admin"><span>Yannick <em>Scents</em> <small>Admin</small></span></a>
+      <a class="admin-bar__brand" href="/admin"><img class="admin-bar__logo" src="/img/brand/logo-96.webp" width="32" height="32" alt="Yannick Scents"><small>Admin</small></a>
       <nav class="admin-nav" aria-label="Admin">
         <a href="/admin" <%- active === 'products' ? 'aria-current="page"' : '' %>>Perfumes</a>
         <a href="/admin/images" <%- active === 'images' ? 'aria-current="page"' : '' %>>Images</a>

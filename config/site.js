@@ -46,6 +46,20 @@ module.exports = {
     { days: 'Monday - Saturday', time: '9:00 AM - 8:00 PM' },
     { days: 'Sunday', time: '10:00 AM - 6:00 PM' },
   ],
+  /** The same hours by weekday (0 = Sunday), in Africa/Addis_Ababa time. The hours table and the open / closed badge read this. */
+  schedule: {
+    timeZone: 'Africa/Addis_Ababa',
+    week: [1, 2, 3, 4, 5, 6, 0],
+    days: {
+      0: { open: '10:00', close: '18:00' },
+      1: { open: '09:00', close: '20:00' },
+      2: { open: '09:00', close: '20:00' },
+      3: { open: '09:00', close: '20:00' },
+      4: { open: '09:00', close: '20:00' },
+      5: { open: '09:00', close: '20:00' },
+      6: { open: '09:00', close: '20:00' },
+    },
+  },
   hoursNote: 'Message outside these hours and we reply the next morning.',
 
   currency: 'ETB',

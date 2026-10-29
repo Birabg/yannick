@@ -1,3 +1,4 @@
+import { loadLateFonts } from './fonts.js';
 const KEY = 'ys-lang';
 const cache = {};
 let current = 'en';
@@ -17,16 +18,20 @@ function rich(text) {
 }
 
 /** English markup is remembered on first translation so it can be restored exactly. */
-function translate(strings) {
-  translateProducts(document, true);
-  document.querySelectorAll('[data-i18n]').forEach((el) => {
+function translate(strings, root = document) {
+  translateProducts(root, true);
+  root.querySelectorAll('[data-i18n]').forEach((el) => {
     el.dataset.en ??= el.innerHTML;
     const text = strings[el.dataset.i18n];
     if (text !== undefined) el.innerHTML = rich(text);
   });
-  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+  root.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
     el.dataset.en ??= el.placeholder;
     el.placeholder = strings[el.dataset.i18nPlaceholder] ?? el.dataset.en;
+  });
+  root.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+    el.dataset.enAria ??= el.getAttribute('aria-label');
+    el.setAttribute('aria-label', strings[el.dataset.i18nAria] ?? el.dataset.enAria);
   });
 }
 
@@ -46,7 +51,7 @@ function translateProducts(root, toAmharic) {
 
 /** Called after new markup is inserted (the product panel), so it follows the chosen language. */
 export function refreshLanguage(root) {
-  if (current === 'am') translateProducts(root, true);
+  if (current === 'am') load('am').then((strings) => translate(strings, root));
 }
 
 function restoreEnglish() {
@@ -57,11 +62,16 @@ function restoreEnglish() {
   document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
     if (el.dataset.en !== undefined) el.placeholder = el.dataset.en;
   });
+  document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+    if (el.dataset.enAria !== undefined) el.setAttribute('aria-label', el.dataset.enAria);
+  });
 }
 
 async function setLanguage(buttons, lang) {
-  if (lang === 'am') translate(await load('am'));
-  else restoreEnglish();
+  if (lang === 'am') {
+    loadLateFonts();
+    translate(await load('am'));
+  } else restoreEnglish();
   current = lang;
   document.documentElement.lang = lang;
   buttons.forEach((button) =>

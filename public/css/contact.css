@@ -1,0 +1,421 @@
+/* ---------- VIII. Place your order: contact cards, how it works, hours and delivery ---------- */
+
+.order__bottle {
+  /* drifts a few pixels with the pointer (public/js/order.js sets --px and --py from -1 to 1) */
+  translate: calc(var(--px, 0) * 7px) calc(var(--py, 0) * 7px);
+  transition: translate 240ms var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .order__bottle {
+    transition: none;
+  }
+}
+
+/* ---------- the three ways to reach us ---------- */
+.cblocks {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0 var(--s-6);
+}
+@media (min-width: 760px) {
+  .cblocks {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.cblock {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: var(--s-4) var(--s-3) var(--s-3);
+  border: 1px solid var(--c-border);
+  border-radius: 24px;
+  background: var(--c-card);
+  transition: transform 220ms var(--ease-out);
+}
+@media (min-width: 760px) {
+  .cblock {
+    min-height: 220px;
+    padding: var(--s-4);
+  }
+}
+/* the glow is drawn once and only faded in */
+.cblock::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  box-shadow:
+    0 0 0 1.5px var(--amber),
+    0 14px 30px -10px rgb(255 161 0 / 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms var(--ease-out);
+}
+.cblock:hover,
+.cblock:focus-within {
+  transform: translate3d(0, -4px, 0);
+}
+.cblock:hover::before,
+.cblock:has(.cblock__link:focus-visible)::before {
+  opacity: 1;
+}
+.cblock__kicker {
+  color: var(--c-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.cblock__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.3rem + 0.7vw, 1.875rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+.cblock__link {
+  color: inherit;
+  text-decoration: none;
+}
+/* the whole card is the link */
+.cblock__link::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border-radius: inherit;
+}
+.cblock__link:focus-visible {
+  outline: none;
+}
+.cblock:has(.cblock__link:focus-visible) {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 3px;
+}
+.cblock__sub {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+.cblock__go {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--c-line);
+  border-radius: 50%;
+  color: var(--c-text);
+  transition:
+    background-color 220ms var(--ease-out),
+    border-color 220ms var(--ease-out),
+    color 220ms var(--ease-out);
+}
+.cblock:hover .cblock__go,
+.cblock:has(.cblock__link:focus-visible) .cblock__go {
+  border-color: var(--amber);
+  background: var(--amber);
+  color: var(--ink);
+}
+.cblock__copy {
+  position: relative;
+  z-index: 2; /* above the stretched link, so it copies instead of dialling */
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: 6px;
+  padding: 0 16px;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-text);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 200ms var(--ease),
+    border-color 200ms var(--ease);
+}
+.cblock__copy .icon {
+  width: 17px;
+  height: 17px;
+}
+.cblock__copy:hover,
+.cblock__copy.is-copied {
+  border-color: var(--amber);
+  background: var(--amber);
+  color: var(--ink);
+}
+.cblock__copy:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 3px;
+}
+
+/* ---------- how it works: the steps hang on one thin amber line that draws itself in ---------- */
+.order__steps-label {
+  margin-bottom: var(--s-3);
+}
+.steps {
+  position: relative;
+  display: grid;
+  gap: var(--s-4);
+  margin: 0 0 var(--s-6);
+  padding: 0;
+  list-style: none;
+}
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 5px;
+  width: 2px;
+  background: var(--amber);
+  transform-origin: top;
+}
+.js .steps::before {
+  transform: scaleY(0);
+}
+.js .steps.is-in::before {
+  transform: none;
+  transition: transform 1400ms var(--ease-out) 200ms;
+}
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: var(--s-2);
+  padding-left: 32px;
+}
+.step__dot {
+  position: absolute;
+  top: 6px;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 5px var(--c-bg);
+}
+.step__num {
+  color: var(--c-accent-text);
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.step__title {
+  margin: 0 0 var(--s-1);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.step p {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+@media (min-width: 800px) {
+  .steps {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-5);
+  }
+  .steps::before {
+    inset: 5px 0 auto 6px;
+    width: auto;
+    height: 2px;
+    transform-origin: left;
+  }
+  .js .steps::before {
+    transform: scaleX(0);
+  }
+  .step {
+    grid-template-columns: 1fr;
+    gap: var(--s-1);
+    padding: 36px 0 0;
+  }
+  .step__dot {
+    top: 0;
+  }
+  .step__num {
+    font-size: 2.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .js .steps::before {
+    transform: none;
+  }
+}
+
+/* ---------- hours and delivery: one two-column card ---------- */
+.hd {
+  display: grid;
+  border: 1px solid var(--c-border);
+  border-radius: 28px;
+  background: var(--c-card);
+  overflow: hidden;
+}
+.hd__col {
+  padding: var(--s-3);
+}
+.hd__delivery {
+  border-top: 1px solid var(--c-border);
+}
+@media (min-width: 800px) {
+  .hd {
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+  .hd__col {
+    padding: var(--s-4);
+  }
+  .hd__delivery {
+    border-top: 0;
+    border-left: 1px solid var(--c-border);
+  }
+}
+.hd__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px var(--s-2);
+  margin-bottom: var(--s-2);
+}
+.hd__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.hd__badge {
+  --hd-state: var(--c-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 14px;
+  border: 1px solid var(--hd-state);
+  border-radius: var(--r-pill);
+  color: var(--hd-state);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.hd__badge.is-open {
+  --hd-state: #17703c;
+}
+:root[data-theme='dark'] .hd__badge.is-open {
+  --hd-state: #5fd68d;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .hd__badge.is-open {
+    --hd-state: #5fd68d;
+  }
+}
+/* open is a filled dot, closed a hollow ring: the shape says it too, not only the colour */
+.hd__dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+.hd__badge.is-open .hd__dot {
+  background: currentColor;
+}
+.hd__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+.hd__table th,
+.hd__table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--c-border);
+  line-height: 1.4;
+}
+.hd__table tr:last-child th,
+.hd__table tr:last-child td {
+  border-bottom: 0;
+}
+.hd__table th {
+  font-weight: 500;
+  text-align: left;
+}
+.hd__table td {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+.hd__table tr.is-today {
+  background: var(--tab-active-tint);
+}
+.hd__table tr.is-today th,
+.hd__table tr.is-today td {
+  font-weight: 700;
+}
+.hd__table tr.is-today th {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+.hd__table tr.is-today td {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+.hd__today {
+  margin-left: 10px;
+  padding: 2px 9px;
+  border-radius: var(--r-pill);
+  background: var(--amber);
+  color: var(--ink);
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: 1px;
+}
+.hd__today[hidden] {
+  display: none;
+}
+.hd__note {
+  margin: var(--s-2) 0 0;
+  color: var(--c-muted);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+.hd__pin {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--s-2);
+  border-radius: 50%;
+  background: var(--amber);
+  color: var(--ink);
+}
+.hd__pin .icon {
+  width: 24px;
+  height: 24px;
+}
+.hd__text {
+  max-width: 34ch;
+  margin: var(--s-1) 0 0;
+  color: var(--c-text);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+:lang(am) .cblock__title,
+:lang(am) .hd__title,
+:lang(am) .step__title {
+  letter-spacing: 0;
+}

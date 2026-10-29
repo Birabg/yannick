@@ -1,0 +1,32 @@
+<%
+  /* params: hours (from src/lib/hours.js: rows, today, open). Rendered for "now" on the server and kept
+     current by public/js/hours.js, both in Africa/Addis_Ababa time, so nothing jumps when the script runs. */
+%>
+<div class="hd" data-hours data-tz="<%= hours.timeZone %>" data-rv>
+  <section class="hd__col hd__hours" id="hours" data-rv-item aria-labelledby="hours-title">
+    <div class="hd__head">
+      <h3 class="hd__title" id="hours-title" <%- i('hours.title') %>><%= t('hours.title') %></h3>
+      <p class="hd__badge<%= hours.open ? ' is-open' : '' %>" role="status" data-hours-badge>
+        <span class="hd__dot" aria-hidden="true"></span>
+        <span data-state="open" <%- i('hours.open') %><%= hours.open ? '' : ' hidden' %>><%= t('hours.open') %></span>
+        <span data-state="closed" <%- i('hours.closed') %><%= hours.open ? ' hidden' : '' %>><%= t('hours.closed') %></span>
+      </p>
+    </div>
+    <table class="hd__table">
+      <tbody>
+        <% hours.rows.forEach(function (r) { const today = r.dow === hours.today; %>
+        <tr<%= today ? ' class=is-today aria-current=date' : '' %> data-dow="<%= r.dow %>" data-open="<%= r.open %>" data-close="<%= r.close %>">
+          <th scope="row"><span <%- i('day.' + r.dow) %>><%= t('day.' + r.dow) %></span><span class="hd__today" <%- i('hours.today') %><%= today ? '' : ' hidden' %>><%= t('hours.today') %></span></th>
+          <td><%= r.time %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <p class="hd__note"><%= site.hoursNote %></p>
+  </section>
+  <section class="hd__col hd__delivery" id="delivery" data-rv-item aria-labelledby="delivery-title">
+    <span class="hd__pin" aria-hidden="true"><%- icon('pin') %></span>
+    <h3 class="hd__title" id="delivery-title" <%- i('delivery.title') %>><%= t('delivery.title') %></h3>
+    <p class="hd__text" <%- i('delivery.text') %>><%= t('delivery.text') %></p>
+  </section>
+</div>

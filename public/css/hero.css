@@ -1,5 +1,5 @@
-/* Hero: a clean paper page, one huge headline, and a row of notched colour cards, one bottle each.
-   The amber shader lives only inside the centre card (never behind text); a CSS gradient is its permanent fallback. */
+/* Hero: the first screen (copy, badge, five cards), the scent-family colours, the notch, the quote and the teaser.
+   Markup is in views/components/hero-*.ejs; public/js/hero.js adds the idle float and pauses it off-screen. */
 .defs {
   position: absolute;
   width: 0;
@@ -32,171 +32,195 @@
   --card-fg: var(--ink);
 }
 
+/* ---------- the first screen: copy on top, badge at the end of the button row, five bottle cards below, all on the header's grid ---------- */
 .hero {
   position: relative;
-  padding-top: calc(var(--header-h) + var(--s-3));
-  padding-bottom: var(--s-4);
   isolation: isolate;
-  background: var(--c-bg);
   color: var(--c-text);
 }
+.hero__main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2svh, 28px);
+  /* under 900px the fixed Call / WhatsApp bar covers the bottom of the screen */
+  min-height: calc(100svh - var(--bar-h) - env(safe-area-inset-bottom));
+  padding: calc(var(--header-h) + clamp(10px, 3svh, 36px)) 0 12px;
+}
+@media (min-width: 900px) {
+  .hero__main {
+    min-height: 100svh;
+  }
+}
 
-/* the dark glass behind the whole hero; the gradient is what shows until (or unless) the shader runs */
+/* background: warm base, one amber glow that rises from behind the cards toward the headline, vignette, still grain; nothing here moves.
+   The bottom edge fades out so the hero melts into the next section instead of ending on a line. */
 .hero__bg {
   position: absolute;
   inset: 0;
   z-index: -1;
-  overflow: hidden;
-  background: linear-gradient(160deg, var(--hero-bg-a) 0%, var(--hero-bg-b) 100%);
+  background-color: var(--hero-base);
+  background-image:
+    radial-gradient(70% 78% at 50% 92%, var(--hero-glow), transparent 72%),
+    radial-gradient(130% 95% at 50% 38%, transparent 52%, var(--hero-vig) 100%);
+  -webkit-mask-image: linear-gradient(#000 80%, transparent);
+  mask-image: linear-gradient(#000 80%, transparent);
   pointer-events: none;
 }
-.hero__bg .hero-shader__stage {
-  position: absolute;
-  inset: 0;
-}
-
-/* ---------- headline, badge, stack ---------- */
-.hero__head {
-  display: grid;
-  gap: var(--s-3);
-  justify-items: center;
-  margin-bottom: var(--s-5);
-  text-align: center;
-}
-.hero__title {
-  grid-row: 2;
-  font-size: var(--t-hero);
-  font-weight: 700;
-  letter-spacing: -0.055em;
-  line-height: 0.92;
-  font-variation-settings: 'opsz' 96;
-}
-.ln {
-  display: block;
-}
-.wm {
-  display: inline-block;
-  padding-bottom: 0.14em;
-  margin-bottom: -0.14em;
-  overflow: hidden;
-  vertical-align: top;
-}
-.w {
-  display: inline-block;
-  transform: translateY(108%);
-  animation: word-up 800ms var(--ease-out) forwards;
-  animation-delay: 150ms;
-}
-.ln--a .wm:nth-child(2) .w {
-  animation-delay: 230ms;
-}
-.ln--b .w {
-  animation-delay: 310ms;
-}
-.ln--c .wm:nth-child(1) .w {
-  animation-delay: 390ms;
-}
-.ln--c .wm:nth-child(2) .w {
-  animation-delay: 470ms;
-}
-@keyframes word-up {
-  to {
-    transform: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .w {
-    transform: none;
-    animation: none;
-  }
-}
-
-.spin {
-  position: relative;
-  display: grid;
-  place-items: center;
-  grid-row: 1;
-  width: 7.5rem;
-  height: 7.5rem;
-  color: var(--c-text);
-}
-.spin__ring {
+.hero__grain {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-}
-.spin__ring text {
-  fill: currentColor;
-  font-family: var(--font-body);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .spin__ring {
-    animation: spin 22s linear infinite;
-  }
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.spin__play {
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 50%;
-  background: var(--c-btn-bg);
-  color: var(--c-btn-fg);
-  transition: background-color var(--d-fast) var(--ease);
-}
-.spin__play svg {
-  width: 1.1rem;
-  height: 1.1rem;
-  margin-left: 2px;
-}
-.spin:hover .spin__play {
-  background: var(--amber);
-  color: var(--ink);
+  opacity: var(--hero-grain);
 }
 
-.stack {
-  display: flex;
-  grid-row: 3;
-  align-items: center;
+/* one grid: headline, buttons, trust line and badge are direct children of this container (phones: one column in that order) */
+.hero__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: start;
+  gap: clamp(14px, 2.4svh, 24px);
 }
-.stack__list {
-  display: flex;
+.hero__copy {
+  display: contents;
 }
-.stack__item {
-  width: 4rem;
-  height: 4rem;
-  margin-right: -1.1rem;
-  overflow: hidden;
-  border: 3px solid var(--c-bg);
+
+/* ---------- headline ---------- */
+.hero__title {
+  max-width: 9em; /* two balanced lines: "A Good Scent / Speaks First" */
+  font-size: clamp(2.4rem, min(1.2rem + 4.6vw, 10.5svh), 5.6rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+  font-variation-settings: 'opsz' 96;
+  text-wrap: balance;
+}
+/* the headline, buttons and trust line animate from CSS alone, so the text never waits for a script */
+.w {
+  display: inline-block;
+  animation: hero-word 650ms var(--ease-out) both;
+}
+.w:nth-child(2) {
+  animation-delay: 70ms;
+}
+.w:nth-child(3) {
+  animation-delay: 140ms;
+}
+.w:nth-child(4) {
+  animation-delay: 210ms;
+}
+.w:nth-child(5) {
+  animation-delay: 280ms;
+}
+.hero__title em {
+  position: relative;
+  display: inline-block; /* a block of its own, so the underline sizes to the word in either language */
+}
+/* the amber underline under the accent word, drawn left to right */
+.hero__title em::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0.02em;
+  height: 0.1em;
+  border-radius: 0.06em;
+  background: var(--amber);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: hero-draw 700ms var(--ease-out) 420ms forwards;
+}
+
+/* ---------- calls to action and the trust line ---------- */
+.hero__cta {
+  animation: hero-rise 650ms var(--ease-out) 260ms both;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+}
+.hero__cta .btn {
+  gap: 0.6rem;
+  min-height: 52px;
+}
+.hero__cta .btn svg {
+  flex: none;
+}
+@media (max-width: 479px) {
+  .hero__cta .btn {
+    flex: 1 1 100%;
+    padding-inline: 1.25rem;
+  }
+}
+.hero__trust {
+  animation: hero-rise 650ms var(--ease-out) 320ms both;
+  max-width: 36rem;
+  margin: 0;
+  color: var(--c-text);
+  font-size: 1.0625rem;
+  font-weight: 450;
+  line-height: 1.45;
+  opacity: 0.86;
+}
+
+/* ---------- the story badge ---------- */
+.badge {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
-  background: var(--card);
+  color: var(--c-text);
 }
-.stack__plus {
+.badge:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 4px;
+}
+.badge__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: hero-spin 22s linear infinite;
+}
+.badge__ring text {
+  fill: currentColor;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.badge__play {
   display: grid;
   place-items: center;
-  width: 4rem;
-  height: 4rem;
-  border: 1px solid var(--c-line);
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: var(--c-bg);
-  transition:
-    background-color var(--d-fast) var(--ease),
-    color var(--d-fast) var(--ease);
-}
-.stack__plus:hover {
-  border-color: var(--amber);
   background: var(--amber);
   color: var(--ink);
+  box-shadow: 0 6px 18px rgb(255 161 0 / 0.35);
+  transition: transform 300ms var(--ease-out);
+}
+.badge__play svg {
+  width: 20px;
+  height: 20px;
+  margin-left: 2px;
+}
+.badge:hover .badge__play,
+.badge:focus-visible .badge__play {
+  transform: scale(1.12);
+}
+@media (min-width: 640px) {
+  .badge {
+    width: 104px;
+    height: 104px;
+  }
+  .badge__play {
+    width: 52px;
+    height: 52px;
+  }
 }
 
 /* ---------- the notch: a rounded step cut from the top-right corner ---------- */
@@ -215,193 +239,401 @@
       calc(var(--nw) - var(--nr)) top calc(var(--nh) - var(--nr)) / var(--nr) var(--nr) no-repeat;
 }
 
-/* ---------- cards ---------- */
-.hero__wrap {
-  container-type: inline-size;
-}
-.hero__stage {
-  position: relative;
-}
+/* ---------- five cards: one row on the header's grid; a gentle stagger; brand and name always shown, price on hover, focus and touch ---------- */
 .hero__cards {
+  margin-top: auto;
+  padding-bottom: 20px;
+}
+.hero__cards-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-inline: var(--gutter);
+}
+.hero__cards-title {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.hero__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  border-radius: var(--r-pill);
+  color: var(--c-text);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.hero__more svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 300ms var(--ease-out);
+}
+.hero__more:hover svg,
+.hero__more:focus-visible svg {
+  transform: translate3d(4px, 0, 0);
+}
+.hero__more:hover,
+.hero__more:focus-visible {
+  color: var(--amber);
+}
+.hero__more:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 3px;
+}
+/* phones and tablets: a snap-scroll row, the next card peeks */
+.hero__row {
+  --gap: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gap);
+  padding: 6px var(--gutter) 10px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--gutter);
-  padding: var(--s-2) var(--gutter) var(--s-3);
   scrollbar-width: none;
+  list-style: none;
 }
-.hero__cards::-webkit-scrollbar {
+.hero__row::-webkit-scrollbar {
   display: none;
-}
-.hero__row {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  width: max-content;
 }
 .hc {
-  flex: none;
-  width: min(68vw, 17rem);
+  flex: 0 0 min(70%, 320px);
+  min-width: 0;
+  container-type: inline-size;
   scroll-snap-align: start;
-  animation: rise 800ms var(--ease-out) both;
+}
+@media (min-width: 640px) {
+  .hc {
+    flex-basis: calc((100% - 2 * var(--gap)) / 3.3);
+  }
+}
+.hc--1,
+.hc--3,
+.hc--5 {
+  margin-top: clamp(10px, 2.2vw, 36px);
+}
+
+.hc__float {
+  transform: translate3d(0, 0, 0);
+}
+.hc__link {
+  display: block;
+  border-radius: 22px;
+}
+.hc__link:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 5px;
+}
+.hc__plate {
+  --nw: clamp(34px, 27cqw, 62px);
+  --nh: clamp(30px, 23cqw, 52px);
+  --nr: clamp(10px, 7cqw, 16px);
+  --go: calc(var(--nh) - 6px);
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  border-radius: 22px;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+    translate3d(0, var(--lift, 0), 0);
+  transition: transform 350ms var(--ease-out);
+}
+.hc__link:hover .hc__plate,
+.hc__link:focus-visible .hc__plate {
+  --lift: -8px;
+}
+/* the shadow sits on an unmasked wrapper, so it follows the notched outline */
+.hc__shape {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(0 10px 14px var(--hc-shadow));
+}
+.hc__face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 22px;
+  background: var(--hc-bg);
+  -webkit-mask: var(--notch-mask);
+  mask: var(--notch-mask);
+}
+/* a soft pool of shadow under the bottle */
+.hc__face::before {
+  content: '';
+  position: absolute;
+  inset: auto 18% 8% 18%;
+  height: 6%;
+  background: radial-gradient(closest-side, rgb(45 28 6 / 0.38), transparent);
+}
+/* the bottle fills about 78% of the plate; lifted a little so an off-white studio backdrop turns to the card colour (multiply) instead of showing as a box */
+.hero .hc__img {
+  position: absolute;
+  top: 9%;
+  left: 8%;
+  width: 84%;
+  height: 78%;
+  padding: 0;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  filter: brightness(1.1);
+  transition: transform 500ms var(--ease-out);
+}
+.hc__link:hover .hc__img,
+.hc__link:focus-visible .hc__img {
+  transform: scale(1.04);
+}
+
+/* caption: brand (small caps) and name always; the price joins on hover and focus, and always on touch screens */
+.hc__cap {
+  display: grid;
+  gap: 2px;
+  padding: 12px 2px 0;
+  line-height: 1.25;
+}
+.hc__brand {
+  overflow: hidden;
+  color: var(--c-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.hc__name {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hc__price {
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  transform: translate3d(0, 4px, 0);
+  transition:
+    opacity 250ms var(--ease),
+    transform 350ms var(--ease-out);
+}
+.hc__link:hover .hc__price,
+.hc__link:focus-visible .hc__price {
+  opacity: 1;
+  transform: none;
+}
+.hero.is-tip-off .hc__price {
+  opacity: 0;
+}
+@media (hover: none) {
+  .hc__price,
+  .hero.is-tip-off .hc__price {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* the arrow sits in the notch: a ring at rest, solid amber and turned a little on hover */
+.hc__go {
+  position: absolute;
+  top: 3px;
+  right: calc((var(--nw) - var(--go)) / 2);
+  display: grid;
+  place-items: center;
+  width: var(--go);
+  height: var(--go);
+  border: 1.5px solid var(--amber);
+  border-radius: 50%;
+  color: var(--c-text);
+  transition:
+    transform 350ms var(--ease-out),
+    background-color var(--d-fast) var(--ease),
+    color var(--d-fast) var(--ease);
+}
+.hc__go svg {
+  width: 45%;
+  height: 45%;
+}
+.hc__link:hover .hc__go,
+.hc__link:focus-visible .hc__go {
+  background: var(--amber);
+  color: var(--ink);
+  transform: rotate(12deg);
+}
+
+/* ---------- the entrance: pure CSS, in one sequence (header, headline, buttons, badge, thumbnails, then the cards ~70ms apart; done in about 1.3s).
+   Only opacity and transform move, so nothing shifts. The first two photos are preloaded. ---------- */
+.badge {
+  animation: hero-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1) 380ms both;
+}
+.hc {
+  animation: hero-card 650ms var(--ease-out) both;
 }
 .hc--1 {
-  --h: 1.7;
-  animation-delay: 300ms;
+  animation-delay: 380ms;
 }
 .hc--2 {
-  --h: 1.55;
-  margin-top: 1.25rem;
-  animation-delay: 360ms;
+  animation-delay: 450ms;
 }
 .hc--3 {
-  --h: 1.42;
-  margin-top: 2.5rem;
-  animation-delay: 420ms;
+  animation-delay: 520ms;
 }
 .hc--4 {
-  --h: 1.55;
-  margin-top: 1.25rem;
-  animation-delay: 480ms;
+  animation-delay: 590ms;
 }
 .hc--5 {
-  --h: 1.7;
-  animation-delay: 540ms;
+  animation-delay: 660ms;
 }
-.hc--6,
-.hc--7 {
-  display: none;
+.site-header--over {
+  animation: hero-fade 500ms var(--ease) backwards;
 }
-@keyframes rise {
+@keyframes hero-fade {
   from {
     opacity: 0;
-    transform: translateY(36px);
+  }
+}
+@keyframes hero-word {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.4em, 0);
   }
   to {
     opacity: 1;
     transform: none;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .hc {
-    animation: none;
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
   }
-}
-.hc__link {
-  position: relative;
-  display: block;
-  aspect-ratio: 1 / var(--h, 1.6);
-  transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
-    translateY(var(--lift, 0));
-  transition: transform 350ms var(--ease-out);
-  will-change: transform;
-}
-.hc__link:hover,
-.hc__link:focus-visible {
-  --lift: -8px;
-}
-.hc__link:focus-visible {
-  outline: 2px solid var(--c-focus);
-  outline-offset: 6px;
-  border-radius: var(--r-card);
-}
-.hc__shape {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: var(--r-card);
-  background: var(--card);
-  -webkit-mask: var(--notch-mask);
-  mask: var(--notch-mask);
-}
-.hc__img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  mix-blend-mode: multiply;
-  transition: transform 500ms var(--ease-out);
-}
-.hc__link:hover .hc__img {
-  transform: scale(1.05);
-}
-.hc__glass {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(90% 60% at 20% 8%, var(--sun) 0%, rgb(255 218 0 / 0) 70%),
-    radial-gradient(80% 70% at 90% 40%, var(--gold) 0%, rgb(255 200 0 / 0) 70%),
-    linear-gradient(165deg, var(--gold) 0%, var(--amber) 100%);
-}
-.hc__label {
-  position: absolute;
-  inset: auto 12px 12px;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--s-1);
-  padding: 0.6rem 0.9rem;
-  border-radius: 18px;
-  background: var(--surface);
-  color: var(--text);
-  font-size: var(--t-small);
-  line-height: 1.25;
-  visibility: hidden;
-  opacity: 0;
-  transform: translateY(8px);
-  transition:
-    opacity 250ms var(--ease),
-    transform 350ms var(--ease-out),
-    visibility 0s 250ms;
-}
-.hc__label strong,
-.hc__label span {
-  /* same colour as the pill: lets contrast checkers see the real background behind the text */
-  background: var(--surface);
-}
-.hc__label strong {
-  font-weight: 600;
-}
-.hc__label span {
-  flex: none;
-  font-variant-numeric: tabular-nums;
-}
-.hc__link:hover .hc__label,
-.hc__link:focus-visible .hc__label {
-  visibility: visible;
-  opacity: 1;
-  transform: none;
-  transition-delay: 0s;
-}
-@media (hover: none) {
-  .hc__label {
-    visibility: visible;
+  to {
     opacity: 1;
     transform: none;
-    transition: none;
   }
 }
-.hc__go {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--c-btn-bg);
-  color: var(--c-btn-fg);
-  transition:
-    background-color var(--d-fast) var(--ease),
-    color var(--d-fast) var(--ease);
+@keyframes hero-card {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 36px, 0) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
-.hc__link:hover .hc__go,
-.hc__link:focus-visible .hc__go {
-  background: var(--amber);
-  color: var(--ink);
+@keyframes hero-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes hero-draw {
+  to {
+    transform: none;
+  }
+}
+@keyframes hero-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* shader: only inside the centre card and the order panel, behind a bottle photo, never behind text */
+/* idle float: starts after the entrance, each card on its own period and phase */
+@keyframes hc-float {
+  0%,
+  100% {
+    transform: translate3d(0, -6px, 0);
+  }
+  50% {
+    transform: translate3d(0, 6px, 0);
+  }
+}
+.hero.is-floating .hc__float {
+  animation: hc-float var(--fp, 7s) ease-in-out var(--fo, 0s) infinite;
+}
+.hc--1 {
+  --fp: 6.4s;
+  --fo: -1s;
+}
+.hc--2 {
+  --fp: 8.2s;
+  --fo: -4s;
+}
+.hc--3 {
+  --fp: 7s;
+  --fo: -2.4s;
+}
+.hc--4 {
+  --fp: 9s;
+  --fo: -6s;
+}
+.hc--5 {
+  --fp: 7.6s;
+  --fo: -3.2s;
+}
+/* off-screen or in a hidden tab: nothing keeps running */
+.hero.is-paused *,
+.hero.is-paused ::after {
+  animation-play-state: paused !important;
+}
+
+/* ---------- scroll cue (desktop) ---------- */
+.hero__cue {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  transform: translateX(-50%);
+  color: var(--c-muted);
+  font-size: 0.875rem;
+  transition: opacity 300ms var(--ease);
+}
+.hero__cue.is-gone {
+  opacity: 0;
+}
+.hero__cue-line {
+  position: relative;
+  display: block;
+  width: 2px;
+  height: 22px;
+  overflow: hidden;
+  border-radius: 1px;
+  background: var(--hero-ring);
+  opacity: 0.5;
+}
+.hero__cue-line::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 14px;
+  border-radius: 1px;
+  background: var(--amber);
+  animation: hero-cue 1.8s var(--ease-out) infinite;
+}
+@keyframes hero-cue {
+  from {
+    transform: translate3d(0, -14px, 0);
+  }
+  to {
+    transform: translate3d(0, 22px, 0);
+  }
+}
+
+/* shader: only inside the order panel, behind a bottle photo, never behind text */
 .hero-shader__stage {
   display: block;
   width: calc(100% / var(--k, 1));
@@ -418,60 +650,87 @@
   display: block;
 }
 
-.hero__cta {
-  display: flex;
-  justify-content: center;
-  margin-top: var(--s-2);
-}
-.hero__cta .btn {
-  gap: var(--s-2);
-}
-
-/* ---------- foot: a quote and a teaser ---------- */
+/* ---------- the band under the hero: the founder's quote and the "find your scent" card, between two thin lines ---------- */
 .hero__foot {
   display: grid;
   gap: var(--s-5);
-  margin-top: var(--s-6);
-  padding-top: var(--s-4);
-  border-top: 1px solid var(--c-border);
+  align-items: center;
+  margin-top: var(--s-5);
+  padding-block: clamp(4rem, 3rem + 3vw, 6rem);
+  border-block: 1px solid var(--c-border);
 }
 .quote {
-  position: relative;
   margin: 0;
-  padding-top: 3.4rem;
 }
 .quote__mark {
-  position: absolute;
-  top: -0.35rem;
-  left: -0.1rem;
+  display: block;
+  height: 2.4rem;
+  color: var(--amber);
   font-family: var(--font-display);
   font-size: 5.5rem;
   font-weight: 800;
-  line-height: 1;
-  color: var(--c-text);
+  line-height: 0.8;
 }
 .quote__text {
-  max-width: 30ch;
-  margin: 0 0 var(--s-2);
+  max-width: 28ch;
+  margin: 0;
+  color: var(--c-text);
   font-family: var(--font-display);
-  font-size: clamp(1.3rem, 1.1rem + 0.9vw, 1.75rem);
+  font-size: clamp(1.375rem, 1.05rem + 1.3vw, 1.875rem);
   font-weight: 500;
   letter-spacing: -0.02em;
-  line-height: 1.25;
+  line-height: 1.3;
+}
+.quote__cap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin-top: var(--s-3);
 }
 .quote__sign {
+  color: var(--c-text);
   font-family: var(--font-hand);
-  font-size: 2.1rem;
+  font-size: 2.5rem;
   font-weight: 600;
   line-height: 1;
   transform: rotate(-3deg);
   transform-origin: left;
+}
+.quote__role {
+  color: var(--c-muted);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.quote__role::before {
+  content: '— ';
 }
 .teaser {
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: var(--s-3);
   align-items: center;
+  min-height: 56px;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-card);
+  background: var(--c-surface);
+  transition:
+    transform 350ms var(--ease-out),
+    box-shadow var(--d-base) var(--ease),
+    border-color var(--d-fast) var(--ease);
+}
+.teaser:hover,
+.teaser:focus-visible {
+  border-color: var(--amber);
+  box-shadow: var(--float);
+  transform: translate3d(0, -4px, 0);
+}
+.teaser:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 4px;
 }
 .teaser__num {
   font-family: var(--font-display);
@@ -482,185 +741,166 @@
 }
 .teaser__label {
   display: block;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.3rem;
   color: var(--c-muted);
-  font-size: var(--t-small);
-  font-weight: 500;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 .teaser__line {
   display: block;
-  max-width: 22ch;
+  max-width: 24ch;
   font-family: var(--font-display);
-  font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.75rem);
+  font-size: clamp(1.125rem, 1rem + 0.7vw, 1.5rem);
   font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.12;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
 }
 .teaser__go {
   display: grid;
   place-items: center;
   width: 3.5rem;
   height: 3.5rem;
+  border: 2px solid var(--amber);
   border-radius: 50%;
-  background: var(--c-btn-bg);
-  color: var(--c-btn-fg);
+  color: var(--c-text);
   transition:
     background-color var(--d-fast) var(--ease),
-    color var(--d-fast) var(--ease);
+    color var(--d-fast) var(--ease),
+    transform 350ms var(--ease-out);
 }
-.teaser:hover .teaser__go {
+.teaser:hover .teaser__go,
+.teaser:focus-visible .teaser__go {
   background: var(--amber);
   color: var(--ink);
+  transform: rotate(-12deg);
 }
 
-/* ---------- tablet: three cards in view, rhythm kept ---------- */
-@media (min-width: 640px) {
-  .hc {
-    width: calc((min(100vw, 1024px) - 2 * var(--gutter) - 24px) / 3);
-  }
-  .hero__head {
-    margin-bottom: var(--s-6);
-  }
-  .ln--a,
-  .ln--b {
-    display: inline;
-  }
+/* ---------- tablet: the foot goes two-up ---------- */
+@media (min-width: 768px) {
   .hero__foot {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     gap: var(--s-6);
-    align-items: end;
   }
   .teaser {
     justify-self: end;
-    max-width: 30rem;
+    width: 100%;
+    max-width: 34rem;
   }
 }
 
-/* ---------- desktop: five cards, the middle one lower, two small ones tucked underneath ---------- */
+/* ---------- desktop: headline across about 60%, buttons left with the badge at the right edge, five equal columns of cards ---------- */
 @media (min-width: 1024px) {
-  .hero {
-    padding-top: calc(var(--header-h) + var(--s-5));
+  .hero__main {
+    padding-bottom: 28px;
   }
-  .hero__head {
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  .hero__top {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--s-6);
     align-items: center;
-    gap: var(--s-4);
-  }
-  .spin {
-    grid-row: 1;
-    grid-column: 1;
-    justify-self: end;
   }
   .hero__title {
-    grid-row: 1;
+    grid-column: 1 / -1;
+    max-width: 60%;
+    font-size: clamp(3.4rem, min(1.2rem + 5.2vw, 11.5svh), 7.2rem);
+  }
+  .hero__cta {
+    grid-column: 1;
+    grid-row: 2;
+    width: auto;
+  }
+  .hero__trust {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .badge {
     grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    margin-block: -26px; /* the row is as tall as the buttons, so the badge is centred on them */
   }
-  .stack {
-    grid-row: 1;
-    grid-column: 3;
-    justify-self: start;
+  .hc__plate {
+    aspect-ratio: 4 / 5;
   }
-  .hero__wrap {
+  .hero__cards {
     width: min(100% - 2 * var(--gutter), var(--container));
     margin-inline: auto;
   }
-  .hero__stage {
-    --cw: calc((100cqw - 64px) / 5);
-    padding-bottom: calc(var(--cw) * 0.4);
-  }
-  .hero__cards {
-    overflow: visible;
-    padding: 0;
+  .hero__cards-head {
+    padding-inline: 0;
   }
   .hero__row {
+    --gap: clamp(14px, 1.6vw, 28px);
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    width: auto;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    padding: 6px 0 10px;
+    overflow: visible;
   }
   .hc {
-    width: auto;
+    flex: none;
   }
-  .hc__link {
-    aspect-ratio: auto;
-    height: calc(var(--cw) * var(--h, 1.6));
+  .hero__cue {
+    display: flex;
   }
-  .hc--2 {
-    margin-top: calc(var(--cw) * 0.14);
-  }
-  .hc--3 {
-    margin-top: calc(var(--cw) * 0.3);
-  }
-  .hc--4 {
-    margin-top: calc(var(--cw) * 0.14);
-  }
-  .hc--1 {
-    --h: 1.7;
-  }
-  .hc--2,
-  .hc--4 {
-    --h: 1.56;
-  }
-  .hc--3 {
-    --h: 1.44;
-  }
-  .hc--6,
-  .hc--7 {
-    display: block;
-    grid-row: 2;
-    margin-top: 0;
-    --nw: 48px;
-    --nh: 40px;
-    --nr: 12px;
-  }
-  .hc--6 {
-    grid-column: 1;
-  }
-  .hc--7 {
-    grid-column: 5;
-  }
-  .hc--6 .hc__link,
-  .hc--7 .hc__link {
-    width: 72%;
-    height: calc(var(--cw) * 0.7);
-  }
-  .hc--7 .hc__link {
-    margin-left: auto;
-  }
-  .hc--6 .hc__go,
-  .hc--7 .hc__go {
-    width: 32px;
-    height: 32px;
-  }
-  .hc--6 .hc__label span,
-  .hc--7 .hc__label span {
-    display: none;
-  }
-  .hero__cta {
-    position: absolute;
-    left: 50%;
-    top: calc(var(--cw) * 1.74 + 20px);
-    margin: 0;
-    transform: translateX(-50%);
+  .hc__shape {
+    filter: drop-shadow(0 16px 20px var(--hc-shadow));
   }
   .hero__foot {
     margin-top: var(--s-5);
   }
 }
-@media (min-width: 1024px) and (max-width: 1100px) {
-  .spin {
-    width: 6rem;
-    height: 6rem;
+
+/* ---------- reduced motion: the final state straight away, nothing loops ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .badge,
+  .hc {
+    animation: none !important;
   }
-  .stack__item,
-  .stack__plus {
-    width: 3.25rem;
-    height: 3.25rem;
+  .w,
+  .hero__cta,
+  .hero__trust,
+  .hero__title em::after {
+    transform: none;
+    animation: none !important;
+  }
+  .badge__ring,
+  .hero__cue-line::after,
+  .hero.is-floating .hc__float,
+  .site-header--over {
+    animation: none;
+  }
+  .hc__plate,
+  .hc__img,
+  .hc__go,
+  .hc__price,
+  .hero__more svg,
+  .teaser,
+  .teaser__go,
+  .badge__play {
+    transition: none;
   }
 }
 
+/* Amharic: its own smaller scale, tight lines, no tracking (Noto Sans Ethiopic) */
 :lang(am) .hero__title {
-  font-size: clamp(2.4rem, 1.2rem + 4.6vw, 5.2rem);
+  max-width: 11em;
+  font-size: clamp(2rem, min(0.9rem + 3.6vw, 9svh), 4.6rem);
   letter-spacing: 0;
   line-height: 1.2;
+}
+@media (min-width: 1024px) {
+  :lang(am) .hero__title {
+    max-width: 66%;
+    font-size: clamp(2.8rem, min(0.9rem + 4.2vw, 11svh), 5.6rem);
+  }
+}
+:lang(am) .hero__trust,
+:lang(am) .hero__cue,
+:lang(am) .hero__cards-title,
+:lang(am) .hc__brand,
+:lang(am) .quote__role,
+:lang(am) .teaser__label {
+  letter-spacing: 0;
+  text-transform: none;
 }

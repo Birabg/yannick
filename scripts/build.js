@@ -20,7 +20,20 @@ esbuild
     format: 'iife',
     target: ['es2022', 'chrome100', 'safari15.4'],
     // Fonts and images are served as static files, not bundled.
-    external: ['/fonts/*', '/img/*'],
+    external: ['/fonts/*', '/img/*', './quickview.js'],
+    logLevel: 'info',
+  })
+  .catch(() => process.exit(1));
+
+// The quick-view panel: its own file, fetched the first time a bottle is hovered or clicked.
+esbuild
+  .build({
+    entryPoints: [path.join(pub, 'js/quickview.js')],
+    outdir: path.join(pub, 'dist/js'),
+    bundle: true,
+    minify: true,
+    format: 'esm',
+    target: ['es2022', 'chrome100', 'safari15.4'],
     logLevel: 'info',
   })
   .catch(() => process.exit(1));

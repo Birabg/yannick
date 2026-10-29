@@ -1,0 +1,202 @@
+/* ---------- II. Collection: heading and count, search and sort, filter chips, then the grid (card.css) ----------
+   Everything sits on the page's container: one left edge, one right edge. 8px rhythm: 96px (64px on phones) of
+   section padding, 32px under the heading, 16px between the rows of controls, 24px before the grid. */
+.collection {
+  padding-block: clamp(4rem, 3rem + 3vw, 6rem);
+}
+.coll__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 32px;
+  margin-bottom: 32px;
+}
+.coll__head .sec-head {
+  margin-bottom: 0;
+}
+.coll__count {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.35em;
+  margin: 0;
+  color: var(--c-muted);
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+.coll__count [data-count-n] {
+  color: var(--c-text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.coll__active {
+  color: var(--c-text);
+  font-weight: 600;
+}
+.coll__active::before {
+  content: '· ';
+  color: var(--c-muted);
+}
+
+.coll__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  margin-bottom: 16px;
+}
+.search {
+  position: relative;
+  flex: 1 1 280px;
+  max-width: 440px;
+  min-width: min(280px, 100%);
+}
+.search input,
+.sort select {
+  min-height: 48px;
+  font-size: 1rem;
+}
+.search input {
+  padding-inline: 3rem;
+}
+.search input::-webkit-search-cancel-button {
+  appearance: none;
+}
+.search__clear {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--c-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+.search__clear[hidden] {
+  display: none;
+}
+.search__clear:hover,
+.search__clear:focus-visible {
+  background: var(--c-surface);
+  color: var(--c-text);
+}
+.search__clear:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 1px;
+}
+.sort {
+  margin-left: auto;
+  font-size: 0.9375rem;
+}
+.sort select {
+  min-width: 220px;
+}
+
+/* the filter chips: 40px, readable, solid amber when chosen; a snap-scroll row with faded edges on phones */
+.filterbar {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 40;
+  margin-inline: calc(var(--gutter) * -1);
+  padding: 8px var(--gutter);
+  background: var(--c-bg);
+}
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-inline: calc(var(--gutter) * -1);
+  padding: 2px var(--gutter);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--gutter),
+    #000 calc(100% - var(--gutter)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--gutter),
+    #000 calc(100% - var(--gutter)),
+    transparent 100%
+  );
+}
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+.tab {
+  flex: none;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--tab-line);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  scroll-snap-align: center;
+  transition:
+    color 200ms var(--ease),
+    border-color 200ms var(--ease),
+    background-color 200ms var(--ease);
+}
+.tab__n {
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+.tab:hover {
+  border-color: var(--c-text);
+}
+.tab[aria-pressed='true'] {
+  border-color: var(--amber);
+  background: var(--amber);
+  color: var(--ink);
+}
+.tab[aria-pressed='true'] .tab__n {
+  color: var(--ink);
+}
+.tab:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
+}
+@media (min-width: 900px) {
+  .filterbar,
+  .tabs {
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+  .tabs {
+    flex-wrap: wrap;
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tab {
+    transition: none;
+  }
+}
+
+.coll__more {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+.coll__more[hidden] {
+  display: none;
+}

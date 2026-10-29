@@ -1,0 +1,19 @@
+/*
+ * Section reveal (public/js/rv.js): each [data-rv-item] fades in and rises 24px, one after another
+ * (70ms apart), once, when its [data-rv] block scrolls into view. Opacity and transform only.
+ * The script removes the attribute afterwards, so the element's own hover transitions take over.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-rv-item] {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+  }
+  .js [data-rv].is-in [data-rv-item] {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    transition:
+      opacity 600ms var(--ease-out),
+      transform 600ms var(--ease-out);
+    transition-delay: min(calc(var(--rv-i, 0) * 70ms), 490ms);
+  }
+}

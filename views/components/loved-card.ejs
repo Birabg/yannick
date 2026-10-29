@@ -1,0 +1,30 @@
+<%
+  /* params: p (product), one (the only card in the section: image beside the details), eager.
+     One link per card (the name, stretched over the whole card); the WhatsApp action is its own link above it. */
+  const label = fmt.productLabel(p);
+  const price = fmt.price(p.price);
+  const isBest = p.badges.includes('bestseller');
+%>
+<li class="lc<%= one ? ' lc--one' : '' %><%= p.inStock ? '' : ' is-soldout' %>" data-rv-item>
+  <div class="lc__card">
+    <div class="lc__plate">
+      <span class="lc__shape"><span class="lc__face">
+        <%- include('photo', { p: p, cls: 'lc__img', alt: '', eager: locals.eager, sizes: '(min-width: 1024px) 320px, 74vw' }) %>
+      </span></span>
+      <% if (isBest) { %><span class="lc__tag" <%- i('loved.best') %>><%= t('loved.best') %></span><% } %>
+      <span class="lc__go" aria-hidden="true"><%- icon('arrow-ur') %></span>
+      <% if (!one) { %><a class="lc__wa" href="<%= fmt.orderLink(p) %>" target="_blank" rel="noopener noreferrer">
+        <%- icon('whatsapp') %><span <%- i('hero.order') %>><%= t('hero.order') %></span><span class="sr-only">: <%= label %></span>
+      </a><% } %>
+    </div>
+    <div class="lc__body">
+      <p class="lc__brand"><%= p.brand %></p>
+      <h3 class="lc__name"><a class="lc__link" href="/perfume/<%= p.slug %>" data-open-product><%= p.name %><span class="sr-only">, <%= p.brand %>, <%= price %>, <span <%- i('hero.view') %>><%= t('hero.view') %></span></span></a></h3>
+      <% if (one && p.tagline) { %><p class="lc__tagline"><%= p.tagline %></p><% } %>
+      <p class="lc__price<%= p.price > 0 ? '' : ' is-ask' %>" aria-hidden="true"><%= price %></p>
+      <% if (one) { %><a class="lc__wa lc__wa--solid" href="<%= fmt.orderLink(p) %>" target="_blank" rel="noopener noreferrer">
+        <%- icon('whatsapp') %><span <%- i('hero.order') %>><%= t('hero.order') %></span><span class="sr-only">: <%= label %></span>
+      </a><% } %>
+    </div>
+  </div>
+</li>

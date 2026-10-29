@@ -1,8 +1,13 @@
-<dialog class="sheet" id="sheet" aria-label="Perfume details">
+<%# The quick-view dialog: a centred modal on desktop, a bottom sheet on phones. Filled by public/js/quickview.js. %>
+<dialog class="sheet" id="sheet" aria-label="Perfume details" data-i18n-aria="qv.title">
   <div class="sheet__bar">
     <span class="sheet__grab" aria-hidden="true"></span>
-    <span class="sheet__title">Perfume details</span>
-    <button type="button" class="icon-btn" data-sheet-close aria-label="Close details"><%- icon('close') %></button>
+    <div class="sheet__nav" data-qv-nav hidden>
+      <button type="button" class="icon-btn" data-qv-prev aria-label="Previous perfume" data-i18n-aria="qv.prev"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <span class="sheet__count" data-qv-count></span>
+      <button type="button" class="icon-btn" data-qv-next aria-label="Next perfume" data-i18n-aria="qv.next"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+    <button type="button" class="icon-btn sheet__close" data-sheet-close aria-label="Close details" data-i18n-aria="qv.close"><%- icon('close') %></button>
   </div>
   <div class="sheet__scroll">
     <div id="sheet-body"></div>

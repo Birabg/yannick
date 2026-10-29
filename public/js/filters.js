@@ -16,22 +16,53 @@ export function initFilters() {
   const known = (document.querySelector('[data-filter-keys]')?.dataset.filterKeys ?? '').split(' ');
   const search = document.getElementById('search');
   const sort = document.getElementById('sort');
-  const count = document.querySelector('[data-count-label]');
+  const countN = document.querySelector('[data-count-n]');
+  const countOne = document.querySelector('[data-count-one]');
+  const countMany = document.querySelector('[data-count-many]');
+  const countActive = document.querySelector('[data-count-active]');
+  const clearSearch = document.querySelector('[data-search-clear]');
+  const moreWrap = document.querySelector('[data-more-wrap]');
+  const PAGE = 8; // with more than 12 bottles, show the first 8 and a "Show more" button
+  const paged = cards.length > 12;
   const empty = document.querySelector('[data-empty]');
   const emptyTitle = document.querySelector('[data-empty-title]');
   const emptyText = document.querySelector('[data-empty-text]');
-  const state = { filter: 'all', query: '', sort: 'featured' };
+  const state = { filter: 'all', query: '', sort: 'featured', brand: '', all: false };
+
+  // The houses: ?brand=dior shows one house's bottles. The slug rule is the same as src/lib/houses.js.
+  const slug = (name) =>
+    name
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  const brands = new Map(cards.map((card) => [slug(card.dataset.brand), card.dataset.brand]));
+  const brandBar = document.querySelector('[data-brandbar]');
+  const brandFromUrl = () => {
+    const wanted = (new URLSearchParams(location.search).get('brand') ?? '').toLowerCase();
+    return brands.has(wanted) ? wanted : '';
+  };
+  function syncBrandBar() {
+    if (!brandBar) return;
+    brandBar.hidden = !state.brand;
+    brandBar.querySelector('[data-brand-name]').textContent = brands.get(state.brand) ?? '';
+  }
 
   const isVisible = (card) => !card.hidden;
+  let matches = [];
 
   function apply() {
     const query = state.query.trim().toLowerCase();
-    cards.forEach((card) => {
+    const sorted = [...cards].sort(SORTERS[state.sort]);
+    matches = sorted.filter((card) => {
       const inFilter =
         state.filter === 'all' || card.dataset.collections.split(' ').includes(state.filter);
-      card.hidden = !(inFilter && (!query || card.dataset.search.includes(query)));
+      const inBrand = !state.brand || slug(card.dataset.brand) === state.brand;
+      return inFilter && inBrand && (!query || card.dataset.search.includes(query));
     });
-    [...cards].sort(SORTERS[state.sort]).forEach((card) => grid.append(card));
+    const shown = new Set(paged && !state.all ? matches.slice(0, PAGE) : matches);
+    cards.forEach((card) => (card.hidden = !shown.has(card)));
+    sorted.forEach((card) => grid.append(card));
   }
 
   /** FLIP: measure, change the DOM, then animate each card from its old spot (transform/opacity only). */
@@ -68,8 +99,16 @@ export function initFilters() {
       });
     }
 
-    const n = visible.length;
-    count.textContent = `${n} ${n === 1 ? 'perfume' : 'perfumes'}`;
+    const n = matches.length;
+    countN.textContent = n;
+    countOne.hidden = n !== 1;
+    countMany.hidden = n === 1;
+    const activeChip = state.filter === 'all' ? null : chipFor(state.filter);
+    const activeName = state.brand ? (brands.get(state.brand) ?? '') : (activeChip?.firstElementChild.textContent ?? '');
+    countActive.hidden = !activeName;
+    countActive.textContent = activeName;
+    if (moreWrap) moreWrap.hidden = !(paged && !state.all && matches.length > PAGE);
+    clearSearch.hidden = state.query === '';
     empty.hidden = n > 0;
     grid.hidden = n === 0;
     if (n === 0) {
@@ -117,6 +156,45 @@ export function initFilters() {
     render();
   }
 
+  /** Show one house's bottles ('' shows every house). Picking a house resets the section tab to All. */
+  function chooseBrand(brand, { push = true } = {}) {
+    state.brand = brand;
+    if (brand && state.filter !== 'all') {
+      state.filter = 'all';
+      const all = chipFor('all');
+      if (all) press(all, { reveal: false });
+    }
+    syncBrandBar();
+    if (push) {
+      const url = new URL(location.href);
+      if (brand) {
+        url.searchParams.set('brand', brand);
+        url.searchParams.delete('filter');
+      } else url.searchParams.delete('brand');
+      if (url.href !== location.href) history.pushState({ brand }, '', url);
+    }
+    render();
+  }
+
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('[data-brand-link]');
+    if (
+      !link ||
+      event.defaultPrevented ||
+      event.button ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey
+    )
+      return;
+    event.preventDefault();
+    chooseBrand(link.dataset.brandLink);
+    document
+      .getElementById('collection')
+      .scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+  });
+  document.querySelector('[data-brand-clear]')?.addEventListener('click', () => chooseBrand(''));
+
   chips.forEach((chip) => chip.addEventListener('click', () => choose(chip.dataset.filter)));
 
   // Arrow keys move between the tabs; Home and End jump to the ends. Enter or Space picks one.
@@ -141,10 +219,24 @@ export function initFilters() {
     });
   });
 
-  window.addEventListener('popstate', () => choose(fromUrl(), { push: false }));
+  window.addEventListener('popstate', () => {
+    state.brand = brandFromUrl();
+    syncBrandBar();
+    choose(fromUrl(), { push: false });
+  });
 
   search.addEventListener('input', () => {
     state.query = search.value;
+    render();
+  });
+  clearSearch.addEventListener('click', () => {
+    search.value = '';
+    state.query = '';
+    render();
+    search.focus();
+  });
+  document.querySelector('[data-more]')?.addEventListener('click', () => {
+    state.all = true;
     render();
   });
   sort.addEventListener('change', () => {
@@ -155,11 +247,24 @@ export function initFilters() {
     button.addEventListener('click', () => {
       state.query = '';
       search.value = '';
+      if (state.brand) {
+        state.brand = '';
+        syncBrandBar();
+        const url = new URL(location.href);
+        url.searchParams.delete('brand');
+        history.replaceState(history.state, '', url);
+      }
       choose('all');
     })
   );
 
   // Arrive on a shared filtered link: apply it without adding a history entry.
+  const initialBrand = brandFromUrl();
+  if (initialBrand) {
+    state.brand = initialBrand;
+    syncBrandBar();
+    render();
+  }
   const initial = fromUrl();
   if (initial !== 'all') {
     state.filter = initial;
@@ -169,5 +274,7 @@ export function initFilters() {
     apply();
     render();
     if (chip) requestAnimationFrame(() => press(chip));
+  } else if (paged && !initialBrand) {
+    render(); // a long shelf starts with its first page
   }
 }
