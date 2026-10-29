@@ -128,4 +128,9 @@ const am = {
   'footer.built': 'የሠራው',
 };
 
+// Scent family copy lives in config/families.js; merge it so the toggle and the server share one source.
+const familyCopy = require('./families');
+Object.assign(en, familyCopy.strings('en'));
+Object.assign(am, familyCopy.strings('am'));
+
 module.exports = { en, am };

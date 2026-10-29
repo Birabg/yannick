@@ -1,0 +1,32 @@
+<%
+  /* params: families (from src/lib/families.js, only those with bottles), num (section number) */
+%>
+<section class="section tone--bg" id="families" aria-labelledby="families-title">
+  <div class="container">
+    <%- include('section-head', { key: 'families', titleId: 'families-title', num: num, lead: true }) %>
+    <div class="sf-row" data-sf data-count="<%= families.length %>">
+      <% families.forEach(function (f, n) { %>
+      <% const on = n === 0; %>
+      <article class="sf sf--<%= f.key %><%= on ? ' is-active' : '' %>" data-sf-panel data-key="<%= f.key %>">
+        <div class="sf__media" aria-hidden="true">
+          <%- include('family-media', { cover: f.cover, eager: n < 2 }) %>
+        </div>
+        <span class="sf__shade" aria-hidden="true"></span>
+        <button class="sf__tab" type="button" id="sf-tab-<%= f.key %>" aria-expanded="<%= on %>" aria-controls="sf-body-<%= f.key %>" data-sf-tab>
+          <span class="sf__num" aria-hidden="true"><%= String(n + 1).padStart(2, '0') %></span>
+          <span class="sf__label" <%- i('family.' + f.key + '.title') %>><%= t('family.' + f.key + '.title') %></span>
+        </button>
+        <div class="sf__inner" id="sf-body-<%= f.key %>" role="region" aria-labelledby="sf-tab-<%= f.key %>"<%= on ? '' : ' inert' %>>
+          <div class="sf__copy">
+            <h3 class="sf__title" <%- i('family.' + f.key + '.title') %>><%= t('family.' + f.key + '.title') %></h3>
+            <p class="sf__text" <%- i('family.' + f.key + '.text') %>><%= t('family.' + f.key + '.text') %></p>
+          </div>
+          <a class="sf__go" href="/families/<%= f.key %>" aria-label="<%= t('family.explore') %>: <%= t('family.' + f.key + '.title') %>">
+            <span <%- i('family.explore') %>><%= t('family.explore') %></span>
+          </a>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>

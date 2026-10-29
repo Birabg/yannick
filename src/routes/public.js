@@ -6,6 +6,8 @@ const { price } = require('../lib/format');
 const { moodPicks } = require('../lib/mood');
 const { heroProducts: pickHero } = require('../lib/hero');
 const { getStory } = require('../lib/story');
+const familyLib = require('../lib/families');
+const { families: familyConfig } = require('../../config/families');
 
 const router = express.Router();
 
@@ -42,6 +44,7 @@ router.get('/', (req, res) => {
   res.render('home', {
     products: list,
     moods: moodPicks(list),
+    families: familyLib.available(list),
     heroProducts,
     houses,
     shelves,
@@ -60,6 +63,22 @@ router.get('/', (req, res) => {
   });
 });
 
+
+router.get('/families/:key', (req, res, next) => {
+  const family = familyLib.find(products.list(), req.params.key);
+  if (!family) return next();
+  const copy = familyConfig.find((f) => f.key === family.key).en;
+  return res.render('family', {
+    family,
+    copy,
+    seo: {
+      title: `${copy.title} perfumes | ${site.brand.name}`,
+      description: `${copy.sub}. ${copy.text}`.slice(0, 155),
+      canonical: `/families/${family.key}`,
+      image: family.cover ? imageUrl(family.cover) : undefined,
+    },
+  });
+});
 router.get('/perfume/:slug', (req, res, next) => {
   const product = products.getBySlug(req.params.slug);
   if (!product) return next();

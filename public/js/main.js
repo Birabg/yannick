@@ -10,10 +10,12 @@ import { initCards, initMood } from './cards.js';
 import { initTheme } from './theme.js';
 import { initPhotos } from './photo.js';
 import { initStory } from './story.js';
+import { initFamilies } from './families.js';
 
 initTheme();
 initPhotos();
 initStory();
+initFamilies();
 initNav();
 initReveal();
 initFooter();

@@ -1,0 +1,43 @@
+<%- include('partials/head') %>
+<main id="main" class="tone--bg">
+  <header class="fh sf--<%= family.key %>">
+    <div class="fh__media" aria-hidden="true">
+      <%- include('components/family-media', { cover: family.cover, eager: true, sizes: '100vw' }) %>
+    </div>
+    <span class="fh__shade" aria-hidden="true"></span>
+    <div class="container fh__body">
+      <a class="fh__back ulink" href="/?family=<%= family.key %>#families" <%- i('family.back') %>><%= t('family.back') %></a>
+      <svg class="fh__glyph" viewBox="0 0 64 24" width="64" height="24" aria-hidden="true" focusable="false"><path d="M2 20 L14 20 L14 12 L26 12 L26 4 L38 4 L38 12 L50 12 L50 20 L62 20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <h1 class="fh__title" <%- i('family.' + family.key + '.title') %>><%= t('family.' + family.key + '.title') %></h1>
+      <p class="fh__sub" <%- i('family.' + family.key + '.sub') %>><%= t('family.' + family.key + '.sub') %></p>
+      <p class="fh__text" <%- i('family.' + family.key + '.text') %>><%= t('family.' + family.key + '.text') %></p>
+    </div>
+  </header>
+  <div class="fband sf--<%= family.key %>" aria-hidden="true"><span class="fband__shape"></span></div>
+
+  <div class="container section fbody">
+    <% const hasNotes = family.notes.top.length || family.notes.heart.length || family.notes.base.length; %>
+    <% if (hasNotes) { %>
+    <section class="fnotes" aria-labelledby="fnotes-title">
+      <h2 class="fnotes__title" id="fnotes-title" <%- i('family.notes') %>><%= t('family.notes') %></h2>
+      <dl class="fnotes__list">
+        <% [['top', family.notes.top], ['heart', family.notes.heart], ['base', family.notes.base]].forEach(function (g) { if (!g[1].length) return; %>
+        <div class="fnotes__row"><dt <%- i('family.' + g[0]) %>><%= t('family.' + g[0]) %></dt><dd><%= g[1].join(' · ') %></dd></div>
+        <% }) %>
+      </dl>
+    </section>
+    <% } %>
+
+    <h2 class="fbody__title" <%- i('family.bottles') %>><%= t('family.bottles') %></h2>
+    <% if (family.products.length) { %>
+    <ul class="grid" data-grid>
+      <% family.products.forEach(function (p, n) { %><%- include('components/product-card', { p: p, order: n }) %><% }) %>
+    </ul>
+    <% } else { %>
+    <p class="fbody__empty"><span <%- i('family.empty') %>><%= t('family.empty') %></span> <a class="ulink" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener">WhatsApp</a></p>
+    <% } %>
+  </div>
+</main>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<%- include('components/sheet') %>
+<%- include('partials/foot') %>

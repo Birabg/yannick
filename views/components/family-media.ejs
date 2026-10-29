@@ -1,0 +1,11 @@
+<%
+  /* params: cover (product or null), eager (bool), sizes. A blurred copy of the photo tints the panel; the bottle sits on top (cut-out when there is one). */
+  const c = locals.cover;
+%><% if (c) { %>
+<img class="sf__tint" src="<%= photo.photoUrl(c, 'sm') %>" width="<%= photo.photoSize(c, 'sm').width %>" height="<%= photo.photoSize(c, 'sm').height %>" alt="" <%- locals.eager ? '' : 'loading="lazy" ' %>decoding="async">
+<% if (c.cutW > 0) { %>
+<img class="sf__bottle is-cut" src="/uploads/products/<%= c.image %>-cut.webp" width="<%= c.cutW %>" height="<%= c.cutH %>" alt="" <%- locals.eager ? 'fetchpriority="high" ' : 'loading="lazy" ' %>decoding="async">
+<% } else { %>
+<img class="sf__bottle" src="<%= photo.photoUrl(c, 'lg') %>" <% if (photo.widthsOf(c).length > 1) { %>srcset="<%= photo.srcset(c) %>" sizes="<%= locals.sizes || '(min-width: 900px) 600px, 100vw' %>" <% } %>width="<%= photo.photoSize(c, 'lg').width %>" height="<%= photo.photoSize(c, 'lg').height %>" alt="" <%- locals.eager ? '' : 'loading="lazy" ' %>decoding="async">
+<% } %>
+<% } %>

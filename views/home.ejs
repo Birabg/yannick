@@ -150,6 +150,9 @@
     </div>
   </section>
 
+  <!-- Scent families: expanding panels -->
+  <% if (families.length) { %><%- include('components/scent-accordion', { families: families, num: num() }) %><% } %>
+
   <!-- Notes: how a scent unfolds -->
   <section class="section tone--bg" id="notes" aria-labelledby="notes-title">
     <div class="container">
