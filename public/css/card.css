@@ -279,10 +279,26 @@
   outline: 3px solid var(--c-focus);
   outline-offset: 2px;
 }
+/* touch screens have no hover: a price-less card keeps a small round order button in the plate's corner (the label stays for screen readers) */
 @media (hover: none) {
   .card__order.is-ask {
+    inset: auto 8px 8px auto;
+    width: 44px;
+    padding: 0;
     opacity: 1;
     transform: none;
+  }
+  .card__order.is-ask > span:not(.sr-only) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+@media (hover: hover) {
+  .card__order {
+    max-width: calc(100% - 20px);
   }
 }
 
