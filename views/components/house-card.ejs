@@ -1,0 +1,14 @@
+<%
+  /* params: house ({ name, slug, theme, count }), decoy (bool: a repeat of the real card; hidden from screen readers and the tab order) */
+  const linked = house.count > 0;
+  const hide = locals.decoy === true;
+%><li class="hm__item"<%- hide ? ' aria-hidden="true"' : '' %>>
+  <% if (linked) { %><a class="house house--<%= house.theme %>" href="/?brand=<%= house.slug %>#collection" data-brand-link="<%= house.slug %>"<%- hide ? ' tabindex="-1"' : '' %>><% } else { %><div class="house house--<%= house.theme %> is-soon"><% } %>
+    <span class="house__name"><%= house.name %></span>
+    <span class="house__meta">
+      <% if (linked) { %><span class="house__n"><%= house.count %></span> <% const k = house.count === 1 ? 'houses.fragrance' : 'houses.fragrances'; %><span <%- i(k) %>><%= t(k) %></span>
+      <% } else { %><span <%- i('houses.soon') %>><%= t('houses.soon') %></span><% } %>
+    </span>
+    <% if (linked) { %><span class="house__go" aria-hidden="true"><%- icon('arrow') %></span><% } %>
+  <% if (linked) { %></a><% } else { %></div><% } %>
+</li>

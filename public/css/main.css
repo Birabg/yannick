@@ -8,5 +8,14 @@
 @import './components.css';
 @import './sections.css';
 @import './system.css';
+@import './loved.css';
+@import './card.css';
+@import './collection.css';
+@import './quickview.css';
 @import './families.css';
+@import './houses.css';
+@import './faq.css';
+@import './contact.css';
+@import './quiz.css';
+@import './rv.css';
 @import './footer.css';

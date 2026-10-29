@@ -21,24 +21,6 @@
   font-style: normal;
   font-display: swap;
 }
-/* handwriting, only for signatures */
-@font-face {
-  font-family: 'Caveat';
-  src: url('/fonts/caveat-latin-600-normal.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-/* The Ethiopic face downloads only when Amharic text is on the page. */
-@font-face {
-  font-family: 'Noto Sans Ethiopic';
-  src: url('/fonts/noto-sans-ethiopic-ethiopic-wght-normal.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+1200-139F, U+2D80-2DDF, U+AB00-AB2F;
-}
-
 :root {
   /* brand */
   --amber: #ffa100;
@@ -172,8 +154,15 @@
   --photo-filter: none;
   --notch-ink: #14110f;
   --vignette: transparent;
-  --hero-bg-a: #fbfaf7;
-  --hero-bg-b: #e6dfd3;
+  --hero-base: #f5eee2;
+  --hero-glow: rgb(255 161 0 / 0.26);
+  --hero-vig: rgb(120 80 20 / 0.12);
+  --hero-grain: 0.045;
+  --hc-bg: #ffffff;
+  --hc-shadow: rgb(70 40 5 / 0.18);
+  --hero-ring: rgb(20 17 15 / 0.55);
+  --c-price: #8f5400; /* amber for text: 5.9:1 on the page, where --amber itself is 1.9:1 */
+  --plate: #f2ece1; /* every product card's plate */
   --fam-fresh: #e9f056;
   --fam-woody: #1f5a43;
   --fam-oriental: #d9651c;
@@ -209,8 +198,15 @@
   --photo-filter: brightness(0.92);
   --notch-ink: #2e2823;
   --vignette: rgb(16 14 12 / 0.55);
-  --hero-bg-a: #0a0a0a;
-  --hero-bg-b: #3d3d40;
+  --hero-base: #100e0c;
+  --hero-glow: rgb(255 161 0 / 0.24);
+  --hero-vig: rgb(0 0 0 / 0.6);
+  --hero-grain: 0.05;
+  --hc-bg: #efe8dc;
+  --hc-shadow: rgb(0 0 0 / 0.6);
+  --hero-ring: rgb(244 239 230 / 0.6);
+  --c-price: var(--amber);
+  --plate: #efe8dc;
   /* a little deeper than in light so the cards do not glare against the dark page */
   --fam-fresh: #d2d946;
   --fam-woody: #1a4a39;
@@ -246,8 +242,15 @@
     --photo-filter: brightness(0.92);
     --notch-ink: #2e2823;
     --vignette: rgb(16 14 12 / 0.55);
-    --hero-bg-a: #0a0a0a;
-    --hero-bg-b: #3d3d40;
+    --hero-base: #100e0c;
+    --hero-glow: rgb(255 161 0 / 0.24);
+    --hero-vig: rgb(0 0 0 / 0.6);
+    --hero-grain: 0.05;
+    --hc-bg: #efe8dc;
+    --hc-shadow: rgb(0 0 0 / 0.6);
+    --hero-ring: rgb(244 239 230 / 0.6);
+    --c-price: var(--amber);
+    --plate: #efe8dc;
     --fam-fresh: #d2d946;
     --fam-woody: #1a4a39;
     --fam-oriental: #cf5d17;

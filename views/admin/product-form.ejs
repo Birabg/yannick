@@ -138,11 +138,12 @@
 <aside class="preview" aria-label="Live preview">
   <p class="label">Live preview</p>
   <article class="card fam--<%= fam %>" data-preview-card>
-    <div class="card__media">
-      <div class="photo">
-        <%- include('../components/photo', { p: p, alt: '', sizes: '320px', attrs: 'data-preview-img' }) %>
-        <div class="photo__flags" data-preview-flags></div>
-      </div>
+    <div class="card__plate">
+      <span class="card__shape"><span class="card__face">
+        <%- include('../components/photo', { p: p, cls: 'card__img', alt: '', sizes: '320px', attrs: 'data-preview-img' }) %>
+      </span></span>
+      <div class="card__tags" data-preview-flags></div>
+      <span class="card__go" aria-hidden="true"><%- icon('arrow-ur') %></span>
     </div>
     <div class="card__body">
       <p class="card__brand" data-preview-brand><%= p.brand || 'Brand' %></p>

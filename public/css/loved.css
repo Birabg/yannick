@@ -1,0 +1,468 @@
+/* ---------- Most Loved Right Now ----------
+   The layout follows the count: 4+ a grid (4 columns, 2 on tablets), 2 or 3 large "feature" cards plus a
+   "See the full collection" tile, 1 a wide card with the details beside the photo. Phones: a snap-scroll row.
+   One rhythm on an 8px scale: 96px (64px on phones) of section padding, 32px under the header, 16 to 24px between cards. */
+.loved {
+  padding-block: clamp(4rem, 3rem + 3vw, 6rem) 0;
+}
+.loved__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 32px;
+  margin-bottom: 32px;
+}
+.loved__titles .sec-title {
+  margin: 0;
+}
+.loved__titles .sec-lead {
+  margin-top: 16px;
+  font-size: 1.0625rem;
+}
+.loved__all {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  border-bottom: 2px solid var(--amber);
+  color: var(--c-text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.loved__all svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 300ms var(--ease-out);
+}
+.loved__all:hover svg,
+.loved__all:focus-visible svg {
+  transform: translate3d(4px, 0, 0);
+}
+.loved__all:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 4px;
+}
+
+/* phones and tablets: a snap-scroll row, the next card peeks */
+.loved__list {
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  padding: 0 var(--gutter) 8px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+  list-style: none;
+}
+.loved__list::-webkit-scrollbar {
+  display: none;
+}
+.lc {
+  display: flex;
+  flex: 0 0 min(74vw, 20rem);
+  min-width: 0;
+  container-type: inline-size;
+  scroll-snap-align: start;
+}
+.lc__card,
+.lc__more {
+  flex: 1;
+  min-width: 0;
+}
+.loved--n1 .lc {
+  flex-basis: 100%;
+}
+
+/* the card: a notched plate with the arrow in the notch, then brand, name and price on the page */
+.lc__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+/* only the picture plate lifts on hover; the text below stays put */
+.lc__card:hover .lc__plate,
+.lc__card:focus-within .lc__plate {
+  transform: translate3d(0, -6px, 0);
+}
+.lc__plate {
+  --nw: clamp(34px, 27cqw, 62px);
+  --nh: clamp(30px, 23cqw, 52px);
+  --nr: clamp(10px, 7cqw, 16px);
+  --go: calc(var(--nh) - 6px);
+  position: relative;
+  aspect-ratio: 4 / 5;
+  transition: transform 350ms var(--ease-out);
+}
+.lc__shape {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(0 10px 14px var(--hc-shadow));
+}
+.lc__face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 22px;
+  background: var(--hc-bg);
+  -webkit-mask: var(--notch-mask);
+  mask: var(--notch-mask);
+}
+/* a soft pool of shadow under the bottle */
+.lc__face::before {
+  content: '';
+  position: absolute;
+  inset: auto 18% 9% 18%;
+  height: 6%;
+  background: radial-gradient(closest-side, rgb(45 28 6 / 0.38), transparent);
+}
+.loved .lc__img {
+  position: absolute;
+  top: 9%;
+  left: 8%;
+  width: 84%;
+  height: 78%;
+  padding: 0;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  filter: brightness(1.1);
+  transition: transform 500ms var(--ease-out);
+}
+.lc__card:hover .lc__img,
+.lc__card:focus-within .lc__img {
+  transform: scale(1.04);
+}
+.lc.is-soldout .lc__img {
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+.lc__tag {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border: 1.5px solid var(--amber);
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.lc__go {
+  position: absolute;
+  z-index: 2;
+  top: 3px;
+  right: calc((var(--nw) - var(--go)) / 2);
+  display: grid;
+  place-items: center;
+  width: var(--go);
+  height: var(--go);
+  border: 1.5px solid var(--amber);
+  border-radius: 50%;
+  color: var(--c-text);
+  transition:
+    transform 350ms var(--ease-out),
+    background-color var(--d-fast) var(--ease),
+    color var(--d-fast) var(--ease);
+}
+.lc__go svg {
+  width: 45%;
+  height: 45%;
+}
+.lc__card:hover .lc__go,
+.lc__card:focus-within .lc__go {
+  background: var(--amber);
+  color: var(--ink);
+  transform: rotate(12deg);
+}
+
+/* WhatsApp quick action: slides up over the foot of the plate on hover and focus, always there on touch screens */
+.lc__wa {
+  position: absolute;
+  z-index: 3;
+  inset: auto 10px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
+  transition:
+    opacity 250ms var(--ease),
+    transform 350ms var(--ease-out),
+    background-color var(--d-fast) var(--ease),
+    color var(--d-fast) var(--ease);
+}
+.lc__wa svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+.lc__card:hover .lc__wa,
+.lc__card:focus-within .lc__wa {
+  opacity: 1;
+  transform: none;
+}
+.lc__wa:hover,
+.lc__wa:focus-visible {
+  background: var(--amber);
+  color: var(--ink);
+}
+.lc__wa:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
+}
+@media (hover: none) {
+  .lc__wa {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.lc__wa--solid {
+  position: relative;
+  z-index: 3;
+  inset: auto;
+  width: max-content;
+  margin-top: 24px;
+  background: var(--amber);
+  color: var(--ink);
+  opacity: 1;
+  transform: none;
+}
+.lc__wa--solid:hover,
+.lc__wa--solid:focus-visible {
+  background: var(--ink);
+  color: var(--paper);
+}
+.lc__body {
+  display: grid;
+  gap: 4px;
+  padding-inline: 2px;
+}
+.lc__brand {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.lc__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.lc__link {
+  color: var(--c-text);
+  text-decoration: none;
+}
+/* the whole card is the link */
+.lc__link::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+}
+.lc__link:focus-visible {
+  outline: none;
+}
+.lc__card:has(.lc__link:focus-visible) .lc__plate {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 4px;
+  border-radius: 22px;
+}
+.lc__price {
+  margin: 4px 0 0;
+  color: var(--c-price);
+  font-size: 1.125rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+.lc__price.is-ask {
+  color: var(--c-muted);
+  font-weight: 600;
+}
+.lc__tagline {
+  max-width: 44ch;
+  margin: 8px 0 0;
+  color: var(--c-muted);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+
+/* the last tile of the feature layouts: amber, notched like a folder tab; the arrow sits outside the masked link, in the notch */
+.lc__tile {
+  --nw: 62px;
+  --nh: 52px;
+  --nr: 16px;
+  --go: 46px;
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  transition: transform 350ms var(--ease-out);
+}
+.lc__tile:hover,
+.lc__tile:focus-within {
+  transform: translate3d(0, -6px, 0);
+}
+.lc__more {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  min-height: 15rem;
+  padding: 24px;
+  border-radius: 22px;
+  background: var(--amber);
+  color: var(--ink);
+  -webkit-mask: var(--notch-mask);
+  mask: var(--notch-mask);
+}
+.lc__more:focus-visible {
+  outline: none;
+}
+.lc__tile:has(.lc__more:focus-visible) {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 4px;
+  border-radius: 22px;
+}
+.lc__more-count {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  line-height: 0.9;
+}
+.lc__more-label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+.lc__more-see {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.lc__tile .lc__go {
+  pointer-events: none;
+  border-color: var(--amber);
+  color: var(--c-text);
+}
+.lc__tile:hover .lc__go,
+.lc__tile:focus-within .lc__go {
+  background: var(--amber);
+  color: var(--ink);
+  transform: rotate(12deg);
+}
+
+/* one bottle: the photo beside the details */
+@media (min-width: 700px) {
+  .loved__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    width: min(100% - 2 * var(--gutter), var(--container));
+    margin-inline: auto;
+    padding: 0;
+    overflow: visible;
+  }
+  .lc {
+    flex: none;
+  }
+  .loved--n2 .lc--more {
+    grid-column: 1 / -1;
+  }
+  .loved--n2 .lc__more {
+    min-height: 9rem;
+  }
+  .loved--n1 .loved__list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .lc--one .lc__card {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    align-items: center;
+    gap: clamp(24px, 5vw, 72px);
+  }
+  .lc--one .lc__plate {
+    aspect-ratio: 1 / 1;
+  }
+  .lc--one .lc__name {
+    font-size: clamp(2rem, 1.4rem + 2.4vw, 3.25rem);
+    letter-spacing: -0.035em;
+  }
+  .lc--one .lc__price {
+    margin-top: 16px;
+    font-size: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .loved--grid .loved__list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+  }
+  .loved--n2 .loved__list {
+    grid-template-columns: 5fr 5fr 2fr;
+  }
+  .loved--n3 .loved__list {
+    grid-template-columns: 3fr 3fr 3fr 2fr;
+  }
+  .loved--n2 .lc--more {
+    grid-column: auto;
+  }
+  .loved--n2 .lc__more {
+    min-height: 15rem;
+  }
+  /* the feature cards are bigger: larger type and a taller plate */
+  .loved--n2 .lc__name,
+  .loved--n3 .lc__name {
+    font-size: 1.5rem;
+  }
+  .loved--n2 .lc__price,
+  .loved--n3 .lc__price {
+    font-size: 1.25rem;
+  }
+  .loved--n2 .lc__plate {
+    aspect-ratio: 5 / 6;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lc__card,
+  .lc__tile,
+  .lc__img,
+  .lc__go,
+  .lc__wa,
+  .loved__all svg {
+    transition: none;
+  }
+}
+
+/* Amharic: no capitals and no letter-spacing (Noto Sans Ethiopic) */
+:lang(am) .lc__brand,
+:lang(am) .lc__tag,
+:lang(am) .lc__name,
+:lang(am) .lc__more-see,
+:lang(am) .lc__more-count {
+  letter-spacing: 0;
+  text-transform: none;
+}

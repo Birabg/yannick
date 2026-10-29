@@ -4,10 +4,11 @@
   "description": "A Good Scent Speaks First - original designer fragrances in Addis Ababa",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f7f3ec",
-  "theme_color": "#ffa100",
+  "background_color": "#0e0c0a",
+  "theme_color": "#0e0c0a",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

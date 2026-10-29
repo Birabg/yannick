@@ -1,0 +1,286 @@
+/* ---------- VI. Find your scent: a step-by-step guide ---------- */
+.quiz {
+  display: grid;
+  gap: var(--s-4);
+  align-items: start;
+}
+.quiz__aside .label {
+  margin-top: 0;
+}
+.quiz__aside .sec-title {
+  font-size: clamp(2.1rem, 1.5rem + 2.6vw, 3.6rem);
+}
+@media (min-width: 960px) {
+  .quiz {
+    grid-template-columns: repeat(12, 1fr);
+    gap: 0 var(--s-4);
+  }
+  /* the heading and the card start on the same line; the heading follows you down the long card */
+  .quiz__aside {
+    grid-column: 1 / 5;
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+  }
+  .quiz__panel {
+    grid-column: 5 / -1;
+  }
+}
+
+.quiz__panel {
+  box-sizing: border-box;
+  min-height: 560px; /* the card does not change height between steps */
+  padding: clamp(20px, 3vw, 40px);
+  border: 1px solid var(--c-border);
+  border-radius: 28px;
+  background: var(--c-card);
+  overflow: hidden;
+}
+.quiz__nojs {
+  margin: 0;
+}
+
+/* progress: three amber segments, and the same fact in words */
+.quiz__bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.quiz__seg {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--c-chip);
+  overflow: hidden;
+}
+.quiz__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--amber);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.quiz__seg.is-done .quiz__fill {
+  transform: none;
+}
+.quiz__seg.is-now .quiz__fill {
+  animation: quiz-fill 420ms var(--ease-out) forwards;
+}
+@keyframes quiz-fill {
+  to {
+    transform: none;
+  }
+}
+.quiz__step {
+  margin: 12px 0 var(--s-3);
+  color: var(--c-muted);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.quiz__stage {
+  position: relative;
+}
+.quiz__slide.is-leaving {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.quiz__q {
+  margin: 0 0 8px;
+  font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.5rem);
+  line-height: 1.1;
+}
+.quiz__q:focus {
+  outline: none;
+}
+.quiz__hint {
+  margin: 0 0 var(--s-3);
+  color: var(--c-muted);
+  font-size: 0.9375rem;
+}
+
+/* big option cards: a radio mark, the title and its small line, and an arrow */
+.quiz__options {
+  display: grid;
+  gap: 12px;
+}
+.quiz__opt {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 72px;
+  padding: 14px 18px;
+  border: 1.5px solid var(--c-border);
+  border-radius: 20px;
+  background: var(--c-surface);
+  color: var(--c-text);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 200ms var(--ease-out),
+    border-color 200ms var(--ease),
+    background-color 200ms var(--ease);
+}
+.quiz__opt:hover {
+  border-color: var(--amber);
+  transform: translate3d(0, -2px, 0);
+}
+.quiz__opt:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 3px;
+}
+.quiz__opt[aria-checked='true'] {
+  border-color: var(--amber);
+  background: var(--tab-active-tint);
+}
+.quiz__mark {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--c-line);
+  border-radius: 50%;
+  transition:
+    border-color 200ms var(--ease),
+    box-shadow 200ms var(--ease);
+}
+.quiz__opt:hover .quiz__mark,
+.quiz__opt[aria-checked='true'] .quiz__mark {
+  border-color: var(--amber);
+}
+.quiz__opt[aria-checked='true'] .quiz__mark {
+  box-shadow:
+    inset 0 0 0 4px var(--c-surface),
+    inset 0 0 0 20px var(--amber);
+}
+.quiz__opt-body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.quiz__opt-label {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.quiz__opt-sub {
+  color: var(--c-muted);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+.quiz__opt-go {
+  flex: none;
+  margin-left: auto;
+  color: var(--c-muted);
+  transition:
+    transform 200ms var(--ease-out),
+    color 200ms var(--ease);
+}
+.quiz__opt:hover .quiz__opt-go {
+  color: var(--c-text);
+  transform: translate3d(4px, 0, 0);
+}
+@media (min-width: 640px) {
+  .quiz__options--4 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.quiz__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: var(--s-3);
+  padding: 0 18px;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-text);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 200ms var(--ease),
+    background-color 200ms var(--ease);
+}
+.quiz__back:hover {
+  border-color: var(--amber);
+  background: var(--c-chip);
+}
+.quiz__back:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 3px;
+}
+
+/* the result: up to three of the shop's own cards */
+.quiz__summary {
+  margin: 0 0 4px;
+  color: var(--c-muted);
+  font-size: 0.9375rem;
+}
+.quiz__note {
+  margin: 8px 0 0;
+  padding: 10px 14px;
+  border-left: 3px solid var(--amber);
+  border-radius: 4px;
+  background: var(--tab-active-tint);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+.quiz__picks {
+  display: grid;
+  gap: var(--s-2);
+  margin: var(--s-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 640px) {
+  .quiz__picks--2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .quiz__picks--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.quiz__pick {
+  position: relative;
+  min-width: 0;
+}
+.quiz__rank {
+  position: absolute;
+  z-index: 3;
+  top: 10px;
+  left: 10px;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  background: var(--amber);
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.quiz__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: var(--s-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz__seg.is-now .quiz__fill {
+    animation: none;
+    transform: none;
+  }
+  .quiz__opt,
+  .quiz__opt-go {
+    transition: none;
+  }
+}
+:lang(am) .quiz__q,
+:lang(am) .quiz__opt-label {
+  letter-spacing: 0;
+}

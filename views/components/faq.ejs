@@ -1,0 +1,33 @@
+<%
+  /* params: items ([{ q, a }]). One open at a time (public/js/faq.js). Without JavaScript every answer is simply shown. */
+  const searchable = items.length > 8;
+%>
+<div class="faq" data-faq data-rv-item>
+  <% if (searchable) { %>
+  <label class="faq__search">
+    <span class="sr-only" <%- i('faq.search') %>><%= t('faq.search') %></span>
+    <%- icon('search') %>
+    <input type="search" placeholder="<%= t('faq.search') %>" data-i18n-placeholder="faq.search" autocomplete="off" data-faq-search>
+  </label>
+  <% } %>
+  <div class="faq__list">
+    <% items.forEach(function (item, n) { %>
+    <div class="faq__item" data-faq-item data-text="<%= (item.q + ' ' + item.a).toLowerCase() %>">
+      <h3 class="faq__q">
+        <button type="button" class="faq__btn" id="faq-q-<%= n %>" aria-expanded="false" aria-controls="faq-a-<%= n %>">
+          <span class="faq__text"><%= item.q %></span>
+          <span class="faq__icon" aria-hidden="true"></span>
+        </button>
+      </h3>
+      <div class="faq__panel" id="faq-a-<%= n %>" role="region" aria-labelledby="faq-q-<%= n %>">
+        <div class="faq__inner"><p class="faq__a"><%= item.a %></p></div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <% if (searchable) { %><p class="faq__none" data-faq-none hidden <%- i('faq.none') %>><%= t('faq.none') %></p><% } %>
+  <div class="faq__more">
+    <p class="faq__more-text" <%- i('faq.more') %>><%= t('faq.more') %></p>
+    <%- include('button', { href: fmt.genericLink(), external: true, ico: 'whatsapp', label: t('faq.ask'), i18n: 'faq.ask', variant: 'outline' }) %>
+  </div>
+</div>

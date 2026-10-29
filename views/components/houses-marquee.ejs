@@ -1,0 +1,47 @@
+<%
+  /*
+   * params: houses (from src/lib/houses.js), houseCss (their colours).
+   * Each row is two identical groups side by side and the track slides left by exactly one group, so the
+   * loop has no seam. A group repeats the houses until it is wider than a 2560px screen. Only the first set
+   * of the first row is real (links, read by screen readers); every repeat is aria-hidden and out of the tab order.
+   * Speed is the same whatever the number of houses: the cycle time is the group width divided by SPEED.
+   */
+  const CARD = 236;        // card width + gap on desktop, used only to size the groups
+  const SPEED = 95;        // px per second
+  const n = houses.length;
+  const repeat = Math.max(1, Math.ceil(2800 / (n * CARD)));
+  const cycle = Math.round((n * repeat * CARD) / SPEED);
+  const twoRows = n >= 8;
+  const half = Math.ceil(n / 2);
+  const second = houses.slice(half).concat(houses.slice(0, half));
+  const sets = Array.from({ length: repeat });
+%>
+<style nonce="<%= cspNonce %>">
+<%- houseCss %>
+</style>
+<noscript><style nonce="<%= cspNonce %>">
+.hm .hm__row { opacity: 1 !important; overflow-x: auto; -webkit-mask-image: none; mask-image: none; padding-inline: var(--gutter); }
+.hm .hm__track { width: auto; }
+.hm .hm__group[aria-hidden='true'], .hm .hm__item[aria-hidden='true'], .hm .hm__row[aria-hidden='true'] { display: none; }
+</style></noscript>
+<div class="hm" data-houses>
+  <div class="hm__row" data-row="1" data-dir="forward" data-cycle="<%= cycle %>">
+    <div class="hm__track" data-track>
+      <ul class="hm__group" aria-labelledby="houses-title">
+        <% sets.forEach(function (_, round) { %><% houses.forEach(function (h) { %><%- include('house-card', { house: h, decoy: round > 0 }) %><% }) %><% }) %>
+      </ul>
+      <ul class="hm__group" aria-hidden="true">
+        <% sets.forEach(function () { %><% houses.forEach(function (h) { %><%- include('house-card', { house: h, decoy: true }) %><% }) %><% }) %>
+      </ul>
+    </div>
+  </div>
+  <% if (twoRows) { %>
+  <div class="hm__row" data-row="2" data-dir="reverse" data-cycle="<%= Math.round(cycle / 0.85) %>" aria-hidden="true">
+    <div class="hm__track" data-track>
+      <% for (let g = 0; g < 2; g += 1) { %><ul class="hm__group">
+        <% sets.forEach(function () { %><% second.forEach(function (h) { %><%- include('house-card', { house: h, decoy: true }) %><% }) %><% }) %>
+      </ul><% } %>
+    </div>
+  </div>
+  <% } %>
+</div>

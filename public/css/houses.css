@@ -1,0 +1,285 @@
+/* ---------- IV. Houses We Carry: the full-width infinite marquee ---------- */
+.hm {
+  --hm-w: 220px;
+  --hm-h: 132px;
+  --hm-gap: 16px;
+  --house-ink: #fff7ea;
+  --house-ink-soft: #f1e8d9;
+  margin-top: var(--s-5);
+  overflow-x: clip;
+}
+.hm__row {
+  /* room above and below for the lift and the glow, which overflow:hidden would otherwise clip */
+  margin-block: -12px;
+  padding-block: 28px;
+  /* the exact height is reserved, so nothing around the marquee moves when it starts */
+  box-sizing: border-box;
+  height: calc(var(--hm-h) + 56px);
+  overflow: hidden;
+  touch-action: pan-y;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.hm__row + .hm__row {
+  margin-top: -38px; /* the rows' padding is 28px each, so this leaves about 18px between the cards */
+}
+/*
+ * The slide itself is a Web Animation started by houses.js (a translate on the track, so its speed can
+ * ease in and out). The markup is complete from the first byte; the rows stay invisible until the fonts
+ * are in and the section is on screen, then fade in. Only transform and opacity ever animate.
+ */
+.hm:not(.is-in) .hm__row {
+  opacity: 0;
+}
+.hm__row.is-entering {
+  will-change: transform, opacity;
+}
+.hm__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+/* one group is exactly half the track, so -50% lands on an identical frame */
+.hm__group {
+  display: flex;
+  flex: none;
+  gap: var(--hm-gap);
+  margin: 0;
+  padding: 0 var(--hm-gap) 0 0;
+  list-style: none;
+}
+.hm__item {
+  flex: none;
+}
+/* without JavaScript the row is a plain scroller: nothing starts, nothing is hidden */
+
+/* ---------- the card ---------- */
+.house {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+  box-sizing: border-box;
+  width: var(--hm-w);
+  height: var(--hm-h);
+  padding: 18px 18px 16px;
+  border-radius: 22px;
+  color: var(--house-ink);
+  text-decoration: none;
+  isolation: isolate;
+  backface-visibility: hidden;
+  background:
+    radial-gradient(
+      120% 95% at 100% 0%,
+      color-mix(in srgb, var(--h-glow) 24%, transparent),
+      transparent 58%
+    ),
+    linear-gradient(135deg, var(--h-a), var(--h-b));
+  box-shadow:
+    inset 0 0 0 1px var(--h-edge, rgb(255 255 255 / 0.1)),
+    0 1px 2px rgb(0 0 0 / 0.2);
+  /* the lift is a transform and the glow is an opacity (see ::after), so a hover never touches layout */
+  transition: transform 220ms var(--ease-out);
+}
+/* a fine grain over the colour, like the photo backdrops */
+.house::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: url('/img/grain.png') 0 0 / 160px;
+  opacity: 0.14;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+.house__name {
+  max-width: 100%;
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.house__meta {
+  color: var(--house-ink-soft);
+  font-size: 0.9375rem;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+}
+.house__n {
+  font-weight: 700;
+}
+.house__go {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgb(255 255 255 / 0.45);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.08);
+  transition:
+    background-color 220ms var(--ease-out),
+    border-color 220ms var(--ease-out),
+    color 220ms var(--ease-out);
+}
+.house__go .icon {
+  width: 16px;
+  height: 16px;
+}
+/* the amber ring and glow are drawn once and only faded in, which keeps the hover on the compositor */
+a.house::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px var(--amber),
+    0 0 0 1px rgb(255 161 0 / 0.55),
+    0 14px 30px -8px rgb(255 161 0 / 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms var(--ease-out);
+}
+a.house:hover,
+a.house:focus-visible {
+  transform: translate3d(0, -4px, 0);
+}
+a.house:hover::after,
+a.house:focus-visible::after {
+  opacity: 1;
+}
+a.house:hover .house__go,
+a.house:focus-visible .house__go {
+  border-color: var(--amber);
+  background: var(--amber);
+  color: var(--ink);
+}
+a.house:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+/* no bottle on the shelf yet: shown, not a link */
+.house.is-soon {
+  cursor: default;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
+  background: linear-gradient(135deg, var(--h-a), var(--h-b)), var(--h-b);
+}
+.house.is-soon::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px dashed rgb(255 255 255 / 0.3);
+  border-radius: 15px;
+  pointer-events: none;
+}
+:lang(am) .house__name,
+:lang(am) .house__meta {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.houses-trust {
+  margin: var(--s-3) 0 0;
+  color: var(--c-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* ---------- the brand filter strip on the collection ---------- */
+.brandbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin: var(--s-2) 0 0;
+  font-size: var(--t-small);
+}
+.brandbar[hidden] {
+  display: none;
+}
+.brandbar strong {
+  font-size: var(--t-body);
+}
+.brandbar__clear {
+  min-height: 36px;
+  padding: 0 0.9rem;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--d-fast) var(--ease),
+    border-color var(--d-fast) var(--ease);
+}
+.brandbar__clear:hover {
+  border-color: var(--amber);
+  background: var(--c-chip);
+}
+
+@media (max-width: 640px) {
+  .hm {
+    --hm-w: 160px;
+    --hm-h: 100px;
+    --hm-gap: 12px;
+  }
+  .house {
+    padding: 12px 14px 12px;
+    border-radius: 18px;
+  }
+  .house__name {
+    font-size: 1.125rem;
+  }
+  .house__meta {
+    font-size: 0.8125rem;
+  }
+  .house__go {
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+  }
+  .house__go .icon {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+/* less motion: no animation; the houses are one row to swipe, without the repeats */
+@media (prefers-reduced-motion: reduce) {
+  .hm:not(.is-in) .hm__row {
+    opacity: 1;
+  }
+  .hm__row {
+    padding-inline: var(--gutter);
+    overflow-x: auto;
+    touch-action: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .hm__track {
+    width: auto;
+  }
+  .hm__group[aria-hidden='true'],
+  .hm__item[aria-hidden='true'],
+  .hm__row[aria-hidden='true'] {
+    display: none;
+  }
+  .house {
+    scroll-snap-align: start;
+    transition: none;
+  }
+}

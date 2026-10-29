@@ -1,0 +1,18 @@
+/* Faces the admin pages use. The public site loads them from public/js/fonts.js after its first screen. */
+/* handwriting, only for signatures */
+@font-face {
+  font-family: 'Caveat';
+  src: url('/fonts/caveat-latin-600-normal.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+/* The Ethiopic face downloads only when Amharic text is on the page. */
+@font-face {
+  font-family: 'Noto Sans Ethiopic';
+  src: url('/fonts/noto-sans-ethiopic-ethiopic-wght-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1200-139F, U+2D80-2DDF, U+AB00-AB2F;
+}

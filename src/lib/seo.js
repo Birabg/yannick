@@ -26,6 +26,16 @@ function storeSchema() {
   };
 }
 
+function organizationSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: site.brand.name,
+    url: siteUrl,
+    logo: `${siteUrl}/img/brand/logo-384.webp`,
+  };
+}
+
 function productSchema(p) {
   return {
     '@context': 'https://schema.org',
@@ -50,4 +60,4 @@ function productSchema(p) {
   };
 }
 
-module.exports = { imageUrl, storeSchema, productSchema };
+module.exports = { imageUrl, storeSchema, organizationSchema, productSchema };

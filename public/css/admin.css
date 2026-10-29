@@ -1,9 +1,11 @@
 @import './tokens.css';
+@import './fonts-late.css';
 @import './base.css';
 @import './buttons.css';
 @import './components.css';
 @import './photo.css';
 @import './theme.css';
+@import './card.css';
 
 /* Admin uses the shop's tokens; only the layout is its own. */
 .photo__img,
@@ -107,7 +109,10 @@
   width: 28px;
   height: 28px;
 }
-.admin-bar__brand em {
+.admin-bar__logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
 }
 .admin-bar__brand small {
   margin-left: 6px;
@@ -489,8 +494,10 @@
   background: var(--c-bg);
 }
 .login__mark {
-  width: 44px;
-  height: 44px;
+  width: 72px;
+  height: 72px;
+  margin-bottom: var(--s-2);
+  border-radius: 50%;
 }
 .login__title {
   font-size: var(--t-l);

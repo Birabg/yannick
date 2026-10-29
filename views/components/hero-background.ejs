@@ -1,0 +1,5 @@
+<%# Static layers only: base colour, amber glow behind the bottles, vignette (hero.css, from theme tokens) and still grain. %>
+<div class="hero__bg" aria-hidden="true">
+  <%# grain as inline SVG noise: no image request, and not an LCP candidate %>
+  <svg class="hero__grain" focusable="false"><filter id="hero-grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#hero-grain)"/></svg>
+</div>

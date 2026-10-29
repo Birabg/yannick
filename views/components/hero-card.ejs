@@ -1,16 +1,24 @@
 <%
-  /* params: p (product), slot (1-5 tall cards, 6-7 small ones), eager, shader (liquid-glass backdrop) */
+  /* params: p (product), slot (1-5), eager (first two cards). One link per card; brand and name are always shown, the price on hover, focus and touch. */
   const color = fmt.cardColor(p);
   const label = fmt.productLabel(p);
+  const price = fmt.price(p.price);
 %>
-<li class="hc hc--<%= slot %> fam--<%= color %> <%= photo.heightClass(p) %>">
-  <a class="hc__link" href="/perfume/<%= p.slug %>" data-open-product data-tilt>
-    <span class="sr-only"><%= label %>, <%= fmt.price(p.price) %></span>
-    <span class="hc__shape">
-      <% if (locals.shader) { %><span class="hc__glass" data-shader data-src="<%= distAsset('hero/island.js') %>" aria-hidden="true"><span class="hero-shader__stage" data-stage></span></span><% } %>
-      <%- include('photo', { p: p, cls: 'hc__img', alt: '', eager: locals.eager, sizes: '(min-width: 1024px) 260px, (min-width: 640px) 32vw, 70vw' }) %>
-      <span class="hc__label" aria-hidden="true"><strong><%= p.name %></strong><span><%= fmt.price(p.price) %></span></span>
-    </span>
-    <span class="hc__go" aria-hidden="true"><%- icon('arrow-ur') %></span>
-  </a>
+<li class="hc hc--<%= slot %> fam--<%= color %>">
+  <div class="hc__float">
+    <a class="hc__link" href="/perfume/<%= p.slug %>" data-open-product data-tilt>
+      <span class="sr-only"><%= label %>, <%= price %>, <span <%- i('hero.view') %>><%= t('hero.view') %></span></span>
+      <span class="hc__plate">
+        <span class="hc__shape"><span class="hc__face">
+          <%- include('photo', { p: p, cls: 'hc__img', alt: '', eager: locals.eager, sizes: '(min-width: 1024px) 300px, 40vw' }) %>
+        </span></span>
+        <span class="hc__go" aria-hidden="true"><%- icon('arrow-ur') %></span>
+      </span>
+      <span class="hc__cap" aria-hidden="true">
+        <span class="hc__brand"><%= p.brand %></span>
+        <strong class="hc__name"><%= p.name %></strong>
+        <span class="hc__price"><%= price %></span>
+      </span>
+    </a>
+  </div>
 </li>

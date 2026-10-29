@@ -1,0 +1,9 @@
+<%
+  /* The headline is the page's only <h1>. Words are spans so each can rise in turn; *Scent* becomes an <em> that gets the amber underline. */
+  const words = t('hero.title').split(' ');
+  const html = words.map(function (word, n) {
+    const inner = /^\*.+\*$/.test(word) ? '<em>' + word.slice(1, -1) + '</em>' : word;
+    return '<span class="w">' + inner + '</span>';
+  }).join(' ');
+%>
+<h1 class="hero__title" id="hero-title" <%- i('hero.title') %>><%- html %></h1>

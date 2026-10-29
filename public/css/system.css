@@ -129,170 +129,9 @@ h3 em,
   border-color: var(--c-line);
 }
 
-/* ---------- product card: a notched colour photo, the words sit on the page ---------- */
-.card {
-  overflow: visible;
-  border: 0;
-  border-radius: 0;
-  background: none;
-}
-.card:hover,
-.card:focus-within {
-  border-color: transparent;
-  box-shadow: none;
-}
-.photo {
-  border-radius: var(--r-card);
-  background: var(--card, var(--c-photo));
-}
-.card .photo {
-  -webkit-mask: var(--notch-mask);
-  mask: var(--notch-mask);
-}
-.card__media {
-  overflow: visible;
-}
-.card__media::after {
-  content: '';
-  position: absolute;
-  z-index: 4;
-  top: 6px;
-  right: 6px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--ink)
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fbfaf7' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M7 17L17 7M8 7h9v9'/></svg>")
-    center / 18px no-repeat;
-  pointer-events: none;
-  transition: background-color var(--d-fast) var(--ease);
-}
-.card:hover .card__media::after,
-.card:focus-within .card__media::after {
-  background-color: var(--amber);
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2314110f' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M7 17L17 7M8 7h9v9'/></svg>");
-}
-.card:hover .photo__img {
-  transform: scale(1.04);
-}
-.card__body {
-  padding: var(--s-2) 0 0;
-}
-.card__name {
-  font-weight: 700;
-  letter-spacing: -0.03em;
-}
-.card__brand {
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.grid {
-  gap: var(--s-5) var(--s-3);
-  align-items: start;
-}
+/* Product card and grid: see card.css */
 
-/* ---------- FAQ: notched blocks, the plus sits in the notch ---------- */
-.faq {
-  display: grid;
-  gap: 12px;
-  border: 0;
-}
-.faq details {
-  position: relative;
-  isolation: isolate;
-  padding: 0 var(--s-4);
-  border: 0;
-  border-radius: var(--r-card);
-}
-.faq details::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: var(--c-surface);
-  -webkit-mask: var(--notch-mask);
-  mask: var(--notch-mask);
-}
-.faq summary {
-  min-height: 84px;
-  padding: var(--s-3) 4.5rem var(--s-3) 0;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-}
-.faq__icon {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--c-btn-bg);
-  transition: background-color var(--d-fast) var(--ease);
-}
-.faq__icon::before,
-.faq__icon::after {
-  inset: 50% auto auto 50%;
-  width: 14px;
-  height: 2px;
-  margin: -1px 0 0 -7px;
-  background: var(--c-btn-fg);
-}
-.faq summary:hover .faq__icon {
-  background: var(--amber);
-}
-.faq summary:hover .faq__icon::before,
-.faq summary:hover .faq__icon::after {
-  background: var(--ink);
-}
-.faq details p {
-  padding-right: 4.5rem;
-}
-
-/* ---------- order blocks ---------- */
-.cblock {
-  position: relative;
-  padding: var(--s-4) var(--s-4) var(--s-4);
-  border: 0;
-  background: none;
-}
-.cblock:hover {
-  box-shadow: none;
-}
-.cblock__title {
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  font-size: var(--t-m);
-}
-.cblock:hover .cblock__title {
-  color: inherit;
-}
-.cblock__go {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--c-btn-bg);
-  color: var(--c-btn-fg);
-  transition: background-color var(--d-fast) var(--ease);
-}
-.cblock:hover .cblock__go {
-  background: var(--amber);
-  color: var(--ink);
-}
-.cblocks {
-  gap: 12px;
-}
-@media (min-width: 760px) {
-  .cblocks {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
+/* FAQ and order blocks: see faq.css and contact.css */
 .order {
   display: grid;
   gap: 12px;
@@ -361,17 +200,6 @@ h3 em,
     min-height: 0;
   }
 }
-.steps {
-  gap: 12px;
-}
-.step__num {
-  font-family: var(--font-display);
-  font-weight: 700;
-}
-.step__title {
-  font-weight: 700;
-  letter-spacing: -0.03em;
-}
 
 /* ---------- notes: three notched colour cards ---------- */
 .nc-grid {
@@ -418,7 +246,6 @@ h3 em,
   font-weight: 600;
   letter-spacing: -0.02em;
 }
-/* theme palette instead of scent-family colours: amber, surface, ink (follows light/dark) */
 .nc.fam--fresh,
 .nc.fam--oriental,
 .nc.fam--woody {
@@ -557,22 +384,12 @@ h3 em,
   animation-delay: 120ms;
 }
 
-/* ---------- panel: the family colour on top, 28px corners ---------- */
-.sheet {
-  border-radius: var(--r-card) var(--r-card) 0 0;
-}
-@media (min-width: 760px) {
-  .sheet {
-    border-radius: var(--r-card) 0 0 var(--r-card);
-  }
-}
 .detail__name {
   font-weight: 700;
   letter-spacing: -0.05em;
 }
 
 /* ---------- the rest of the page ---------- */
-.quiz__panel,
 .review {
   border-radius: var(--r-card);
 }
@@ -580,50 +397,39 @@ h3 em,
   min-height: 44px;
 }
 
-.quiz__aside .sec-title {
-  font-size: clamp(2.1rem, 1.5rem + 2.6vw, 3.6rem);
-}
 
 /* ---------- photos: focus point, fit, theme ---------- */
 /* The focus point (fx-N, fy-N, steps of 10) keeps the bottle in frame when a photo is cropped to a card. */
 .photo__img,
 .hc__img,
 .pick__photo,
-.stack__img,
 .order__bottle {
   object-position: var(--fx, 50%) var(--fy, 50%);
   filter: var(--photo-filter);
 }
 .photo__img,
 .hc__img,
-.pick__photo,
-.stack__img {
+.pick__photo {
   object-fit: cover;
 }
 /* Tall studio shots show the whole bottle; their white backdrop blends into the card colour. */
 .photo__img.fit-contain,
 .hc__img.fit-contain,
-.pick__photo.fit-contain,
-.stack__img.fit-contain {
+.pick__photo.fit-contain {
   object-fit: contain;
   padding: 4% 3% 5%;
 }
 .hc__img.is-fallback,
 .photo__img.is-fallback,
-.pick__photo.is-fallback,
-.stack__img.is-fallback {
+.pick__photo.is-fallback {
   object-fit: contain;
   object-position: 50% 50%;
 }
-.pick__photo,
-.stack__img {
+.pick__photo {
   display: block;
   width: 100%;
   height: 100%;
   mix-blend-mode: multiply;
-}
-.stack__img {
-  transform: scale(1.35);
 }
 .pick__photo {
   transform: scale(1.1);
@@ -642,7 +448,6 @@ h3 em,
 }
 
 /* the amber glass: a darker vignette in the dark theme keeps text over it readable */
-.hc__glass::after,
 .order__glass::after {
   content: '';
   position: absolute;
@@ -650,183 +455,19 @@ h3 em,
   background: radial-gradient(110% 90% at 50% 45%, transparent 35%, var(--vignette) 100%);
   pointer-events: none;
 }
-:root[data-theme='dark'] .card__media::after {
-  background-color: var(--amber);
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2314110f' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M7 17L17 7M8 7h9v9'/></svg>");
-}
-:root[data-theme='dark'] .card:hover .card__media::after,
-:root[data-theme='dark'] .card:focus-within .card__media::after {
-  background-color: var(--sun);
-}
 
 /* Photos are shown exactly as supplied, with their own backdrop (no blending onto the card colour). */
 .photo__img,
 .hc__img,
 .pick__photo,
-.stack__img,
 .order__bottle,
 .lib__img {
   mix-blend-mode: normal;
 }
 
-/* ---------- Filter tabs: small rectangles, uppercase, amber when active ---------- */
-.filterbar {
-  padding-block: var(--s-2);
-}
-.tabs {
-  display: flex;
-  gap: 12px;
-  padding: 2px var(--gutter);
-  margin-inline: calc(var(--gutter) * -1);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
-  scrollbar-width: none;
-  /* edge fade where the row scrolls on phones */
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 var(--gutter),
-    #000 calc(100% - var(--gutter)),
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 var(--gutter),
-    #000 calc(100% - var(--gutter)),
-    transparent 100%
-  );
-}
-.tabs::-webkit-scrollbar {
-  display: none;
-}
-.tab {
-  flex: none;
-  min-height: 44px;
-  padding: 0 20px;
-  border: 1px solid var(--tab-line);
-  border-radius: var(--r-pill);
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  scroll-snap-align: center;
-  transition:
-    color 200ms var(--ease),
-    border-color 200ms var(--ease),
-    background-color 200ms var(--ease);
-}
-.tab__n {
-  font-variant-numeric: tabular-nums;
-}
-.tab:hover {
-  border-color: var(--tab-line-hover);
-  color: var(--text);
-}
-.tab[aria-pressed='true'] {
-  border-color: var(--tab-active-line);
-  background: var(--tab-active-tint);
-  color: var(--text);
-}
-.tab:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 3px;
-}
-:lang(am) .tab {
-  letter-spacing: 0.04em;
-}
-@media (min-width: 900px) {
-  .tabs {
-    justify-content: center;
-    margin-inline: 0;
-    padding-inline: 0;
-    flex-wrap: wrap;
-    overflow: visible;
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .tab {
-    transition: none;
-  }
-}
+/* Filter chips: see collection.css */
 
-/* ---------- Most Loved Right Now ---------- */
-.loved {
-  padding-block: clamp(3rem, 2rem + 3vw, 5rem) 0;
-}
-.loved__head {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--s-2);
-  margin-bottom: var(--s-4);
-}
-.loved__label {
-  margin: 0;
-  padding: 6px 12px;
-  border: 1px solid var(--tab-active-line);
-  border-radius: var(--r-pill);
-  color: var(--text);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-.loved .sec-title {
-  margin: 0;
-}
-@media (min-width: 900px) {
-  .loved__head {
-    flex-direction: row;
-    align-items: center;
-    gap: var(--s-3);
-  }
-}
-.loved__row {
-  display: flex;
-  gap: var(--s-2);
-  margin: 0;
-  padding: 0 var(--gutter) var(--s-2);
-  list-style: none;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--gutter);
-  scrollbar-width: none;
-}
-.loved__row::-webkit-scrollbar {
-  display: none;
-}
-.loved__row > li {
-  flex: 0 0 min(74vw, 20rem);
-  scroll-snap-align: start;
-}
-@media (min-width: 700px) {
-  .loved__row > li {
-    flex-basis: 42vw;
-  }
-}
-@media (min-width: 1024px) {
-  .loved__row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    align-items: start;
-    gap: var(--s-3);
-    width: min(100% - 2 * var(--gutter), var(--container));
-    margin-inline: auto;
-    padding-inline: 0;
-    overflow: visible;
-  }
-  .loved__row > li:nth-child(n + 5) {
-    display: none;
-  }
-}
+/* Most Loved Right Now: see loved.css */
 
 /* ---------- Our Story ---------- */
 .story {

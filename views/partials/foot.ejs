@@ -22,7 +22,15 @@
   </div>
 
   <div class="container foot__main">
-    <p class="foot__brand"><img class="foot__mark" src="/favicon.svg" width="28" height="28" alt="" decoding="async"><span>Yannick Scents</span></p>
+    <div class="foot__id">
+      <p class="foot__brand"><img class="foot__mark" src="/img/brand/logo-192.webp" srcset="/img/brand/logo-192.webp 1x, /img/brand/logo-384.webp 2x" width="64" height="64" alt="Yannick Scents" loading="lazy" decoding="async"></p>
+      <p class="foot__tag" <%- i('footer.tag') %>><%= t('footer.tag') %></p>
+      <ul class="foot__social" aria-label="<%= t('footer.follow') %>">
+        <li><a class="foot__chip" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener"><%- icon('whatsapp') %><span>WhatsApp</span></a></li>
+        <li><a class="foot__chip" href="tel:<%= site.contact.phone %>"><%- icon('phone') %><span><%= site.contact.phoneDisplay %></span></a></li>
+        <li><a class="foot__chip" href="<%= site.contact.tiktok %>" target="_blank" rel="noopener"><%- icon('tiktok') %><span><%= site.contact.tiktokHandle %></span></a></li>
+      </ul>
+    </div>
 
     <div class="foot__cols">
       <nav class="foot__col" aria-labelledby="foot-nav">
@@ -59,9 +67,12 @@
     <p><span <%- i('footer.built') %>><%= t('footer.built') %></span> <a class="foot__link foot__link--inline" href="<%= site.contact.credit.url %>"><%= site.contact.credit.label %></a></p>
   </div>
 
-  <svg class="foot__word" viewBox="0 0 1000 175" role="img" aria-label="<%= site.brand.name %>" data-footer-word>
-    <text x="500" y="235" text-anchor="middle" textLength="1000" lengthAdjust="spacingAndGlyphs">Yannick</text>
-  </svg>
+  <%# Decorative: the brand name is already in .foot__brand. The viewBox is the word's real ink box (glyph ascent 109, descent 2 at this size) plus a little room, so no letter is cropped. %>
+  <div class="container foot__wordwrap" aria-hidden="true">
+    <svg class="foot__word" viewBox="0 0 1000 124" focusable="false" data-footer-word>
+      <text x="0" y="113" textLength="994" lengthAdjust="spacingAndGlyphs"><%= site.brand.name %></text>
+    </svg>
+  </div>
 </footer>
 
 <div class="mobile-bar" role="group" aria-label="Quick contact">

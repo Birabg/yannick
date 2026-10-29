@@ -1,0 +1,27 @@
+<%
+  /* The three ways to reach the shop. Each card is one big link (the title link stretches over the card);
+     the phone card also holds a separate "Copy number" button above that link. */
+%>
+<div class="cblocks" data-rv>
+  <div class="cblock" data-rv-item>
+    <span class="cblock__kicker">WhatsApp</span>
+    <h3 class="cblock__title"><a class="cblock__link" href="<%= fmt.genericLink() %>" target="_blank" rel="noopener"><span <%- i('cb.wa.title') %>><%= t('cb.wa.title') %></span></a></h3>
+    <p class="cblock__sub" <%- i('cb.wa.sub') %>><%= t('cb.wa.sub') %></p>
+    <span class="cblock__go" aria-hidden="true"><%- icon('arrow-ur') %></span>
+  </div>
+  <div class="cblock" data-rv-item>
+    <span class="cblock__kicker" <%- i('cb.tel.kicker') %>><%= t('cb.tel.kicker') %></span>
+    <h3 class="cblock__title"><a class="cblock__link" href="tel:<%= site.contact.phone %>"><%= site.contact.phoneDisplay %></a></h3>
+    <p class="cblock__sub" <%- i('cb.tel.sub') %>><%= t('cb.tel.sub') %></p>
+    <button type="button" class="cblock__copy" data-copy="<%= site.contact.phone %>">
+      <%- icon('copy') %><span <%- i('order.copy') %>><%= t('order.copy') %></span><span hidden data-copied-label <%- i('order.copied') %>><%= t('order.copied') %></span>
+    </button>
+    <span class="cblock__go" aria-hidden="true"><%- icon('arrow-ur') %></span>
+  </div>
+  <div class="cblock" data-rv-item>
+    <span class="cblock__kicker">TikTok</span>
+    <h3 class="cblock__title"><a class="cblock__link" href="<%= site.contact.tiktok %>" target="_blank" rel="noopener"><%= site.contact.tiktokHandle %></a></h3>
+    <p class="cblock__sub" <%- i('cb.tt.sub') %>><%= t('cb.tt.sub') %></p>
+    <span class="cblock__go" aria-hidden="true"><%- icon('arrow-ur') %></span>
+  </div>
+</div>
