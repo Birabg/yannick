@@ -1,0 +1,27 @@
+<%
+  /* The TikTok story card beside the headline. The photo is the Our Story one (src/lib/story.js), so a new photo in
+     /admin/story changes both; without one it is a warm amber card with the badge centred. The whole card is one link. */
+  const ph = story.photo;
+%>
+<a class="story-card<%= ph ? '' : ' story-card--plain' %>" href="<%= site.contact.tiktok %>" target="_blank" rel="noopener noreferrer" aria-label="<%= t('hero.story') %>" data-i18n-aria="hero.story" data-badge>
+  <% if (ph) {
+    const set = function (ext) { return ph.widths.map(function (w) { return ph.url + '/' + ph.base + '-' + w + '.' + ext + ' ' + w + 'w'; }).join(', '); };
+    const sizes = '(min-width: 1180px) 520px, (min-width: 769px) 36vw, 100vw';
+  %>
+  <picture>
+    <source type="image/avif" srcset="<%= set('avif') %>" sizes="<%= sizes %>">
+    <source type="image/webp" srcset="<%= set('webp') %>" sizes="<%= sizes %>">
+    <img class="story-card__img fx-<%= Math.round(story.focus.x / 10) * 10 %> fy-<%= Math.round(story.focus.y / 10) * 10 %>" src="<%= ph.url %>/<%= ph.base %>-<%= ph.widths[ph.widths.length - 1] %>.webp" width="<%= ph.width %>" height="<%= ph.height %>" alt="" decoding="async" fetchpriority="low">
+  </picture>
+  <% } %>
+  <span class="story-card__foot" aria-hidden="true">
+    <span class="badge">
+      <svg class="badge__ring" focusable="false" viewBox="0 0 120 120"><defs><path id="badge-path" d="M60 60m-46 0a46 46 0 1 1 92 0a46 46 0 1 1-92 0"/></defs><text><textPath href="#badge-path" textLength="286" lengthAdjust="spacing">Watch our story • on TikTok •</textPath></text></svg>
+      <span class="badge__play"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
+    </span>
+    <span class="story-card__label">
+      <strong <%- i('hero.storyWatch') %>><%= t('hero.storyWatch') %></strong>
+      <span <%- i('hero.storyOn') %>><%= t('hero.storyOn') %></span>
+    </span>
+  </span>
+</a>

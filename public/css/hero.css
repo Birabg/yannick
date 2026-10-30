@@ -1,5 +1,5 @@
-/* Hero: the first screen (copy, badge, five cards), the scent-family colours, the notch, the quote and the teaser.
-   Markup is in views/components/hero-*.ejs; public/js/hero.js adds the idle float and pauses it off-screen. */
+/* Hero: the first screen (copy beside the TikTok story card, five bottle cards), the scent-family colours, the notch, the quote and the teaser.
+   Markup is in views/components/hero-*.ejs and story-card.ejs; public/js/hero.js adds the idle float and pauses it off-screen. */
 .defs {
   position: absolute;
   width: 0;
@@ -32,24 +32,38 @@
   --card-fg: var(--ink);
 }
 
-/* ---------- the first screen: copy on top, badge at the end of the button row, five bottle cards below, all on the header's grid ---------- */
+
+/* ---------- the first screen, on the header's container: row 1 is the copy (7/12) beside the story card (5/12), both ending on
+   one line; then the "Featured bottles" row and five cards. Spacing is on an 8px rhythm. ---------- */
 .hero {
   position: relative;
   isolation: isolate;
   color: var(--c-text);
 }
+/* The header is fixed over the hero, so 100svh here is calc(100svh - header) of content below it, and the top padding is
+   the header's height plus the breathing room under its bottom edge: 24px on phones, 32px on tablets, 40-72px on desktop.
+   Spare height also goes above the headline, so the cards and their captions stay on the first screen. */
 .hero__main {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: clamp(12px, 2svh, 28px);
   /* under 900px the fixed Call / WhatsApp bar covers the bottom of the screen */
   min-height: calc(100svh - var(--bar-h) - env(safe-area-inset-bottom));
-  padding: calc(var(--header-h) + clamp(10px, 3svh, 36px)) 0 12px;
+  padding: calc(var(--header-h) + var(--s-3)) 0 16px;
+}
+@media (min-width: 769px) {
+  .hero__main {
+    padding-top: calc(var(--header-h) + var(--s-4));
+  }
 }
 @media (min-width: 900px) {
   .hero__main {
     min-height: 100svh;
+  }
+}
+@media (min-width: 1180px) {
+  .hero__main {
+    padding-top: calc(var(--header-h) + clamp(40px, 6vh, 72px));
   }
 }
 
@@ -75,21 +89,29 @@
   opacity: var(--hero-grain);
 }
 
-/* one grid: headline, buttons, trust line and badge are direct children of this container (phones: one column in that order) */
+/* row 1: phones stack headline, buttons, trust line, then the story card.
+   --hero-fs is the headline size; --cap is how far below the top of its line box the capital letters start (in em, measured
+   for Bricolage Grotesque at line-height 1.02), so the story card can start on the same visual line. */
 .hero__top {
+  --hero-fs: clamp(2.4rem, 1.2rem + 4.6vw, 3.5rem);
+  --cap: 0.163;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  justify-items: start;
-  gap: clamp(14px, 2.4svh, 24px);
+  gap: 24px;
+  margin-top: auto;
 }
 .hero__copy {
-  display: contents;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
 }
 
 /* ---------- headline ---------- */
 .hero__title {
   max-width: 9em; /* two balanced lines: "A Good Scent / Speaks First" */
-  font-size: clamp(2.4rem, min(1.2rem + 4.6vw, 10.5svh), 5.6rem);
+  margin: 0;
+  font-size: var(--hero-fs);
   font-weight: 700;
   letter-spacing: -0.045em;
   line-height: 1.02;
@@ -130,13 +152,13 @@
   animation: hero-draw 700ms var(--ease-out) 420ms forwards;
 }
 
-/* ---------- calls to action and the trust line ---------- */
+/* ---------- calls to action and the trust line: 24px under the headline, 16px between ---------- */
 .hero__cta {
   animation: hero-rise 650ms var(--ease-out) 260ms both;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  width: 100%;
+  margin-top: 24px;
 }
 .hero__cta .btn {
   gap: 0.6rem;
@@ -146,6 +168,9 @@
   flex: none;
 }
 @media (max-width: 479px) {
+  .hero__cta {
+    width: 100%;
+  }
   .hero__cta .btn {
     flex: 1 1 100%;
     padding-inline: 1.25rem;
@@ -154,7 +179,7 @@
 .hero__trust {
   animation: hero-rise 650ms var(--ease-out) 320ms both;
   max-width: 36rem;
-  margin: 0;
+  margin: 16px 0 0;
   color: var(--c-text);
   font-size: 1.0625rem;
   font-weight: 450;
@@ -162,20 +187,102 @@
   opacity: 0.86;
 }
 
-/* ---------- the story badge ---------- */
+/* ---------- the story card: the founder photo with a dark foot, the spinning badge on its bottom-left corner; one link ---------- */
+.story-card {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 220px;
+  overflow: hidden;
+  border: 1px solid var(--c-border);
+  border-radius: 24px;
+  background: var(--c-surface);
+  color: var(--paper);
+  animation: story-in 650ms var(--ease-out) 360ms both;
+}
+.story-card:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 4px;
+}
+.story-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--fx, 50%) var(--fy, 30%);
+  transition: transform 600ms var(--ease-out);
+}
+.story-card:hover .story-card__img,
+.story-card:focus-visible .story-card__img {
+  transform: scale(1.04);
+}
+/* the dark foot that keeps the label readable on any photo, in either theme */
+.story-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(to top, rgb(14 10 6 / 0.86), rgb(14 10 6 / 0.4) 42%, transparent 72%);
+}
+.story-card__foot {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+}
+.story-card__label {
+  display: grid;
+  gap: 2px;
+  line-height: 1.25;
+  text-shadow: 0 1px 8px rgb(0 0 0 / 0.35);
+}
+.story-card__label strong {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.story-card__label span {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  opacity: 0.88;
+}
+/* no photo yet: a warm amber card with the badge in the middle */
+.story-card--plain {
+  background:
+    radial-gradient(120% 90% at 30% 20%, rgb(255 205 120 / 0.9), transparent 60%),
+    linear-gradient(140deg, #ffb52e, #c96f00);
+  color: var(--ink);
+}
+.story-card--plain::after {
+  content: none;
+}
+.story-card--plain .story-card__foot {
+  inset: 0;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+.story-card--plain .story-card__label {
+  text-shadow: none;
+}
+
+/* ---------- the badge: a ring of text turning around an amber play button ---------- */
 .badge {
   position: relative;
   display: grid;
   flex: none;
   place-items: center;
-  width: 96px;
-  height: 96px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
-  color: var(--c-text);
-}
-.badge:focus-visible {
-  outline: 3px solid var(--c-focus);
-  outline-offset: 4px;
+  animation: hero-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1) 520ms both;
 }
 .badge__ring {
   position: absolute;
@@ -195,32 +302,26 @@
 .badge__play {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: var(--amber);
   color: var(--ink);
   box-shadow: 0 6px 18px rgb(255 161 0 / 0.35);
   transition: transform 300ms var(--ease-out);
 }
+.story-card--plain .badge__play {
+  background: var(--ink);
+  color: var(--amber);
+}
 .badge__play svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   margin-left: 2px;
 }
-.badge:hover .badge__play,
-.badge:focus-visible .badge__play {
+.story-card:hover .badge__play,
+.story-card:focus-visible .badge__play {
   transform: scale(1.12);
-}
-@media (min-width: 640px) {
-  .badge {
-    width: 104px;
-    height: 104px;
-  }
-  .badge__play {
-    width: 52px;
-    height: 52px;
-  }
 }
 
 /* ---------- the notch: a rounded step cut from the top-right corner ---------- */
@@ -239,31 +340,37 @@
       calc(var(--nw) - var(--nr)) top calc(var(--nh) - var(--nr)) / var(--nr) var(--nr) no-repeat;
 }
 
-/* ---------- five cards: one row on the header's grid; a gentle stagger; brand and name always shown, price on hover, focus and touch ---------- */
+
+/* ---------- "Featured bottles" and five cards. Phones and tablets: a snap-scroll row with the next card peeking;
+   from 1180px five equal columns on the container. Brand, name (two lines reserved) and price share one baseline;
+   the stagger and the idle float move only the plates. ---------- */
 .hero__cards {
-  margin-top: auto;
-  padding-bottom: 20px;
+  margin-top: 40px;
 }
 .hero__cards-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  min-height: 32px;
+  margin-bottom: 16px;
   padding-inline: var(--gutter);
 }
 .hero__cards-title {
   margin: 0;
-  color: var(--c-muted);
-  font-size: 0.8125rem;
+  color: var(--c-text);
+  font-size: 0.875rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+  opacity: 0.82;
 }
 .hero__more {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   min-height: 44px;
+  margin-block: -6px; /* a 44px target inside the 32px row */
   border-radius: var(--r-pill);
   color: var(--c-text);
   font-size: 0.9375rem;
@@ -287,13 +394,12 @@
   outline: 3px solid var(--c-focus);
   outline-offset: 3px;
 }
-/* phones and tablets: a snap-scroll row, the next card peeks */
 .hero__row {
   --gap: 14px;
   display: flex;
   align-items: flex-start;
   gap: var(--gap);
-  padding: 6px var(--gutter) 10px;
+  padding: 0 var(--gutter) 8px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--gutter);
@@ -304,25 +410,12 @@
   display: none;
 }
 .hc {
-  flex: 0 0 min(70%, 320px);
+  flex: 0 0 62%;
   min-width: 0;
   container-type: inline-size;
   scroll-snap-align: start;
 }
-@media (min-width: 640px) {
-  .hc {
-    flex-basis: calc((100% - 2 * var(--gap)) / 3.3);
-  }
-}
-.hc--1,
-.hc--3,
-.hc--5 {
-  margin-top: clamp(10px, 2.2vw, 36px);
-}
 
-.hc__float {
-  transform: translate3d(0, 0, 0);
-}
 .hc__link {
   display: block;
   border-radius: 22px;
@@ -338,10 +431,10 @@
   --go: calc(var(--nh) - 6px);
   position: relative;
   display: block;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 5;
   border-radius: 22px;
   transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
-    translate3d(0, var(--lift, 0), 0);
+    translate3d(0, calc(var(--stagger, 0px) + var(--lift, 0px)), 0);
   transition: transform 350ms var(--ease-out);
 }
 .hc__link:hover .hc__plate,
@@ -389,7 +482,7 @@
   transform: scale(1.04);
 }
 
-/* caption: brand (small caps) and name always; the price joins on hover and focus, and always on touch screens */
+/* caption: brand in small caps, the name with two lines reserved, the price (or "Ask for price") in amber */
 .hc__cap {
   display: grid;
   gap: 2px;
@@ -399,7 +492,7 @@
 .hc__brand {
   overflow: hidden;
   color: var(--c-muted);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-overflow: ellipsis;
@@ -407,37 +500,22 @@
   white-space: nowrap;
 }
 .hc__name {
+  display: -webkit-box;
+  min-height: 2.5em;
   overflow: hidden;
   font-family: var(--font-display);
-  font-size: 1.0625rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 .hc__price {
+  color: var(--c-price);
   font-size: 0.9375rem;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
-  opacity: 0;
-  transform: translate3d(0, 4px, 0);
-  transition:
-    opacity 250ms var(--ease),
-    transform 350ms var(--ease-out);
-}
-.hc__link:hover .hc__price,
-.hc__link:focus-visible .hc__price {
-  opacity: 1;
-  transform: none;
-}
-.hero.is-tip-off .hc__price {
-  opacity: 0;
-}
-@media (hover: none) {
-  .hc__price,
-  .hero.is-tip-off .hc__price {
-    opacity: 1;
-    transform: none;
-  }
 }
 
 /* the arrow sits in the notch: a ring at rest, solid amber and turned a little on hover */
@@ -468,28 +546,25 @@
   transform: rotate(12deg);
 }
 
-/* ---------- the entrance: pure CSS, in one sequence (header, headline, buttons, badge, thumbnails, then the cards ~70ms apart; done in about 1.3s).
+/* ---------- the entrance: pure CSS, in one sequence (header, headline, buttons, story card, then the cards ~70ms apart; done in about 1.4s).
    Only opacity and transform move, so nothing shifts. The first two photos are preloaded. ---------- */
-.badge {
-  animation: hero-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1) 380ms both;
-}
 .hc {
   animation: hero-card 650ms var(--ease-out) both;
 }
 .hc--1 {
-  animation-delay: 380ms;
+  animation-delay: 460ms;
 }
 .hc--2 {
-  animation-delay: 450ms;
+  animation-delay: 530ms;
 }
 .hc--3 {
-  animation-delay: 520ms;
+  animation-delay: 600ms;
 }
 .hc--4 {
-  animation-delay: 590ms;
+  animation-delay: 670ms;
 }
 .hc--5 {
-  animation-delay: 660ms;
+  animation-delay: 740ms;
 }
 .site-header--over {
   animation: hero-fade 500ms var(--ease) backwards;
@@ -513,6 +588,16 @@
   from {
     opacity: 0;
     transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes story-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
   }
   to {
     opacity: 1;
@@ -550,17 +635,18 @@
   }
 }
 
-/* idle float: starts after the entrance, each card on its own period and phase */
+/* idle float: starts after the entrance, each plate on its own period and phase. It uses `translate`, which adds to the
+   plate's transform (stagger, tilt, hover lift) instead of replacing it. */
 @keyframes hc-float {
   0%,
   100% {
-    transform: translate3d(0, -6px, 0);
+    translate: 0 -5px;
   }
   50% {
-    transform: translate3d(0, 6px, 0);
+    translate: 0 5px;
   }
 }
-.hero.is-floating .hc__float {
+.hero.is-floating .hc__plate {
   animation: hc-float var(--fp, 7s) ease-in-out var(--fo, 0s) infinite;
 }
 .hc--1 {
@@ -589,50 +675,6 @@
   animation-play-state: paused !important;
 }
 
-/* ---------- scroll cue (desktop) ---------- */
-.hero__cue {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  display: none;
-  align-items: center;
-  gap: 10px;
-  transform: translateX(-50%);
-  color: var(--c-muted);
-  font-size: 0.875rem;
-  transition: opacity 300ms var(--ease);
-}
-.hero__cue.is-gone {
-  opacity: 0;
-}
-.hero__cue-line {
-  position: relative;
-  display: block;
-  width: 2px;
-  height: 22px;
-  overflow: hidden;
-  border-radius: 1px;
-  background: var(--hero-ring);
-  opacity: 0.5;
-}
-.hero__cue-line::after {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto;
-  height: 14px;
-  border-radius: 1px;
-  background: var(--amber);
-  animation: hero-cue 1.8s var(--ease-out) infinite;
-}
-@keyframes hero-cue {
-  from {
-    transform: translate3d(0, -14px, 0);
-  }
-  to {
-    transform: translate3d(0, 22px, 0);
-  }
-}
-
 /* shader: only inside the order panel, behind a bottle photo, never behind text */
 .hero-shader__stage {
   display: block;
@@ -650,14 +692,14 @@
   display: block;
 }
 
-/* ---------- the band under the hero: the founder's quote and the "find your scent" card, between two thin lines ---------- */
+/* ---------- the band under the hero: the founder's quote and the "find your scent" card. It starts 64-80px under the
+   card captions (8px row padding + 16px hero padding + 40-56px here) and ends on one thin line. ---------- */
 .hero__foot {
   display: grid;
   gap: var(--s-5);
   align-items: center;
-  margin-top: var(--s-5);
-  padding-block: clamp(4rem, 3rem + 3vw, 6rem);
-  border-block: 1px solid var(--c-border);
+  padding-block: clamp(40px, 5svh, 56px) clamp(4rem, 3rem + 3vw, 6rem);
+  border-bottom: 1px solid var(--c-border);
 }
 .quote {
   margin: 0;
@@ -790,38 +832,69 @@
   }
 }
 
-/* ---------- desktop: headline across about 60%, buttons left with the badge at the right edge, five equal columns of cards ---------- */
-@media (min-width: 1024px) {
-  .hero__main {
-    padding-bottom: 28px;
-  }
+
+/* ---------- tablet and up: copy beside the story card; plate heights follow the viewport height, so the captions stay on the first screen ---------- */
+@media (min-width: 769px) {
+  /* the headline is sized by the screen's height as well as its width, so the whole first screen fits at 1366x768 and up */
   .hero__top {
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: var(--s-6);
-    align-items: center;
+    --hero-fs: clamp(2.75rem, min(6vw, 27.3svh - 128px), 6.75rem);
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+    column-gap: 32px;
+    align-items: stretch;
   }
-  .hero__title {
-    grid-column: 1 / -1;
-    max-width: 60%;
-    font-size: clamp(3.4rem, min(1.2rem + 5.2vw, 11.5svh), 7.2rem);
+  /* from the top of the headline's capitals to the bottom of the trust line */
+  .story-card {
+    aspect-ratio: auto;
+    max-height: none;
+    min-height: 160px; /* low enough for the one-line Amharic headline at 1366px */
+    margin-top: calc(var(--hero-fs) * var(--cap));
   }
-  .hero__cta {
-    grid-column: 1;
-    grid-row: 2;
-    width: auto;
+  .hero__cards {
+    margin-top: clamp(32px, 5svh, 56px);
   }
-  .hero__trust {
-    grid-column: 1;
-    grid-row: 3;
+  /* a gentle stagger on the plates only: the 2nd and 4th sit higher; the row's top padding makes room */
+  .hero__row {
+    --gap: 18px;
+    --st: clamp(8px, 1.5svh, 16px);
+    padding-top: var(--st);
   }
-  .badge {
-    grid-column: 2;
-    grid-row: 2;
-    justify-self: end;
-    margin-block: -26px; /* the row is as tall as the buttons, so the badge is centred on them */
+  .hc--2 .hc__plate,
+  .hc--4 .hc__plate {
+    --stagger: calc(-1 * var(--st));
+  }
+  /* four cards and a peek of the fifth */
+  .hc {
+    flex-basis: calc((100% - 4 * var(--gap)) / 4.3);
   }
   .hc__plate {
-    aspect-ratio: 4 / 5;
+    aspect-ratio: auto;
+    height: min(clamp(150px, 23svh, 280px), 125cqw);
+  }
+}
+
+/* ---------- desktop: 7/12 + 5/12, five equal columns across the container ---------- */
+@media (min-width: 1180px) {
+  .hero__top {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: clamp(32px, 3vw, 48px);
+  }
+  .badge {
+    width: 96px;
+    height: 96px;
+  }
+  .badge__play {
+    width: 48px;
+    height: 48px;
+  }
+  .story-card__foot {
+    gap: 16px;
+    padding: 16px 20px;
+  }
+  .story-card__label strong {
+    font-size: 1.25rem;
+  }
+  .story-card__label span {
+    font-size: 1rem;
   }
   .hero__cards {
     width: min(100% - 2 * var(--gutter), var(--container));
@@ -831,29 +904,27 @@
     padding-inline: 0;
   }
   .hero__row {
-    --gap: clamp(14px, 1.6vw, 28px);
+    --gap: clamp(16px, 1.6vw, 28px);
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    padding: 6px 0 10px;
+    padding-inline: 0;
     overflow: visible;
   }
   .hc {
     flex: none;
   }
-  .hero__cue {
-    display: flex;
-  }
   .hc__shape {
     filter: drop-shadow(0 16px 20px var(--hc-shadow));
   }
-  .hero__foot {
-    margin-top: var(--s-5);
+  .hc__name {
+    font-size: 1.0625rem;
   }
 }
 
 /* ---------- reduced motion: the final state straight away, nothing loops ---------- */
 @media (prefers-reduced-motion: reduce) {
   .badge,
+  .story-card,
   .hc {
     animation: none !important;
   }
@@ -865,15 +936,14 @@
     animation: none !important;
   }
   .badge__ring,
-  .hero__cue-line::after,
-  .hero.is-floating .hc__float,
+  .hero.is-floating .hc__plate,
   .site-header--over {
     animation: none;
   }
+  .story-card__img,
   .hc__plate,
   .hc__img,
   .hc__go,
-  .hc__price,
   .hero__more svg,
   .teaser,
   .teaser__go,
@@ -883,20 +953,24 @@
 }
 
 /* Amharic: its own smaller scale, tight lines, no tracking (Noto Sans Ethiopic) */
+:lang(am) .hero__top {
+  --hero-fs: clamp(2rem, 0.9rem + 3.6vw, 3rem);
+  --cap: 0.204; /* Ethiopic glyphs at line-height 1.2 */
+}
 :lang(am) .hero__title {
   max-width: 11em;
-  font-size: clamp(2rem, min(0.9rem + 3.6vw, 9svh), 4.6rem);
   letter-spacing: 0;
   line-height: 1.2;
 }
-@media (min-width: 1024px) {
+@media (min-width: 769px) {
+  :lang(am) .hero__top {
+    --hero-fs: clamp(2.3rem, min(4.6vw, 23svh - 105px), 5.6rem);
+  }
   :lang(am) .hero__title {
-    max-width: 66%;
-    font-size: clamp(2.8rem, min(0.9rem + 4.2vw, 11svh), 5.6rem);
+    max-width: 100%;
   }
 }
 :lang(am) .hero__trust,
-:lang(am) .hero__cue,
 :lang(am) .hero__cards-title,
 :lang(am) .hc__brand,
 :lang(am) .quote__role,

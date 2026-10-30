@@ -1,4 +1,4 @@
-/* Header: logo left, nav centred, order button and language right.
+/* Header: logo left; nav links, order button and language grouped on the right.
    On the home page it floats transparent over the hero and turns solid after 40px of scroll. */
 .site-header {
   position: sticky;
@@ -234,9 +234,10 @@
   .nav {
     display: contents;
   }
+  /* the links sit right, beside the actions, so the logo stands alone and FAQ isn't stranded far from the search icon */
   .nav__list {
     grid-column: 2;
-    justify-content: center;
+    justify-content: flex-end;
     gap: var(--s-4);
   }
   .nav__actions {
