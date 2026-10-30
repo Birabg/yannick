@@ -46,8 +46,8 @@ router.get('/', (req, res) => {
     moods: moodPicks(list),
     families: familyLib.available(list),
     heroProducts,
-    // "+N more" next to the round thumbnails: every bottle the hero does not already show (cards and thumbnails)
-    moreCount: Math.max(0, list.length - heroProducts.length),
+    // "+N more" beside "Featured bottles": every bottle the five hero cards do not show
+    moreCount: Math.max(0, list.length - Math.min(5, heroProducts.length)),
     houses,
     houseCss: houseLib.css(houses),
     hours: hoursLib.view(),

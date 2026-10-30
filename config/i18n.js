@@ -24,7 +24,8 @@ const en = {
   'hero.moreAria': 'See the whole collection',
   'hero.featured': 'Featured bottles',
   'hero.story': 'Watch our story on TikTok',
-  'hero.scroll': 'Scroll',
+  'hero.storyWatch': 'Watch our story',
+  'hero.storyOn': 'on TikTok',
   'hero.sub':
     'Original bottles from famous houses. Free delivery in Addis. Tell us what you like and we will find your scent.',
   'hero.cta': 'Explore the Collection',
@@ -177,7 +178,8 @@ const am = {
   'hero.moreAria': 'ሙሉውን ስብስብ ይመልከቱ',
   'hero.featured': 'የተመረጡ ሽቶዎች',
   'hero.story': 'ታሪካችንን በቲክቶክ ይመልከቱ',
-  'hero.scroll': 'ወደ ታች',
+  'hero.storyWatch': 'ታሪካችንን ይመልከቱ',
+  'hero.storyOn': 'በቲክቶክ',
   'hero.sub': 'ከታዋቂ ብራንዶች ኦሪጅናል ሽቶዎች። በአዲስ አበባ ነፃ ዴሊቨሪ። የሚወዱትን ይንገሩን፣ መዓዛዎን እንፈልግልዎታለን።',
   'hero.cta': 'ስብስቡን ያስሱ',
   // TODO native review

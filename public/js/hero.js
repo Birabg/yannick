@@ -1,13 +1,13 @@
 import { prefersReducedMotion } from './motion.js';
 
-const INTRO_MS = 1400; // the CSS entrance (about 1.3s) is over by then, so the idle float may begin
-const RING_SLOW = 0.25; // the badge ring turns at a quarter of its speed while hovered
+const INTRO_MS = 1500; // the CSS entrance (about 1.4s) is over by then, so the idle float may begin
+const RING_SLOW = 0.25; // the story badge ring turns at a quarter of its speed while hovered
 const RING_EASE = 0.12; // share of the way to the target speed covered each frame
 
 /**
  * The hero's behaviour. The look and the entrance are all CSS (hero.css, so the headline and the first bottles
  * never wait for a script); this file only flips states on the section:
- * is-floating (idle float), is-paused (off-screen or hidden tab), is-tip-off (Escape).
+ * is-floating (idle float) and is-paused (off-screen or hidden tab).
  */
 export function initHero() {
   const hero = document.querySelector('[data-hero]');
@@ -18,8 +18,6 @@ export function initHero() {
   repaintPhotosAsCardsLand(hero);
   pauseWhenAway(hero);
   slowRingOnHover(hero);
-  scrollCue(hero);
-  escapeClosesTips(hero);
   keepScrollerFocusable(hero);
 }
 
@@ -82,28 +80,6 @@ function slowRingOnHover(hero) {
   badge.addEventListener('pointerleave', () => set(1));
   badge.addEventListener('focus', () => set(RING_SLOW));
   badge.addEventListener('blur', () => set(1));
-}
-
-/** The "scroll" cue fades out as soon as the page has moved. */
-function scrollCue(hero) {
-  const cue = hero.querySelector('[data-cue]');
-  if (!cue) return;
-  const update = () => cue.classList.toggle('is-gone', window.scrollY > 40);
-  update();
-  window.addEventListener('scroll', update, { passive: true });
-}
-
-/** Escape hides the name-and-price tooltips; moving to another card brings them back. */
-function escapeClosesTips(hero) {
-  const cards = hero.querySelector('[data-cards]');
-  if (!cards) return;
-  const close = () => hero.classList.add('is-tip-off');
-  const open = () => hero.classList.remove('is-tip-off');
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') close();
-  });
-  cards.addEventListener('pointerover', open);
-  cards.addEventListener('focusin', open);
 }
 
 /** The card row is a keyboard-scrollable region only when it really overflows (phones and tablets). */

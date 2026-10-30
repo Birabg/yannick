@@ -27,10 +27,9 @@
           <%- include('components/hero-headline') %>
           <%- include('components/hero-cta') %>
         </div>
-        <%- include('components/story-badge') %>
+        <%- include('components/story-card') %>
       </div>
       <% if (heroCards.length) { %><%- include('components/hero-cards', { items: heroCards, more: moreCount }) %><% } %>
-      <div class="hero__cue" aria-hidden="true" data-cue><span class="hero__cue-line"></span><span <%- i('hero.scroll') %>><%= t('hero.scroll') %></span></div>
     </div>
 
     <div class="container hero__foot">
