@@ -33,7 +33,7 @@
     <h2 class="qv__name" id="qv-title" tabindex="-1"><%= p.name %></h2>
     <% if (meta) { %><p class="qv__meta"><%= meta %></p><% } %>
 
-    <p class="qv__price<%= p.price > 0 ? '' : ' is-ask' %>"><% if (p.price > 0) { %><small><%= site.currency %></small><%= p.price.toLocaleString('en-US') %><% } else { %><span <%- i('qv.ask') %>><%= t('qv.ask') %></span><% } %></p>
+    <p class="qv__price<%= p.price > 0 ? '' : ' is-ask' %>"><% if (p.price > 0) { %><small><%= site.currency %></small><%= fmt.amount(p.price) %><% } else { %><span <%- i('qv.ask') %>><%= t('qv.ask') %></span><% } %></p>
     <p class="qv__stock <%= p.inStock ? 'is-in' : 'is-out' %>"><span class="qv__dot" aria-hidden="true"></span><span <%- i(p.inStock ? 'qv.inStock' : 'qv.soldOut') %>><%= t(p.inStock ? 'qv.inStock' : 'qv.soldOut') %></span></p>
 
     <% if (p.tagline) { %><p class="qv__tagline"<% if (p.taglineAm) { %> data-am="<%= p.taglineAm %>"<% } %>><%= p.tagline %></p><% } %>

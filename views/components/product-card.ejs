@@ -1,7 +1,7 @@
 <%
   /* params: p (product), order (position in featured order), rv (reveal on scroll; only inside a [data-rv] block).
-     One card for the home page collection and the scent-family pages: a notched plate on one colour for every bottle
-     (the background-free cut-out when there is one), brand, name and price on the page, and a single link over the whole card. */
+     One card for the home page collection, the "By mood" picks and the scent-family pages: a notched plate on one colour for every bottle
+     (the background-free cut-out when there is one), brand, name, price and a light Order pill on the page, and a single link over the whole card. */
   const label = fmt.productLabel(p);
   const fam = fmt.cardColor(p);
   const price = fmt.price(p.price);
@@ -16,8 +16,8 @@
   <article class="card fam--<%= fam %><%= p.inStock ? '' : ' is-soldout' %>">
     <div class="card__plate">
       <span class="card__shape"><span class="card__face">
-        <% if (p.cutW > 0) { %><img class="card__img is-cut" src="/uploads/products/<%= p.image %>-cut.webp" width="<%= p.cutW %>" height="<%= p.cutH %>" alt="" loading="lazy" decoding="async" data-photo>
-        <% } else { %><%- include('photo', { p: p, cls: 'card__img', alt: '', sizes: '(min-width: 1200px) 300px, 45vw' }) %><% } %>
+        <% if (p.cutW > 0) { %><img class="card__img is-cut" src="/uploads/products/<%= p.image %>-cut.webp" width="<%= p.cutW %>" height="<%= p.cutH %>" alt="<%= label %>" loading="lazy" decoding="async" data-photo>
+        <% } else { %><%- include('photo', { p: p, cls: 'card__img', alt: label, sizes: '(min-width: 1200px) 300px, 45vw' }) %><% } %>
       </span></span>
       <div class="card__tags">
         <% if (!p.inStock) { %><span class="card__tag card__tag--soldout">Sold out</span><% } %>
@@ -25,13 +25,13 @@
         <% tags.forEach(function (b) { %><span class="card__tag card__tag--<%= b.key %>"><%= b.label %></span><% }) %>
       </div>
       <span class="card__go" aria-hidden="true"><%- icon('arrow-ur') %></span>
-      <a class="card__order<%= p.price > 0 ? '' : ' is-ask' %>" href="<%= fmt.orderLink(p) %>" target="_blank" rel="noopener noreferrer"><%- icon('whatsapp') %><span <%- i(p.inStock ? 'qv.order' : 'qv.askBack') %>><%= t(p.inStock ? 'qv.order' : 'qv.askBack') %></span><span class="sr-only">: <%= label %></span></a>
     </div>
     <div class="card__body">
       <p class="card__brand"><%= p.brand %></p>
       <h3 class="card__name"><a class="card__link" href="/perfume/<%= p.slug %>" data-open-product><%= p.name %><span class="sr-only">, <%= p.brand %>, <%= price %>, <span <%- i('hero.view') %>><%= t('hero.view') %></span></span></a></h3>
       <% if (p.size || p.concentration) { %><p class="card__meta"><%= [p.size, p.concentration].filter(Boolean).join(' · ') %></p><% } %>
-      <p class="card__price<%= p.price > 0 ? '' : ' is-ask' %>"><span aria-hidden="true"><%= price %></span></p>
+      <p class="card__price" aria-hidden="true"><% if (p.price > 0) { %><%= price %><% } else { %><span class="card__ask" <%- i('qv.ask') %>><%= t('qv.ask') %></span><% } %></p>
+      <a class="card__order" href="<%= fmt.orderLink(p) %>" target="_blank" rel="noopener noreferrer"><%- icon('whatsapp') %><span <%- i(p.inStock ? 'card.order' : 'qv.askBack') %>><%= t(p.inStock ? 'card.order' : 'qv.askBack') %></span><span class="sr-only"> <%= label %> on WhatsApp</span></a>
     </div>
   </article>
 </li>

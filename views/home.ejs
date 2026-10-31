@@ -12,6 +12,7 @@
   const num = function () { return String(++step).padStart(2, '0'); };
 %>
 <%- include('partials/head', { preloadImage: heroProducts[0] || null, preloadImage2: heroProducts[1] || null }) %>
+<%- include('components/splash-screen') %>
 <main id="main">
 
   <!-- Hero -->
@@ -196,17 +197,7 @@
         <div class="mood__panel" data-mood-panel="<%= m.key %>" <%= n === 0 ? '' : 'hidden' %>>
           <p class="mood__line"><%= m.line %></p>
           <ul class="mood__list">
-            <% m.picks.forEach(function (p) { %>
-            <li class="pick">
-              <span class="pick__img fam--<%= fmt.cardColor(p) %>"><%- include('components/photo', { p: p, cls: 'pick__photo', alt: '', sizes: '96px' }) %></span>
-              <div class="pick__body">
-                <p class="pick__brand"><%= p.brand %></p>
-                <h3 class="pick__name"><a href="/perfume/<%= p.slug %>" data-open-product><%= p.name %></a></h3>
-                <p class="pick__meta"><%= [p.size, p.concentration, fmt.price(p.price)].filter(Boolean).join(' · ') %></p>
-              </div>
-              <a class="btn btn--sm pick__order" href="<%= fmt.orderLink(p) %>" target="_blank" rel="noopener"><span>Order</span><span class="sr-only"> <%= fmt.productLabel(p) %> on WhatsApp</span></a>
-            </li>
-            <% }) %>
+            <% m.picks.forEach(function (p, k) { %><%- include('components/product-card', { p: p, order: k }) %><% }) %>
           </ul>
         </div>
         <% }) %>

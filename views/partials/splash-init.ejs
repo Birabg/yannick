@@ -1,0 +1,32 @@
+<%#
+  The intro splash (components/splash-screen.ejs) is decided here, before the first paint, right after the theme.
+  Every public page marks the browser session as visited, so the splash plays only when the session starts on the home page:
+  never on a reload, the Back button, an in-site navigation or with reduced motion. Its styles ship in both the inlined critical
+  CSS (production) and main.css (development, where it is render-blocking), so the layer is styled from the first paint.
+  `has-splash` shows the layer and locks the scroll; `splash-hold` keeps the hero's CSS entrance at rest until the layer leaves.
+%>
+<% if (path === '/') { %>
+<script nonce="<%= cspNonce %>">
+(function () {
+  var show = true;
+  try {
+    if (sessionStorage.getItem('ys-visited')) show = false;
+    sessionStorage.setItem('ys-visited', '1');
+  } catch (e) {} // storage unavailable: show it on this load
+  var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+  if (nav && nav.type === 'back_forward') show = false;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) show = false;
+  if (!show) return;
+  document.documentElement.classList.add('has-splash', 'splash-hold');
+  var logo = document.createElement('link');
+  logo.rel = 'preload';
+  logo.as = 'image';
+  logo.href = '/img/brand/logo-192.webp';
+  logo.setAttribute('imagesrcset', '/img/brand/logo-192.webp 192w, /img/brand/logo-384.webp 384w');
+  logo.setAttribute('imagesizes', '(max-width: 599px) 80px, 112px');
+  document.head.appendChild(logo);
+})();
+</script>
+<% } else { %>
+<script nonce="<%= cspNonce %>">try { sessionStorage.setItem('ys-visited', '1'); } catch (e) {}</script>
+<% } %>

@@ -24,7 +24,7 @@
     <p class="detail__brand"><%= p.brand %></p>
     <<%= H %> class="detail__name"<%- sheet ? ' id="sheet-title"' : '' %>><%= p.name %></<%= H %>>
     <p class="detail__meta"><%= [p.size, p.concentration, p.family].filter(Boolean).join(' · ') %></p>
-    <p class="detail__price<%= p.price > 0 ? '' : ' is-ask' %>"><% if (p.price > 0) { %><small><%= site.currency %></small><%= p.price.toLocaleString('en-US') %><% } else { %>Ask for price<% } %></p>
+    <p class="detail__price<%= p.price > 0 ? '' : ' is-ask' %>"><% if (p.price > 0) { %><small><%= site.currency %></small><%= fmt.amount(p.price) %><% } else { %>Ask for price<% } %></p>
 
     <% if (p.tagline) { %><p class="detail__tagline"<% if (p.taglineAm) { %> data-am="<%= p.taglineAm %>"<% } %>><%= p.tagline %></p><% } %>
     <% if (p.description) { %><p class="detail__text"<% if (p.descriptionAm) { %> data-am="<%= p.descriptionAm %>"<% } %>><%= p.description %></p><% } %>

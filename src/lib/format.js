@@ -6,9 +6,12 @@ const ABBREVIATIONS = {
   'Eau de Cologne': 'EDC',
 };
 
+/** The one number format for every price on the site: 102000 -> "102,000". */
+const AMOUNT = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+const amount = (n) => AMOUNT.format(Number(n));
+
 /** A price of 0 means the owner has not set one yet. */
-const price = (n) =>
-  n > 0 ? `${site.currency} ${Number(n).toLocaleString('en-US')}` : 'Ask for price';
+const price = (n) => (n > 0 ? `${site.currency} ${amount(n)}` : 'Ask for price');
 
 const abbreviate = (concentration) => ABBREVIATIONS[concentration] || concentration;
 
@@ -57,6 +60,7 @@ const slugify = (s) =>
     .slice(0, 80);
 
 module.exports = {
+  amount,
   price,
   abbreviate,
   productLabel,

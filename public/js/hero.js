@@ -13,7 +13,13 @@ export function initHero() {
   const hero = document.querySelector('[data-hero]');
   if (!hero) return;
 
-  if (!prefersReducedMotion()) setTimeout(() => hero.classList.add('is-floating'), INTRO_MS);
+  if (!prefersReducedMotion()) {
+    const float = () => setTimeout(() => hero.classList.add('is-floating'), INTRO_MS);
+    // while the intro splash is up the entrance is held (splash.css), so the float waits for the splash to leave
+    if (document.documentElement.classList.contains('splash-hold'))
+      document.addEventListener('ys:splash-exit', float, { once: true });
+    else float();
+  }
 
   repaintPhotosAsCardsLand(hero);
   pauseWhenAway(hero);

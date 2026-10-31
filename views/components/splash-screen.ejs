@@ -1,0 +1,138 @@
+<%#
+  SplashScreen: the brand intro on the first home-page visit of a browser session (decided in partials/splash-init.ejs).
+  The markup waits in a <template>, so crawlers and visitors without it never get its text or its logo request; the page
+  underneath is the real, fully laid-out page from the first paint. The controller below runs inline, so the 2.5s cap holds
+  even before main.js arrives. Look and timeline: public/css/splash.css. The logo is the header's own badge (built from
+  public/img/Logo by scripts/make-logo.js), shown as is.
+%>
+<template id="splash-tpl">
+  <div class="splash" role="status" aria-live="polite" aria-label="<%= t('splash.loading') %>" data-splash-am-label="<%= tAm('splash.loading') %>">
+    <span class="splash__glow" aria-hidden="true"></span>
+    <div class="splash__content" aria-hidden="true">
+      <span class="splash__seal">
+        <img class="splash__logo" src="/img/brand/logo-192.webp" srcset="/img/brand/logo-192.webp 192w, /img/brand/logo-384.webp 384w" sizes="(max-width: 599px) 80px, 112px" width="112" height="112" alt="" decoding="async">
+        <span class="splash__shine"></span>
+      </span>
+      <p class="splash__word"><span class="splash__name">Yannick</span><span class="splash__scents"><span>S</span><span>C</span><span>E</span><span>N</span><span>T</span><span>S</span></span></p>
+      <p class="splash__tag" data-splash-am="<%= tAm('footer.tag') %>"><%= t('footer.tag') %></p>
+      <span class="splash__line"><span class="splash__fill" data-splash-fill></span></span>
+    </div>
+    <span class="sr-only" data-splash-am="<%= tAm('splash.loading') %>"><%= t('splash.loading') %></span>
+    <button class="splash__skip" type="button" data-splash-skip data-splash-am="<%= tAm('splash.skip') %>"><%= t('splash.skip') %></button>
+  </div>
+</template>
+<script nonce="<%= cspNonce %>">
+(function () {
+  var MIN = 1300; // never leave before the intro has played and the full lockup has been seen for a moment
+  var MAX = 2500; // never keep anyone waiting longer, whatever the network
+  var OUT = 700; // the exit: the words lift and fade, then the layer lifts away like a curtain
+  var root = document.documentElement;
+  var tpl = document.getElementById('splash-tpl');
+  if (!root.classList.contains('has-splash')) {
+    tpl.remove();
+    return;
+  }
+  var t0 = performance.now();
+  var splash = tpl.content.firstElementChild.cloneNode(true);
+  var am = false;
+  try {
+    am = localStorage.getItem('ys-lang') === 'am';
+  } catch (e) {}
+  if (am) {
+    splash.setAttribute('aria-label', splash.getAttribute('data-splash-am-label'));
+    [].forEach.call(splash.querySelectorAll('[data-splash-am]'), function (el) {
+      el.textContent = el.getAttribute('data-splash-am');
+      el.lang = 'am';
+    });
+  }
+  tpl.replaceWith(splash);
+
+  // While the layer is up, Tab stays on Skip (a keydown trap: making the page `inert` and back costs a whole-page restyle).
+  var skip = splash.querySelector('[data-splash-skip]');
+  var gone = false;
+
+  // The line fills as the first screen really gets ready: the fonts, the story photo and the first two bottles.
+  var fill = splash.querySelector('[data-splash-fill]');
+  var LINE = 600; // the line appears at 600ms; progress made before then is drawn from there
+  var target = 0;
+  var draw = function () {
+    fill.style.transform = 'scaleX(' + target + ')';
+  };
+  var setFill = function (x) {
+    target = Math.max(target, x);
+    if (performance.now() - t0 >= LINE) draw();
+  };
+  setTimeout(draw, LINE);
+  var total = 0;
+  var done = 0;
+  var track = function (promise) {
+    total++;
+    var step = function () {
+      done++;
+      setFill(0.15 + (0.75 * done) / total);
+    };
+    return Promise.resolve(promise).then(step, step);
+  };
+  var decoded = function (img) {
+    return img && img.decode ? img.decode().catch(function () {}) : null;
+  };
+  var fonts = track(document.fonts ? document.fonts.ready : null);
+  var pageReady = new Promise(function (resolve) {
+    if (document.readyState !== 'loading') resolve();
+    else document.addEventListener('DOMContentLoaded', resolve, { once: true });
+  }).then(function () {
+    var hero = document.querySelector('[data-hero]');
+    if (!hero) return;
+    var imgs = [hero.querySelector('.story-card__img')].concat(
+      [].slice.call(hero.querySelectorAll('.hc__img'), 0, 2)
+    );
+    return Promise.all(imgs.filter(Boolean).map(function (img) { return track(decoded(img)); }));
+  });
+
+  var out = false;
+  var leave = function () {
+    if (out) return;
+    out = true;
+    setFill(1);
+    splash.classList.add('is-out');
+    root.classList.remove('splash-hold'); // the hero's own entrance starts now, as the curtain lifts
+    document.dispatchEvent(new Event('ys:splash-exit'));
+    splash.addEventListener('transitionend', function (e) {
+      if (e.target === splash && e.propertyName === 'transform') end();
+    });
+    setTimeout(end, OUT + 200);
+  };
+  // The teardown is spread over two frames so no single frame pays for all of it.
+  var end = function () {
+    if (gone) return;
+    gone = true;
+    document.removeEventListener('keydown', onKey);
+    splash.remove();
+    requestAnimationFrame(function () {
+      root.classList.remove('has-splash');
+      var main = document.getElementById('main');
+      var active = document.activeElement;
+      if (main && (!active || active === document.body)) {
+        if (!main.hasAttribute('tabindex')) main.setAttribute('tabindex', '-1');
+        main.focus({ preventScroll: true });
+      }
+    });
+  };
+  var onKey = function (e) {
+    if (e.key === 'Escape') leave();
+    else if (e.key === 'Tab' && !out) {
+      e.preventDefault();
+      skip.focus();
+    }
+  };
+
+  Promise.all([fonts, pageReady]).then(function () {
+    setFill(1);
+    setTimeout(leave, Math.max(300, MIN - (performance.now() - t0)));
+  });
+  setTimeout(leave, MAX);
+  splash.addEventListener('pointerdown', leave);
+  skip.addEventListener('click', leave);
+  document.addEventListener('keydown', onKey);
+})();
+</script>

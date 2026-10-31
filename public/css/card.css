@@ -30,19 +30,17 @@
   background: none;
   box-shadow: none;
   container-type: inline-size;
+  transition: transform 350ms var(--ease-out);
 }
 .grid__item {
   min-width: 0;
 }
+/* on hover the card lifts a little and the plate's shadow deepens; every card keeps its slot, so rows stay aligned */
 .card:hover,
 .card:focus-within {
   border-color: transparent;
   box-shadow: none;
-}
-/* on hover only the picture plate lifts; the brand, name and price never move, so rows stay aligned */
-.card:hover .card__plate,
-.card:focus-within .card__plate {
-  transform: translate3d(0, -6px, 0);
+  transform: translate3d(0, -4px, 0);
 }
 
 .card__plate {
@@ -52,12 +50,16 @@
   --go: calc(var(--nh) - 6px);
   position: relative;
   aspect-ratio: 4 / 5;
-  transition: transform 350ms var(--ease-out);
 }
 .card__shape {
   position: absolute;
   inset: 0;
   filter: drop-shadow(0 8px 12px var(--hc-shadow));
+  transition: filter 350ms var(--ease-out);
+}
+.card:hover .card__shape,
+.card:focus-within .card__shape {
+  filter: drop-shadow(0 14px 22px var(--hc-shadow));
 }
 .card__face {
   position: absolute;
@@ -95,13 +97,14 @@
   transform-origin: 50% 100%;
   transition: transform 500ms var(--ease-out);
 }
-/* a photo that kept its backdrop: white melts into the plate in the light theme only */
-:root:not([data-theme='dark']) .card__img:not(.is-cut) {
+/* a photo that kept its backdrop (no cut-out yet): its white melts into the plate. The plate stays light in the dark
+   theme too (--plate), and the masked face isolates the blend, so this is safe in both themes. */
+.card__img:not(.is-cut) {
   mix-blend-mode: multiply;
 }
 .card:hover .card__img,
 .card:focus-within .card__img {
-  transform: scale(1.03);
+  transform: scale(1.04);
 }
 .card.is-soldout .card__img {
   filter: grayscale(1);
@@ -116,6 +119,7 @@
   flex-wrap: wrap;
   gap: 6px;
   max-width: calc(100% - var(--nw) - 20px);
+  pointer-events: none; /* clicks fall through to the card link */
 }
 .card__tag,
 .card__tags .sticker {
@@ -148,6 +152,7 @@
   border: 1.5px solid var(--amber);
   border-radius: 50%;
   color: var(--c-text);
+  pointer-events: none;
   transition:
     transform 350ms var(--ease-out),
     background-color var(--d-fast) var(--ease),
@@ -165,10 +170,11 @@
 }
 
 .card__body {
+  position: static; /* so the card link below stretches over the plate too, not only the text */
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
   padding: 0 2px;
 }
 .card__brand {
@@ -220,86 +226,78 @@
   color: var(--c-muted);
   font-size: 0.875rem;
 }
+/* price and Order sit at the foot of the card (margin-top: auto), so they line up across a row whatever the name's length */
 .card__price {
+  display: flex;
+  align-items: center;
+  min-height: 1.75rem;
   overflow: hidden;
   margin: auto 0 0;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding-top: 4px;
   color: var(--c-text);
   font-size: 1.125rem;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
+  line-height: 1.2;
 }
-.card__price.is-ask {
-  color: var(--c-muted);
+/* no price yet: a quiet label, so it reads as "ask us" and not as a missing value */
+.card__ask {
+  padding: 4px 10px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-pill);
+  background: var(--c-chip);
+  color: var(--c-text);
+  font-size: 0.8125rem;
   font-weight: 600;
+  letter-spacing: 0.01em;
 }
-/* the order button sits inside the plate (shown on hover or focus; always shown on touch screens for "ask for price"),
-   so it never pushes the text below it. It is its own link, above the card link. */
+/* the order link: a light outlined pill that fills when the card is hovered. It is its own link, above the card link. */
 .card__order {
-  position: absolute;
-  z-index: 3;
-  inset: auto 10px 10px;
-  display: flex;
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-self: flex-start;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  max-width: 100%;
   min-height: 44px;
-  padding: 0 14px;
+  padding: 8px 16px;
+  border: 1.5px solid var(--c-line);
   border-radius: var(--r-pill);
-  background: var(--ink);
-  color: var(--paper);
-  font-size: 0.9375rem;
+  background: transparent;
+  color: var(--c-text);
+  font-size: 0.875rem;
   font-weight: 600;
-  white-space: nowrap;
-  opacity: 0;
-  transform: translate3d(0, 8px, 0);
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
   transition:
-    opacity 250ms var(--ease),
-    transform 350ms var(--ease-out),
     background-color var(--d-fast) var(--ease),
+    border-color var(--d-fast) var(--ease),
     color var(--d-fast) var(--ease);
 }
 .card__order svg {
-  width: 18px;
-  height: 18px;
+  flex: none;
+  width: 16px;
+  height: 16px;
 }
-.card:hover .card__order,
-.card:focus-within .card__order {
-  opacity: 1;
-  transform: none;
+.card:hover .card__order {
+  border-color: var(--c-btn-bg);
+  background: var(--c-btn-bg);
+  color: var(--c-btn-fg);
 }
 .card__order:hover,
+.card:hover .card__order:hover,
 .card__order:focus-visible {
+  border-color: var(--amber);
   background: var(--amber);
   color: var(--ink);
 }
 .card__order:focus-visible {
   outline: 3px solid var(--c-focus);
   outline-offset: 2px;
-}
-/* touch screens have no hover: a price-less card keeps a small round order button in the plate's corner (the label stays for screen readers) */
-@media (hover: none) {
-  .card__order.is-ask {
-    inset: auto 8px 8px auto;
-    width: 44px;
-    padding: 0;
-    opacity: 1;
-    transform: none;
-  }
-  .card__order.is-ask > span:not(.sr-only) {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-  }
-}
-@media (hover: hover) {
-  .card__order {
-    max-width: calc(100% - 20px);
-  }
 }
 
 /* ---------- the grid: 2 columns, 3 from 900px, 4 from 1200px, on the page's container ---------- */
@@ -337,11 +335,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card__plate,
+  .card,
+  .card__shape,
   .card__img,
   .card__order,
   .card__go {
     transition: none;
+  }
+  .card:hover,
+  .card:focus-within {
+    transform: none;
   }
 }
 :lang(am) .card__brand,
