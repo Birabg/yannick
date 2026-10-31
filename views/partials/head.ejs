@@ -13,6 +13,7 @@
   <% if (seo.noindex) { %><meta name="robots" content="noindex, nofollow"><% } %>
   <% if (canonical) { %><link rel="canonical" href="<%= canonical %>"><% } %>
   <%- include('theme-init') %>
+  <%- include('splash-init') %>
 
   <meta property="og:site_name" content="<%= site.brand.name %>">
   <meta property="og:type" content="<%= seo.type === 'product' ? 'product' : 'website' %>">

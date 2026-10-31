@@ -111,6 +111,8 @@ function createApp() {
       icon: (name, cls = '') =>
         `<svg class="icon ${cls}" aria-hidden="true" focusable="false"><use href="#i-${name}"/></svg>`,
       t: (key) => i18n.en[key] ?? key,
+      /** The Amharic string, for markup that must switch language before any script loads (the intro splash). */
+      tAm: (key) => i18n.am[key] ?? i18n.en[key] ?? key,
       i: (key) => `data-i18n="${key}"`,
       /** Escapes text, then turns *word* into the italic serif accent. */
       rich: (text) => escapeHtml(text).replace(/\*([^*]+)\*/g, '<em>$1</em>'),

@@ -109,6 +109,8 @@ const en = {
   'footer.explore': 'Explore',
   'footer.contact': 'Contact',
   'footer.tag': 'A good scent speaks first.',
+  'splash.loading': 'Loading Yannick Scents',
+  'splash.skip': 'Skip',
   'footer.nav': 'Navigation',
   'footer.order': 'Order',
   'footer.visit': 'Visit',
@@ -269,6 +271,9 @@ const am = {
   'footer.explore': 'ይዳሰሱ',
   'footer.contact': 'አድራሻ',
   'footer.tag': 'ጥሩ መዓዛ መጀመሪያ ይናገራል።',
+  // Draft Amharic for the intro splash: needs a native review.
+  'splash.loading': 'ያኒክ ሴንትስ እየተጫነ ነው',
+  'splash.skip': 'ዝለል',
   'footer.nav': 'ዳሰሳ',
   'footer.order': 'ማዘዣ',
   'footer.visit': 'ይጎብኙን',
