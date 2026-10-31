@@ -54,6 +54,7 @@ const en = {
   'collection.more': 'Show more',
   'filter.clear': 'Clear filters',
   'card.ask': 'Ask on WhatsApp',
+  'card.order': 'Order',
   'qv.title': 'Perfume details',
   'qv.prev': 'Previous perfume',
   'qv.next': 'Next perfume',
@@ -210,6 +211,7 @@ const am = {
   'collection.more': 'ተጨማሪ አሳይ',
   'filter.clear': 'ማጣሪያዎችን አጽዳ',
   'card.ask': 'በዋትስአፕ ይጠይቁ',
+  'card.order': 'ያዝዙ',
   // Draft Amharic for the quick-view panel: needs a native review before launch.
   'qv.title': 'የሽቶ ዝርዝር',
   'qv.prev': 'ቀዳሚ ሽቶ',

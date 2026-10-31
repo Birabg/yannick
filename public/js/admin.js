@@ -241,7 +241,7 @@ if (previewForm) {
     const price = Number.parseInt(field('price').value.replace(/\D/g, ''), 10);
     set(
       '[data-preview-price]',
-      price > 0 ? `ETB ${price.toLocaleString('en-US')}` : 'Ask for price'
+      price > 0 ? `ETB ${new Intl.NumberFormat('en-US').format(price)}` : 'Ask for price'
     );
 
     const checked = (name) =>
